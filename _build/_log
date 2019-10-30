@@ -1,0 +1,7 @@
+### Starting build.
+# Target: myocamlbuild, tags: { package(js_of_ocaml.ocamlbuild), link, native, ocaml, program }
+ocamlfind ocamlopt -package unix -package ocamlbuild -linkpkg -package js_of_ocaml.ocamlbuild myocamlbuild.ml /Users/abhay/.opam/4.08.1/lib/ocamlbuild/ocamlbuild.cmx -o myocamlbuild
++ ocamlfind ocamlopt -package unix -package ocamlbuild -linkpkg -package js_of_ocaml.ocamlbuild myocamlbuild.ml /Users/abhay/.opam/4.08.1/lib/ocamlbuild/ocamlbuild.cmx -o myocamlbuild
+ocamlfind: Package `js_of_ocaml-ocamlbuild' not found - required by `js_of_ocaml.ocamlbuild'
+Command exited with code 2.
+# Compilation unsuccessful.

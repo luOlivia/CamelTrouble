@@ -1,3 +1,5 @@
+type t
+
 type pos = {
   mutable x: float;
   mutable y: float;

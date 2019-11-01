@@ -7,4 +7,4 @@ type t
 
 (** [parse_map_file filename] is the constructed [map] after parsing 
     [filename]. *)
-val parse_map_file : string -> t
+val maze_from_file : string -> t 

@@ -1,10 +1,7 @@
 ### Starting build.
-# Target: myocamlbuild, tags: { link, native, ocaml, program }
-/Users/abhay/.opam/4.08.1/bin/ocamlopt.opt unix.cmxa -I /Users/abhay/.opam/4.08.1/lib/ocamlbuild /Users/abhay/.opam/4.08.1/lib/ocamlbuild/ocamlbuildlib.cmxa myocamlbuild.ml /Users/abhay/.opam/4.08.1/lib/ocamlbuild/ocamlbuild.cmx -o myocamlbuild
-+ /Users/abhay/.opam/4.08.1/bin/ocamlopt.opt unix.cmxa -I /Users/abhay/.opam/4.08.1/lib/ocamlbuild /Users/abhay/.opam/4.08.1/lib/ocamlbuild/ocamlbuildlib.cmxa myocamlbuild.ml /Users/abhay/.opam/4.08.1/lib/ocamlbuild/ocamlbuild.cmx -o myocamlbuild
-File "myocamlbuild.ml", line 1, characters 35-68:
-1 | let _ = Ocamlbuild_plugin.dispatch Ocamlbuild_js_of_ocaml.dispatcher
-                                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-Error: Unbound module Ocamlbuild_js_of_ocaml
+# Target: main.ml.depends, tags: { package(js_of_ocaml), package(js_of_ocaml-lwt), package(js_of_ocaml-lwt.graphics), package(js_of_ocaml-ppx), package(unix), extension:ml, file:main.ml, ocaml, ocamldep, quiet, traverse }
+ocamlfind ocamldep -package js_of_ocaml-lwt -package js_of_ocaml-lwt.graphics -package js_of_ocaml -package js_of_ocaml-ppx -package unix -modules main.ml > main.ml.depends
++ ocamlfind ocamldep -package js_of_ocaml-lwt -package js_of_ocaml-lwt.graphics -package js_of_ocaml -package js_of_ocaml-ppx -package unix -modules main.ml > main.ml.depends
+ocamlfind: Package `js_of_ocaml-lwt.graphics' not found
 Command exited with code 2.
 # Compilation unsuccessful.

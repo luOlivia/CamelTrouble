@@ -1,4 +1,4 @@
-MODULES=ball camel director main map sprite
+MODULES=ball camel director main map
 OBJECTS=$(MODULES:=.cmo)
 MLS=$(MODULES:=.ml)
 MLIS=$(MODULES:=.mli)

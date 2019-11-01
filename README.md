@@ -1,2 +1,2 @@
 # CamelTrouble
-TankTrouble, but make it Ocaml
+TankTrouble, but make it OCaml

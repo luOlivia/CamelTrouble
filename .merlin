@@ -4,3 +4,4 @@ PKG js_of_ocaml-lwt.graphics
 PKG js_of_ocaml 
 PKG js_of_ocaml-ppx
 PKG unix
+PKG oUnit

@@ -17,7 +17,9 @@ let make_print_test
       assert_equal expected_output ((fun d -> true) "") )
 
 let maze_tests = [
-  make_print_test "Print out test maze" "maps/simple.map" true;
+  make_print_test "Print out wall map maze" "maps/simple.map" true;
+  make_print_test "Print out maze with walls and movables" "maps/with_movable.map" true;
+  make_print_test "Print out maze with all types" "maps/with_all.map" true;
 ]
 
 let suite = "search test suite" >::: List.flatten [

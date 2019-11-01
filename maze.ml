@@ -7,6 +7,7 @@ exception InvalidMazeChar of string
 
 let maze_HEIGHT = 10
 let maze_WIDTH = 20 
+let num_PLAYERS = 2
 
 type maze = (cell array) array
 
@@ -22,6 +23,15 @@ let make_t lst m = {
   spawn_points = lst;
   maze = m;
 }
+
+let reverse_array array = 
+  let len=Array.length array in
+  for i=0 to len/2-1 do 
+    let temp = array.(i) in
+    array.(i) <- array.(len-i-1);
+    array.(len-i-1) <- temp         
+  done;
+  array;;
 
 
 (** [cell_of_str c] is the cell type corresponding to string char [c]*)
@@ -64,7 +74,7 @@ let rec read_lines text m idx =
 let maze_from_file file_path =
   let raw_text = open_in file_path in 
   let parsed_maze = read_lines raw_text empty_maze 0 in 
-  make_t [] parsed_maze
+  make_t [] (reverse_array parsed_maze)
 
 
 (**[print_maze maze] prints in terminal a textual representation of the maze*)

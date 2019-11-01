@@ -1,4 +1,4 @@
-MODULES=ball camel gui main maze state test
+MODULES=ball camel main maze state test
 OBJECTS=$(MODULES:=.cmo)
 MLS=$(MODULES:=.ml)
 MLIS=$(MODULES:=.mli)

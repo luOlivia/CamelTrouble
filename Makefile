@@ -9,7 +9,11 @@ default: build
 	utop
 
 build:
-	$(OCAMLBUILD) $(MAIN) && js_of_ocaml +graphics.js $(MAIN)
+	$(OCAMLBUILD) $(OBJECTS)
+
+play: 
+	# $(OCAMLBUILD) $(MAIN) && js_of_ocaml +graphics.js $(MAIN)
+	$(OCAMLBUILD) $(MAIN) && ./$(MAIN)
 
 docs: docs-public docs-private
 

@@ -74,7 +74,7 @@ let rec read_lines text m idx =
 let maze_from_file file_path =
   let raw_text = open_in file_path in 
   let parsed_maze = read_lines raw_text empty_maze 0 in 
-  make_t [] (reverse_array parsed_maze)
+  make_t [] (reverse_array (Array.map (reverse_array) parsed_maze)) 
 
 
 (**[print_maze maze] prints in terminal a textual representation of the maze*)

@@ -1,7 +1,10 @@
 ### Starting build.
-# Target: myocamlbuild, tags: { package(js_of_ocaml.ocamlbuild), link, native, ocaml, program }
-ocamlfind ocamlopt -package unix -package ocamlbuild -linkpkg -package js_of_ocaml.ocamlbuild myocamlbuild.ml /Users/abhay/.opam/4.08.1/lib/ocamlbuild/ocamlbuild.cmx -o myocamlbuild
-+ ocamlfind ocamlopt -package unix -package ocamlbuild -linkpkg -package js_of_ocaml.ocamlbuild myocamlbuild.ml /Users/abhay/.opam/4.08.1/lib/ocamlbuild/ocamlbuild.cmx -o myocamlbuild
-ocamlfind: Package `js_of_ocaml-ocamlbuild' not found - required by `js_of_ocaml.ocamlbuild'
+# Target: myocamlbuild, tags: { link, native, ocaml, program }
+/Users/abhay/.opam/4.08.1/bin/ocamlopt.opt unix.cmxa -I /Users/abhay/.opam/4.08.1/lib/ocamlbuild /Users/abhay/.opam/4.08.1/lib/ocamlbuild/ocamlbuildlib.cmxa myocamlbuild.ml /Users/abhay/.opam/4.08.1/lib/ocamlbuild/ocamlbuild.cmx -o myocamlbuild
++ /Users/abhay/.opam/4.08.1/bin/ocamlopt.opt unix.cmxa -I /Users/abhay/.opam/4.08.1/lib/ocamlbuild /Users/abhay/.opam/4.08.1/lib/ocamlbuild/ocamlbuildlib.cmxa myocamlbuild.ml /Users/abhay/.opam/4.08.1/lib/ocamlbuild/ocamlbuild.cmx -o myocamlbuild
+File "myocamlbuild.ml", line 1, characters 35-68:
+1 | let _ = Ocamlbuild_plugin.dispatch Ocamlbuild_js_of_ocaml.dispatcher
+                                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Error: Unbound module Ocamlbuild_js_of_ocaml
 Command exited with code 2.
 # Compilation unsuccessful.

@@ -1,0 +1,1 @@
+val draw_init: Maze.t -> unit

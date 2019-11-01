@@ -1,7 +1,2 @@
 ### Starting build.
-# Target: main.ml.depends, tags: { package(js_of_ocaml), package(js_of_ocaml-lwt), package(js_of_ocaml-lwt.graphics), package(js_of_ocaml-ppx), package(unix), extension:ml, file:main.ml, ocaml, ocamldep, quiet, traverse }
-ocamlfind ocamldep -package js_of_ocaml-lwt -package js_of_ocaml-lwt.graphics -package js_of_ocaml -package js_of_ocaml-ppx -package unix -modules main.ml > main.ml.depends
-+ ocamlfind ocamldep -package js_of_ocaml-lwt -package js_of_ocaml-lwt.graphics -package js_of_ocaml -package js_of_ocaml-ppx -package unix -modules main.ml > main.ml.depends
-ocamlfind: Package `js_of_ocaml-lwt.graphics' not found
-Command exited with code 2.
 # Compilation unsuccessful.

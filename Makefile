@@ -1,4 +1,4 @@
-MODULES=ball camel director main map
+MODULES=ball camel gui main maze state
 OBJECTS=$(MODULES:=.cmo)
 MLS=$(MODULES:=.ml)
 MLIS=$(MODULES:=.mli)
@@ -9,7 +9,7 @@ default: build
 	utop
 
 build:
-	$(OCAMLBUILD) $(MAIN) && js_of_ocaml +graphics.js $(MAIN)
+	$(OCAMLBUILD) $(OBJECTS) && js_of_ocaml +graphics.js $(MAIN)
 
 docs: docs-public docs-private
 

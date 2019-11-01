@@ -3,9 +3,8 @@ type cell =
   | Movable
   | Empty 
 
-type map = 
-  cell array array
+type t
 
 (** [parse_map_file filename] is the constructed [map] after parsing 
     [filename]. *)
-val parse_map_file : string -> map
+val parse_map_file : string -> t

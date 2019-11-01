@@ -1,8 +1,0 @@
-"Rule: ocaml: ml & cmi -> cmo (%=main )": ")\214\137A;\217\144\152l\253\241j\133\220\217\006"
-"Rule: ocaml: cmo* -> byte (%=main )": "\178z\021\224\212\156p#}5\193C\028\225\247\006"
-"Rule: ocaml dependencies mli (%=main )": "\234\224\224\223Q[\190\017\1501G\237\214Fm\026"
-"Rule: ocaml: ml -> cmo & cmi (%=main )": "\191r\253\018H\212\130\127\199~W\210\247i\173\212"
-"Rule: ocaml dependencies ml (%=main )": "\184\156\183\020\"\tw\1800\158\029\242\178\244#'"
-"Resource: /Users/abhay/Documents/code/cs 3110/CamelTrouble/main.mli": "\212\029\140\217\143\000\178\004\233\128\t\152\236\248B~"
-"Rule: ocaml: mli -> cmi (%=main )": "5\006v\232\213\017\178\029\226#&\018\181\133@\230"
-"Resource: /Users/abhay/Documents/code/cs 3110/CamelTrouble/main.ml": "\212\029\140\217\143\000\178\004\233\128\t\152\236\248B~"

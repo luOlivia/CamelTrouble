@@ -1,2 +1,2 @@
-open Graphics_js
-
+let draw_init maze = 
+  failwith "unimplemented"

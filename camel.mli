@@ -1,6 +1,7 @@
 type pos = {
   mutable x: float;
   mutable y: float;
+  mutable angle_degrees: float;
 }
 
 type controls =

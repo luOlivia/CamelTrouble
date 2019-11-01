@@ -1,5 +1,0 @@
-"Rule: ocaml: cmo* -> byte (%=main )": "\191w}\180\162K\202\132\148\031\177\020\203&\026\""
-"Rule: ocaml: ml -> cmo & cmi (%=main )": "\191r\253\018H\212\130\127\199~W\210\247i\173\212"
-"Resource: /Users/olivialu/Desktop/3110/CamelTrouble/main.byte": "\2272\002C\209\148\127\244\015\141x\t\214_k>"
-"Rule: ocaml dependencies ml (%=main )": "\129\129\161:t\141\155\130\193B\250\017\174'Yk"
-"Resource: /Users/abhay/Documents/code/cs 3110/CamelTrouble/main.ml": "\212\029\140\217\143\000\178\004\233\128\t\152\236\248B~"

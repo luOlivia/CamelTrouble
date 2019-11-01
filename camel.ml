@@ -9,11 +9,13 @@ type controls =
   | Right
   | Up
   | Down
+  | Shoot
 
 type camel_action =
   | Shooting 
   | CamelMoving
   | Rotating
+  | Stationary
 
 type t = {
   position: pos; 
@@ -22,4 +24,9 @@ type t = {
   is_alive: bool
 }
 
+let camel_init pos =
+  {position=pos; curr_control=Left; curr_action=Stationary; is_alive=true}
 
+(* let move_camel control camel_action camel =
+   match control with
+   | Left ->  *)

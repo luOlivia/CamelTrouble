@@ -9,5 +9,11 @@ type ball_action =
   | CollisionWall
   | BallMoving
 
-type t = 
-  {position: pos; curr_action: ball_action}
+type t = {
+  position: pos; 
+  curr_action: ball_action; 
+  time_left: float
+}
+
+let ball_init pos =
+  {position=pos; curr_action=BallMoving; time_left=1000.0}

@@ -1,11 +1,11 @@
-MODULES=ball camel main maze state test
+MODULES=ball camel cell main maze state test
 OBJECTS=$(MODULES:=.cmo)
 MLS=$(MODULES:=.ml)
 MLIS=$(MODULES:=.mli)
 TEST=test.byte
 MAIN=main.byte
 OCAMLBUILD=ocamlbuild -use-ocamlfind
-PKGS=unix,oUnit,str
+PKGS=unix,oUnit,str,graphics
 
 
 default: build
@@ -17,6 +17,9 @@ build:
 	
 test:
 	$(OCAMLBUILD) $(TEST) && ./$(TEST)
+
+play:
+	$(OCAMLBUILD) $(MAIN) && ./$(MAIN)
 
 docs: docs-public docs-private
 

@@ -148,9 +148,5 @@ let make_maze density =
   done; maze
 
 let connections maze = 
-  let connctns = Array.make (num_grid_squares * num_grid_squares) [] in
-  for i = 0 to num_grid_squares - 1 do
-    for j = 0 to num_grid_squares - 1 do 
-      connctns.(i + j * num_grid_squares) <- neighbors maze {x=i; y=j}
-    done
-  done; connctns
+  let connctns = Array.make_matrix (num_grid_squares * num_grid_squares) 5 in
+  connctns

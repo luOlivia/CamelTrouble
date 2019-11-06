@@ -6,6 +6,8 @@ type t = {
   ballspeed: float;
 }
 
+val init: int -> float -> 'a -> 'b -> t
+
 val new_ball_pos_x: t -> float 
 
 val new_ball_pos_y: t -> float 

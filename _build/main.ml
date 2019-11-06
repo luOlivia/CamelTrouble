@@ -20,8 +20,7 @@ let draw_camel camel color =
   let curr_x = int_of_float camel.pos.x in 
   let curr_y = int_of_float camel.pos.y in 
   let c_width = int_of_float State.camel_width in 
-  draw_poly [| (2, 2), (2, 2) |]
-(* fill_ellipse curr_x curr_y 10 20 *)
+  fill_ellipse curr_x curr_y 10 20
 
 (** returns new state with camel moved positions *)
 let move_fwd st speed =
@@ -46,7 +45,7 @@ let input state =
   | 'w' -> print_endline "player 1 up"; move_fwd state (-20.0)
   | 'a' -> print_endline "player 1 left"; rotate state
   | 's' -> print_endline "player 1 down"; move_fwd state 10.0
-  | 'd' -> print_endline "player 1 right"; rotate state
+  | 'd' -> print_endline "player 1 right"; state
   | _ -> print_endline "sir pls"; state
 
 (** [run] displays the game window and allows users to quit with key q *)

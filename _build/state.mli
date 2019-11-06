@@ -17,3 +17,6 @@ val ball_width : float
 val wall_width : float
 
 val square_width : float 
+
+val move_fwd : t -> Camel.t -> Camel.t
+val move_rev : t -> Camel.t -> Camel.t

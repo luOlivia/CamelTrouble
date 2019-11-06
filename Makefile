@@ -12,7 +12,6 @@ default: build
 	utop
 
 build:
-	$(OCAMLBUILD) $(MAIN) && ./$(MAIN)
 	$(OCAMLBUILD) $(OBJECTS) && js_of_ocaml +graphics.js $(MAIN)
 	
 test:

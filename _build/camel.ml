@@ -7,10 +7,17 @@ type t = {
   pos: Position.t
 }
 
+let init name x y = {
+  name= name;
+  num_bullets= 10;
+  dir= 0.0;
+  pos= make_position x y
+}
+
 (** [rot_speed] is speed the tank rotates in degrees *)
 let rot_speed = 5.0
 (** [fwd_speed] is speed the tank moves forward *)
-let fwd_speed = 1.0
+let fwd_speed = 5.0
 (** [rev_speed] is speed the tank moves backward *)
 let rev_speed = -0.75
 
@@ -31,6 +38,15 @@ let move_horiz x dir speed =
 let move_vert y dir speed = 
   y -. (speed *. ((90.0-.dir) |> to_radians |> Stdlib.sin))
 
+(** [free_range camel y dir] is camel moved w/o regard to walls *)
+let free_range camel speed = 
+  let new_x = move_horiz camel.pos.x camel.dir speed in 
+  let new_y = move_vert camel.pos.y camel.dir speed in 
+  let new_pos = make_position new_x new_y in 
+  print_endline (string_of_float new_y);
+  {camel with pos = new_pos}
+
+(* 
 let corner_collide pos =
   true (* will be abstracted out into main *)
 
@@ -65,7 +81,10 @@ let move camel speed =
 
 let move_fwd camel = {camel with pos = move camel fwd_speed}
 let move_rev camel = {camel with pos = move camel rev_speed}
-
+*)
 let hit camel = camel
 (* let hit camel state = 
    if camel.name = "one" then state.camel1_alive = False else state.camel2_alive = False *)
+
+let print camel = 
+  camel.name^" num_bullets: "^string_of_int camel.num_bullets^" angle dir: "^string_of_float camel.dir^" pos: "^string_of_float camel.pos.x^" "^string_of_float camel.pos.y

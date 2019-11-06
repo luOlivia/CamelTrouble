@@ -15,7 +15,7 @@ type t = {
 let camel_width = 10.0
 let ball_width = 10.0 
 let wall_width = 10.0
-let square_width = 10.0
+let square_width = 700.0
 
 (*TODO returns new state with camel1 or camel2 modified
   originally from: ball *)
@@ -113,9 +113,6 @@ let corner_collide st pos width =
     let d4 = distance p4 pos in 
     let dist = min d1 (min d2 (min d3 d4)) in 
     dist < w
-
-
-
 
 (**
    - modifies ball 

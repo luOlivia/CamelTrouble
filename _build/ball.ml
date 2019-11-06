@@ -17,7 +17,14 @@ type t =
     ballspeed: float;
   }
 
-
+let init owner a x y = 
+  {
+    timer= 10.0;
+    owner= owner;
+    angle= a;
+    position= make_position 0.0 0.0;
+    ballspeed= 20.0; (* arbitrary for now*)
+  }
 
 let get_position b = 
   b.position

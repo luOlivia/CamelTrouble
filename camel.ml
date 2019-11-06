@@ -17,7 +17,7 @@ let init name x y = {
 (** [rot_speed] is speed the tank rotates in degrees *)
 let rot_speed = 5.0
 (** [fwd_speed] is speed the tank moves forward *)
-let fwd_speed = 1.0
+let fwd_speed = 5.0
 (** [rev_speed] is speed the tank moves backward *)
 let rev_speed = -0.75
 

@@ -12,7 +12,7 @@ let state = {
   camel2= camel2;
   camel1_alive= true;
   camel2_alive= true; 
-  maze= make_maze 100
+  maze= make_maze 30
 } 
 
 (** [to_radians x] is degrees [x] to radians *)
@@ -49,7 +49,7 @@ let draw_camel camel color =
 let move_fwd st speed =
   (* let new_camel = move_fwd state camel in  *)
   let new_camel = Camel.free_range st.camel1 speed in 
-  print_endline (Camel.print new_camel);
+  print_endline (Camel.to_str new_camel);
   draw_camel st.camel1 Graphics.white;
   draw_camel new_camel Graphics.black;
   {st with camel1 = new_camel}
@@ -58,7 +58,7 @@ let rotate d st =
   (* let new_camel = move_fwd state camel in  *)
   let new_camel = if d = "left" then Camel.turn_left st.camel1 
     else Camel.turn_right st.camel1 in
-  print_endline (Camel.print new_camel);
+  print_endline (Camel.to_str new_camel);
   draw_camel st.camel1 Graphics.white;
   draw_camel new_camel Graphics.black;
   {st with camel1 = new_camel}

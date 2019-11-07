@@ -86,5 +86,5 @@ let hit camel = camel
 (* let hit camel state = 
    if camel.name = "one" then state.camel1_alive = False else state.camel2_alive = False *)
 
-let print camel = 
+let to_str camel = 
   camel.name^" num_bullets: "^string_of_int camel.num_bullets^" angle dir: "^string_of_float camel.dir^" pos: "^string_of_float camel.pos.x^" "^string_of_float camel.pos.y

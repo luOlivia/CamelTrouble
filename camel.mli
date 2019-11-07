@@ -22,4 +22,4 @@ val free_range : t -> float -> t
 
 val hit : t -> t 
 
-val print : t -> string
+val to_str : t -> string

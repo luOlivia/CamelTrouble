@@ -109,27 +109,32 @@ let intersect cells1 cells2 =
         else a) 
      [] cells2) |> Array.of_list
 
+let diff l1 l2 = List.filter (fun x -> not (List.mem x l2)) l1
+
 let area_neighbors maze area = 
-  Array.map (fun x -> walled_neighbors maze x) area 
-  |> Array.fold_left union [||]
+  (Array.map (fun x -> walled_neighbors maze x) area 
+   |> Array.fold_left union [||] |> Array.to_list |>
+   diff) (area |> Array.to_list) |> Array.of_list
 
 let remove_wall maze area =
   let neighbors = area_neighbors maze area in
   for i = 0 to 1 do
-    let chosen = neighbors |> Array.length |> Random.int |> Array.get neighbors in
-    let x1, y1 = chosen.x, chosen.y in
-    let x2, y2 = 
-      (match List.find_opt (fun x -> is_neighbors chosen x) (Array.to_list area) with 
-       | None -> 0, 0
-       | Some cell -> cell.x, cell.y) in
-    if x1 = x2 then 
-      match maze.horizontal_walls with 
-      | Horizontal walls -> walls.(max y1 y2).(x1) <- false
-      | _ -> failwith "can only match horizontal wall"
-    else
-      match maze.vertical_walls with 
-      | Vertical walls -> walls.(max x1 x2).(y1) <- false
-      | _ -> failwith "can only match vertical wall"
+    try 
+      let chosen = neighbors |> Array.length |> Random.int |> Array.get neighbors in
+      let x1, y1 = chosen.x, chosen.y in
+      let x2, y2 = 
+        (match List.find_opt (fun x -> is_neighbors chosen x) (Array.to_list area) with 
+         | None -> 0, 0
+         | Some cell -> cell.x, cell.y) in
+      if x1 = x2 then 
+        match maze.horizontal_walls with 
+        | Horizontal walls -> walls.(max y1 y2).(x1) <- false
+        | _ -> failwith "can only match horizontal wall"
+      else
+        match maze.vertical_walls with 
+        | Vertical walls -> walls.(max x1 x2).(y1) <- false
+        | _ -> failwith "can only match vertical wall"
+    with _ -> ();
   done; maze
 
 let make_walls density = 
@@ -175,7 +180,8 @@ let merge_all maze =
            set_opt.(!j) <- None;
            i := 0;
            j := 0;
-          ) else incr i; incr j
+          ) 
+        else incr i; incr j
       | _ -> (); incr i; incr j;
     done
   done;
@@ -192,14 +198,15 @@ let merge_all maze =
   done; res
 
 let make_maze density = 
-  make_empty_walls ()
-(* let walls = ref (make_walls density) in 
-   let areas = ref (merge_all !walls) in
-   while Array.length !areas > 1 do
-   walls := remove_wall !walls !areas.(0);
-   areas := merge_all !walls;
-   print_endline (Array.length !areas |> string_of_int)
-   done; !walls *)
+  (* make_empty_walls () *)
+  let walls = ref (make_walls density) in 
+  let areas = ref (merge_all !walls) in
+  for i = 0 to 10 do
+    walls := remove_wall !walls !areas.(0);
+    areas := merge_all !walls;
+  done; 
+
+  !walls
 
 let to_str maze = 
   let lines = Array.make (num_grid_squares+1) "" in 
@@ -224,14 +231,3 @@ let to_str maze =
   done;
   lines |> Array.to_list |> String.concat "\n"
 
-(* let make_maze density = 
-   let walls =  make_walls density in 
-   let areas =  merge_all walls in
-   let len = Array.length areas in
-   let i = ref len in
-   while !i > 1 do
-    let walls = remove_wall walls areas.(0) in
-    let areas = merge_all walls in
-    i := Array.length areas;
-    print_endline (!i |> string_of_int)
-   done; walls *)

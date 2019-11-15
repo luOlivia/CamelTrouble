@@ -1,0 +1,59 @@
+# Packages matching: installed
+# Name                  # Installed # Synopsis
+ANSITerminal            0.8.1       Basic control of ANSI compliant terminals and the windows shell
+base-bigarray           base
+base-bytes              base        Bytes library distributed with the OCaml compiler
+base-threads            base
+base-unix               base
+biniou                  1.2.1       Binary data format designed for speed, safety, ease of use and backward compatibility as protocols evolve
+bisect_ppx              1.4.1       Code coverage for OCaml
+bisect_ppx-ocamlbuild   1.0.1       Ocamlbuild plugin for Bisect_ppx, the coverage tool
+camomile                1.0.2       A Unicode library
+charInfo_width          1.1.0       Determine column width for a character
+cmdliner                1.0.4       Declarative definition of command line interfaces for OCaml
+conf-m4                 1           Virtual package relying on m4
+cppo                    1.6.6       Code preprocessor like cpp for OCaml
+csv                     2.3         A pure OCaml library to read and write CSV files
+dune                    1.11.4      Fast, portable and opinionated build system
+dune-configurator       1.0.0
+easy-format             1.3.2       High-level and functional interface to the Format module of the OCaml standard library
+jbuilder                transition  This is a transition package, jbuilder is now named dune. Use the dune
+js_of_ocaml             3.4.0       Compiler from OCaml bytecode to Javascript
+js_of_ocaml-compiler    3.4.0       Compiler from OCaml bytecode to Javascript
+js_of_ocaml-lwt         3.4.0       Compiler from OCaml bytecode to Javascript
+js_of_ocaml-ppx         3.4.0       Compiler from OCaml bytecode to Javascript
+lambda-term             2.0.2       Terminal manipulation library for OCaml
+lwt                     4.3.0       Promises and event-driven I/O
+lwt_log                 1.1.1       Lwt logging library (deprecated)
+lwt_ppx                 1.2.4       PPX syntax for Lwt, providing something similar to async/await from JavaScript
+lwt_react               1.1.3       Helpers for using React with Lwt
+menhir                  20190924    An LR(1) parser generator
+merlin                  3.3.2       Editor helper, provides completion, typing and source browsing in Vim and Emacs
+mmap                    1.1.0       File mapping functionality
+ocaml                   4.08.1      The OCaml compiler (virtual package)
+ocaml-base-compiler     4.08.1      Official release 4.08.1
+ocaml-config            1           OCaml Switch Configuration
+ocaml-migrate-parsetree 1.4.0       Convert OCaml parsetrees between different versions
+ocamlbuild              0.14.0      OCamlbuild is a build system with builtin rules to easily build most OCaml projects.
+ocamlfind               1.8.1       A library manager for OCaml
+ocp-indent              1.8.1       A simple tool to indent OCaml programs
+ocplib-endian           1.0         Optimised functions to read and write int16/32/64 from strings and bigarrays, based on new primitives added in version 4.01.
+ounit                   2.2.1       This is a transition package, ounit is now ounit2
+ounit2                  2.2.1       OUnit testing framework
+ppx_derivers            1.2.1       Shared [@@deriving] plugin registry
+ppx_tools_versioned     5.2.3       A variant of ppx_tools based on ocaml-migrate-parsetree
+qcheck                  0.11        Compatibility package for qcheck
+qcheck-core             0.11        Core qcheck library
+qcheck-ounit            0.11        OUnit backend for qcheck
+qtest                   2.9         qtest : Inline (Unit) Tests for OCaml.
+re                      1.9.0       RE is a regular expression library for OCaml
+react                   1.2.1       Declarative events and signals for OCaml
+result                  1.4         Compatibility Result module
+seq                     base        Compatibility package for OCaml's standard iterator type starting from 4.07.
+stdlib-shims            0.1.0       Backport some of the new stdlib features to older compiler
+topkg                   1.0.1       The transitory OCaml software packager
+uchar                   0.0.2       Compatibility library for OCaml's Uchar module
+user-setup              0.7         Helper for the configuration of editors for the use of OCaml tools
+utop                    2.4.2       Universal toplevel for OCaml
+yojson                  1.7.0       Yojson is an optimized parsing and printing library for the JSON format
+zed                     2.0.3       Abstract engine for text edition in OCaml

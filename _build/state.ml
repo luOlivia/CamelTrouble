@@ -15,7 +15,8 @@ type t = {
 let camel_width = 10.0
 let ball_width = 10.0 
 let wall_width = 10.0
-let square_width = 700.0
+let wall_height = 90.0
+let square_width = 90.0
 
 (*TODO returns new state with camel1 or camel2 modified
   originally from: ball *)

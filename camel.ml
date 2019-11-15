@@ -22,10 +22,10 @@ let fwd_speed = 5.0
 let rev_speed = -0.75
 
 (** [turn_right camel] is [camel] with right rotation *)
-let turn_right camel = {camel with dir = Stdlib.mod_float (camel.dir +. rot_speed) 360.0}
+let turn_right camel = {camel with dir = Stdlib.mod_float (camel.dir -. rot_speed) 360.0}
 
 (** [turn_left camel] is [camel] with left rotation *)
-let turn_left camel = {camel with dir = Stdlib.mod_float (camel.dir -. rot_speed) 360.0}
+let turn_left camel = {camel with dir = Stdlib.mod_float (camel.dir +. rot_speed) 360.0}
 
 (** [to_radians x] is degrees [x] to radians *)
 let to_radians x = x *. Float.pi /. 180.0

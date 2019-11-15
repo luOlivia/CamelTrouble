@@ -231,4 +231,3 @@ let to_str maze =
   done;
   lines |> Array.to_list |> String.concat "\n"
 
-let () = print_endline (make_maze 20 |> to_str);

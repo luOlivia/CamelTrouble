@@ -15,6 +15,7 @@ val camel_width : float
 val ball_width : float 
 
 val wall_width : float
+val wall_height : float
 
 val square_width : float 
 

@@ -4,7 +4,7 @@ ocamlfind ocamldep -package js_of_ocaml-lwt -package js_of_ocaml-lwt.graphics -p
 # Target: main.cmi, tags: { package(js_of_ocaml), package(js_of_ocaml-lwt), package(js_of_ocaml-lwt.graphics), package(js_of_ocaml-ppx), package(oUnit), package(unix), byte, compile, extension:mli, file:main.mli, interf, ocaml, quiet, traverse }
 ocamlfind ocamlc -c -package js_of_ocaml-lwt -package js_of_ocaml-lwt.graphics -package js_of_ocaml -package js_of_ocaml-ppx -package unix -package oUnit -o main.cmi main.mli # cached
 # Target: main.ml.depends, tags: { package(js_of_ocaml), package(js_of_ocaml-lwt), package(js_of_ocaml-lwt.graphics), package(js_of_ocaml-ppx), package(oUnit), package(unix), extension:ml, file:main.ml, ocaml, ocamldep, quiet, traverse }
-ocamlfind ocamldep -package js_of_ocaml-lwt -package js_of_ocaml-lwt.graphics -package js_of_ocaml -package js_of_ocaml-ppx -package unix -package oUnit -modules main.ml > main.ml.depends # cached
+ocamlfind ocamldep -package js_of_ocaml-lwt -package js_of_ocaml-lwt.graphics -package js_of_ocaml -package js_of_ocaml-ppx -package unix -package oUnit -modules main.ml > main.ml.depends
 # Target: ball.mli.depends, tags: { package(js_of_ocaml), package(js_of_ocaml-lwt), package(js_of_ocaml-lwt.graphics), package(js_of_ocaml-ppx), package(oUnit), package(unix), extension:mli, file:ball.mli, ocaml, ocamldep, quiet, traverse }
 ocamlfind ocamldep -package js_of_ocaml-lwt -package js_of_ocaml-lwt.graphics -package js_of_ocaml -package js_of_ocaml-ppx -package unix -package oUnit -modules ball.mli > ball.mli.depends # cached
 # Target: position.mli.depends, tags: { package(js_of_ocaml), package(js_of_ocaml-lwt), package(js_of_ocaml-lwt.graphics), package(js_of_ocaml-ppx), package(oUnit), package(unix), extension:mli, file:position.mli, ocaml, ocamldep, quiet, traverse }
@@ -26,7 +26,16 @@ ocamlfind ocamldep -package js_of_ocaml-lwt -package js_of_ocaml-lwt.graphics -p
 # Target: state.cmi, tags: { package(js_of_ocaml), package(js_of_ocaml-lwt), package(js_of_ocaml-lwt.graphics), package(js_of_ocaml-ppx), package(oUnit), package(unix), byte, compile, extension:mli, file:state.mli, interf, ocaml, quiet, traverse }
 ocamlfind ocamlc -c -package js_of_ocaml-lwt -package js_of_ocaml-lwt.graphics -package js_of_ocaml -package js_of_ocaml-ppx -package unix -package oUnit -o state.cmi state.mli # cached
 # Target: main.cmo, tags: { package(js_of_ocaml), package(js_of_ocaml-lwt), package(js_of_ocaml-lwt.graphics), package(js_of_ocaml-ppx), package(oUnit), package(unix), byte, compile, extension:cmo, extension:ml, file:main.cmo, file:main.ml, implem, ocaml, quiet, traverse }
-ocamlfind ocamlc -c -package js_of_ocaml-lwt -package js_of_ocaml-lwt.graphics -package js_of_ocaml -package js_of_ocaml-ppx -package unix -package oUnit -o main.cmo main.ml # cached
+ocamlfind ocamlc -c -package js_of_ocaml-lwt -package js_of_ocaml-lwt.graphics -package js_of_ocaml -package js_of_ocaml-ppx -package unix -package oUnit -o main.cmo main.ml
++ ocamlfind ocamlc -c -package js_of_ocaml-lwt -package js_of_ocaml-lwt.graphics -package js_of_ocaml -package js_of_ocaml-ppx -package unix -package oUnit -o main.cmo main.ml
+File "main.ml", line 60, characters 6-11:
+60 |   let halfw = State.wall_width/.2. in 
+           ^^^^^
+Warning 26: unused variable halfw.
+File "main.ml", line 61, characters 6-11:
+61 |   let halfh = State.wall_height/.2. in 
+           ^^^^^
+Warning 26: unused variable halfh.
 # Target: ball.ml.depends, tags: { package(js_of_ocaml), package(js_of_ocaml-lwt), package(js_of_ocaml-lwt.graphics), package(js_of_ocaml-ppx), package(oUnit), package(unix), extension:ml, file:ball.ml, ocaml, ocamldep, quiet, traverse }
 ocamlfind ocamldep -package js_of_ocaml-lwt -package js_of_ocaml-lwt.graphics -package js_of_ocaml -package js_of_ocaml-ppx -package unix -package oUnit -modules ball.ml > ball.ml.depends # cached
 # Target: ball.cmo, tags: { package(js_of_ocaml), package(js_of_ocaml-lwt), package(js_of_ocaml-lwt.graphics), package(js_of_ocaml-ppx), package(oUnit), package(unix), byte, compile, extension:cmo, extension:ml, file:ball.cmo, file:ball.ml, implem, ocaml, quiet, traverse }
@@ -36,17 +45,17 @@ ocamlfind ocamldep -package js_of_ocaml-lwt -package js_of_ocaml-lwt.graphics -p
 # Target: camel.cmo, tags: { package(js_of_ocaml), package(js_of_ocaml-lwt), package(js_of_ocaml-lwt.graphics), package(js_of_ocaml-ppx), package(oUnit), package(unix), byte, compile, extension:cmo, extension:ml, file:camel.cmo, file:camel.ml, implem, ocaml, quiet, traverse }
 ocamlfind ocamlc -c -package js_of_ocaml-lwt -package js_of_ocaml-lwt.graphics -package js_of_ocaml -package js_of_ocaml-ppx -package unix -package oUnit -o camel.cmo camel.ml # cached
 # Target: maze.ml.depends, tags: { package(js_of_ocaml), package(js_of_ocaml-lwt), package(js_of_ocaml-lwt.graphics), package(js_of_ocaml-ppx), package(oUnit), package(unix), extension:ml, file:maze.ml, ocaml, ocamldep, quiet, traverse }
-ocamlfind ocamldep -package js_of_ocaml-lwt -package js_of_ocaml-lwt.graphics -package js_of_ocaml -package js_of_ocaml-ppx -package unix -package oUnit -modules maze.ml > maze.ml.depends
+ocamlfind ocamldep -package js_of_ocaml-lwt -package js_of_ocaml-lwt.graphics -package js_of_ocaml -package js_of_ocaml-ppx -package unix -package oUnit -modules maze.ml > maze.ml.depends # cached
 # Target: cell.mli.depends, tags: { package(js_of_ocaml), package(js_of_ocaml-lwt), package(js_of_ocaml-lwt.graphics), package(js_of_ocaml-ppx), package(oUnit), package(unix), extension:mli, file:cell.mli, ocaml, ocamldep, quiet, traverse }
 ocamlfind ocamldep -package js_of_ocaml-lwt -package js_of_ocaml-lwt.graphics -package js_of_ocaml -package js_of_ocaml-ppx -package unix -package oUnit -modules cell.mli > cell.mli.depends # cached
 # Target: cell.cmi, tags: { package(js_of_ocaml), package(js_of_ocaml-lwt), package(js_of_ocaml-lwt.graphics), package(js_of_ocaml-ppx), package(oUnit), package(unix), byte, compile, extension:mli, file:cell.mli, interf, ocaml, quiet, traverse }
 ocamlfind ocamlc -c -package js_of_ocaml-lwt -package js_of_ocaml-lwt.graphics -package js_of_ocaml -package js_of_ocaml-ppx -package unix -package oUnit -o cell.cmi cell.mli # cached
+# Target: maze.cmo, tags: { package(js_of_ocaml), package(js_of_ocaml-lwt), package(js_of_ocaml-lwt.graphics), package(js_of_ocaml-ppx), package(oUnit), package(unix), byte, compile, extension:cmo, extension:ml, file:maze.cmo, file:maze.ml, implem, ocaml, quiet, traverse }
+ocamlfind ocamlc -c -package js_of_ocaml-lwt -package js_of_ocaml-lwt.graphics -package js_of_ocaml -package js_of_ocaml-ppx -package unix -package oUnit -o maze.cmo maze.ml # cached
 # Target: state.ml.depends, tags: { package(js_of_ocaml), package(js_of_ocaml-lwt), package(js_of_ocaml-lwt.graphics), package(js_of_ocaml-ppx), package(oUnit), package(unix), extension:ml, file:state.ml, ocaml, ocamldep, quiet, traverse }
 ocamlfind ocamldep -package js_of_ocaml-lwt -package js_of_ocaml-lwt.graphics -package js_of_ocaml -package js_of_ocaml-ppx -package unix -package oUnit -modules state.ml > state.ml.depends # cached
 # Target: state.cmo, tags: { package(js_of_ocaml), package(js_of_ocaml-lwt), package(js_of_ocaml-lwt.graphics), package(js_of_ocaml-ppx), package(oUnit), package(unix), byte, compile, extension:cmo, extension:ml, file:state.cmo, file:state.ml, implem, ocaml, quiet, traverse }
 ocamlfind ocamlc -c -package js_of_ocaml-lwt -package js_of_ocaml-lwt.graphics -package js_of_ocaml -package js_of_ocaml-ppx -package unix -package oUnit -o state.cmo state.ml # cached
-# Target: maze.cmo, tags: { package(js_of_ocaml), package(js_of_ocaml-lwt), package(js_of_ocaml-lwt.graphics), package(js_of_ocaml-ppx), package(oUnit), package(unix), byte, compile, extension:cmo, extension:ml, file:maze.cmo, file:maze.ml, implem, ocaml, quiet, traverse }
-ocamlfind ocamlc -c -package js_of_ocaml-lwt -package js_of_ocaml-lwt.graphics -package js_of_ocaml -package js_of_ocaml-ppx -package unix -package oUnit -o maze.cmo maze.ml
 # Target: position.ml.depends, tags: { package(js_of_ocaml), package(js_of_ocaml-lwt), package(js_of_ocaml-lwt.graphics), package(js_of_ocaml-ppx), package(oUnit), package(unix), extension:ml, file:position.ml, ocaml, ocamldep, quiet, traverse }
 ocamlfind ocamldep -package js_of_ocaml-lwt -package js_of_ocaml-lwt.graphics -package js_of_ocaml -package js_of_ocaml-ppx -package unix -package oUnit -modules position.ml > position.ml.depends # cached
 # Target: position.cmo, tags: { package(js_of_ocaml), package(js_of_ocaml-lwt), package(js_of_ocaml-lwt.graphics), package(js_of_ocaml-ppx), package(oUnit), package(unix), byte, compile, extension:cmo, extension:ml, file:position.cmo, file:position.ml, implem, ocaml, quiet, traverse }

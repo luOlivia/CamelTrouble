@@ -1,9 +1,22 @@
-type pos = {
-  mutable x: float;
-  mutable y: float;
+type t = {
+  timer: float;
+  owner: int;
+  angle: float;
+  position: Position.t;
+  ballspeed: float;
 }
 
-type ball_action =
-  | CollisionCamel 
-  | CollisionWall
-  | BallMoving
+val init: int -> float -> 'a -> 'b -> t
+
+val new_ball_pos_x: t -> float 
+
+val new_ball_pos_y: t -> float 
+
+val flip_ball_h: t -> t 
+
+val flip_ball_v: t -> t 
+
+val get_position: t -> Position.t
+
+val get_angle: t -> float 
+

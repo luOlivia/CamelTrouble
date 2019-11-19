@@ -1,12 +1,12 @@
 type t = {
   timer: float;
-  owner: int;
+  owner: Camel.t;
   angle: float;
   position: Position.t;
   ballspeed: float;
 }
 
-val init: int -> float -> 'a -> 'b -> t
+val init: Camel.t -> float -> float -> float -> t
 
 val new_ball_pos_x: t -> float 
 

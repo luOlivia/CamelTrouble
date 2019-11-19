@@ -1,4 +1,5 @@
-open Position 
+open Position
+open Camel  
 (* 
 - timer 
 - owner 
@@ -11,7 +12,7 @@ open Position
 type t = 
   {
     timer: float;
-    owner: int;
+    owner: Camel.t;
     angle: float;
     position: Position.t;
     ballspeed: float;
@@ -22,7 +23,7 @@ let init owner a x y =
     timer= 10.0;
     owner= owner;
     angle= a;
-    position= make_position 0.0 0.0;
+    position= make_position x y;
     ballspeed= 20.0; (* arbitrary for now*)
   }
 

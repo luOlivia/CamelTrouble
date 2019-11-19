@@ -3,6 +3,7 @@ open State
 open Ball
 open Maze
 open Graphics
+open Unix 
 
 let xDimension = 8.0 *. State.wall_width +. 7.0 *. State.square_width |> int_of_float
 let yDimension = xDimension
@@ -58,15 +59,16 @@ let draw_camel camel color =
 
 let draw_balls state color = 
   set_color color;
+
   let rec iter_balls = function
     | [] -> () 
-    | ball::t -> draw_circle (ball.position.x |> int_of_float) (ball.position.y |> int_of_float) 3; iter_balls t 
+    | ball::t -> fill_circle (ball.position.x |> int_of_float) (ball.position.y |> int_of_float) 3; iter_balls t 
   in iter_balls state.ball_list 
 
 let draw_state state = 
   (* set background color to sand *)
-  set_color (Graphics.rgb 255 251 224);
-  fill_rect 0 0 xDimension yDimension;
+  (* set_color (Graphics.rgb 255 251 224);
+     fill_rect 0 0 xDimension yDimension; *)
 
   (* draws walls *)
   let halfw = State.wall_width/.2. in 
@@ -112,12 +114,17 @@ let draw_state state =
   (* draw balls *)
   draw_balls state Graphics.black
 
+(**[move_all_balls player st] is the new state after all balls have been moved.*)
+let move_all_balls st = 
+  (* let rec iter_balls blst = function
+     | [] -> blst 
+     | ball::t -> iter_balls ((State.move_ball st ball)::blst) t
+     in let blst' = iter_balls [] (st.ball_list) in  *)
+  let blst' = List.fold_left (fun a x -> (State.move_ball st x)::a) [] st.ball_list in 
+  {st with ball_list = blst'}
 
-(* let draw_camel camel color = 
-   set_color color;
-   let curr_x = int_of_float camel.pos.x in 
-   let curr_y = int_of_float camel.pos.y in 
-   fill_ellipse curr_x curr_y 10 20 *)
+let rec update_state state = 
+  move_all_balls state 
 
 (** returns new state with camel moved positions *)
 let move direction st =
@@ -125,9 +132,7 @@ let move direction st =
     | `Forward -> move_fwd st st.camel1
     | `Reverse -> move_rev st st.camel1 in
   print_endline (Camel.to_str new_camel);
-  Graphics.clear_graph (); 
-  let st' = {st with camel1 = new_camel} in
-  draw_state st'; st' 
+  let st' = {st with camel1 = new_camel} in st'
 
 (*     
 let move_rev st =
@@ -143,47 +148,102 @@ let rotate d st =
     | `Left -> Camel.turn_left st.camel1
     | `Right -> Camel.turn_right st.camel1 in
   print_endline (Camel.to_str new_camel);
-  Graphics.clear_graph (); 
-  let st' = {st with camel1 = new_camel} in
-  draw_state st'; st'
-
-(**[move_all_balls player st] is the new state after all balls have been moved.*)
-let move_all_balls player st = 
-  let rec iter_balls blst = function
-    | [] -> blst 
-    | ball::t -> iter_balls ((State.move_ball st ball)::blst) t
-  in let blst' = iter_balls [] (st.ball_list) in 
-  {st with ball_list = blst'}
+  let st' = {st with camel1 = new_camel} in st'
 
 let shoot player st = 
   let xpos, ypos = player.pos.x, player.pos.y in 
   let newball = Ball.init player player.dir xpos ypos in 
-  Graphics.clear_graph (); 
-  let st' = {st with ball_list=(newball::st.ball_list)} in
-  let st'' = move_all_balls player st in 
-  draw_state st'; st'' 
+  let st' = {st with ball_list=(newball::st.ball_list)} in st'
+
+(** [flush_kp () flushes keypress queue *)
+let flush_kp () = while key_pressed () do
+    let c = read_key ()
+    in ()
+  done
 
 let input state = 
-  match read_key () with
-  | '0' -> print_endline "exit"; exit 0
-  | 'w' -> print_endline "player 1 up"; move `Forward state
-  | 'a' -> print_endline "player 1 left"; rotate `Left state
-  | 's' -> print_endline "player 1 down"; move `Reverse state 
-  | 'd' -> print_endline "player 1 right"; rotate `Right state
-  | 'e' -> print_endline "player 1 shooting"; shoot state.camel1 state
-  | _ -> print_endline "sir pls"; state
+  if not (Graphics.key_pressed ()) then update_state state
+  else let k = Graphics.read_key () in
+    flush_kp ();
+    match k with
+    | '0' -> print_endline "exit"; exit 0
+    | 'w' -> print_endline "player 1 up"; move `Forward state
+    | 'a' -> print_endline "player 1 left"; rotate `Left state
+    | 's' -> print_endline "player 1 down"; move `Reverse state 
+    | 'd' -> print_endline "player 1 right"; rotate `Right state
+    | 'e' -> print_endline "player 1 shooting"; shoot state.camel1 state
+    | _ -> print_endline "sir pls"; state
 
-(** [run] displays the game window and allows users to quit with key q *)
+(** [run] displays the game window and allows users to quit with key 0
+    refactor later bc alex *)
 let rec run state =
   let new_state = input state in
+  Graphics.auto_synchronize false;
+  Graphics.clear_graph (); 
+  draw_state new_state;
+  Graphics.auto_synchronize true;
   run new_state
-
-let floaty i = i |> float_of_int
 
 let init = Graphics.open_graph "";
   set_window_title "Camel Trouble";
   resize_window (xDimension) (yDimension);
   draw_state init_state;
+  run init_state 
 
-  run init_state
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 

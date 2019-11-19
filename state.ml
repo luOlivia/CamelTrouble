@@ -48,7 +48,7 @@ let current_square x_or_y pos =
       (out := ix -. 0.5; 
        found := true;)
   done;
-  if !found then !out else failwith "should not occur"
+  if !found then !out else failwith "should not occur curr_square"
 
 (* let current_x_square pos = 
    print_endline("NEW CALL");

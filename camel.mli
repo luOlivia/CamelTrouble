@@ -34,3 +34,13 @@ val hit : t -> bool
 
 (** [to_str camel] is string rep of [camel] params *)
 val to_str : t -> string
+val to_str : t -> string
+val to_str : t -> string
+val to_str : t -> string
+val to_str : t -> string
+val to_str : t -> string
+val to_str : t -> string
+val to_str : t -> string
+val to_str : t -> string
+val to_str : t -> string
+val to_str : t -> string

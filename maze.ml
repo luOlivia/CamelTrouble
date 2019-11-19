@@ -206,6 +206,15 @@ let make_maze density =
     areas := merge_all !walls;
   done; 
 
+  for i = 0 to num_grid_squares do 
+    (match !walls.horizontal_walls with
+     | Horizontal walls -> walls.(0).(i) <- true; walls.(num_grid_squares).(i) <- true
+     | _ -> failwith "can only match horizontal wall");
+    match !walls.vertical_walls with
+    | Vertical walls -> walls.(0).(i) <- true; walls.(num_grid_squares).(i) <- true
+    | _ -> failwith "can only match vertical wall" 
+  done; 
+
   !walls
 
 let to_str maze = 

@@ -24,7 +24,7 @@ let init owner a x y =
     owner= owner;
     angle= a;
     position= make_position x y;
-    ballspeed= 20.0; (* arbitrary for now*)
+    ballspeed= 0.1; (* arbitrary for now*)
   }
 
 let get_position b = 

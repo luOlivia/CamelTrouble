@@ -1,17 +1,17 @@
 open Position
 
 type t = {
-  name: string;
+  player_num: int;
   num_bullets: int;
   dir: float; (* degrees 0 - 360 *)
-  pos: Position.t
+  pos: Position.t;
 }
 
-let init name x y = {
-  name= name;
-  num_bullets= 10;
+let init num x y = {
+  player_num=num;
+  num_bullets= 5;
   dir= 0.0;
-  pos= make_position x y
+  pos= make_position x y;
 }
 
 (** [rot_speed] is speed the tank rotates in degrees *)
@@ -41,10 +41,10 @@ let free_range camel speed =
   let new_pos = make_position new_x new_y in 
   {camel with pos = new_pos}
 
-let hit camel = false
+(* let hit camel = false *)
 (* failwith "Unimplemented" *)
 
 let to_str camel = 
-  camel.name^" num_bullets: "^string_of_int camel.num_bullets^
+  string_of_int camel.player_num^" num_bullets: "^string_of_int camel.num_bullets^
   " angle dir: "^string_of_float camel.dir^" pos: "^
   string_of_float camel.pos.x^" "^string_of_float camel.pos.y

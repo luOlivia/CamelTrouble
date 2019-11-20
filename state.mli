@@ -29,3 +29,12 @@ val move_ball: t -> Ball.t -> Ball.t
 val move_fwd : t -> Camel.t -> Camel.t
 (** [move_rev st camel] is [camel] with new pos after moving backwards. *)
 val move_rev : t -> Camel.t -> Camel.t
+
+val shoot : Camel.t -> t -> t
+val move : [< `Forward | `Reverse ] -> t -> t
+val rotate : [< `Left | `Right ] -> t -> t
+
+val rot_point : float -> float -> float -> float -> float -> int * int
+val update_state : t -> t
+
+val init_state : t

@@ -23,8 +23,8 @@ let init owner a x y =
     timer= 10.0;
     owner= owner;
     angle= a;
-    position= make_position x y;
     ballspeed= 0.1; (* arbitrary for now*)
+    position= make_position x y;
   }
 
 let get_position b = 
@@ -46,7 +46,7 @@ let flip_ball_h b =
   if b.angle > 180.0 then 
     {b with angle = (-1.0) *. b.angle +. 540.0}
   else 
-    {b with angle = (-1.0) *. b.angle +. 100.0}
+    {b with angle = (-1.0) *. b.angle +. 180.0}
 
 
 let flip_ball_v b = {b with angle = (-1.0) *. b.angle +. 360.0} 

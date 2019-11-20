@@ -15,13 +15,20 @@ type t = {
 let camel_width = 26.0
 let ball_width = 6.0 
 let wall_width = 5.0
-let wall_height = 55.5
+let wall_height = 45.5
 let square_width = 50.0
+
+(** [to_radians x] is degrees [x] to radians *)
+let to_radians x = x *. Float.pi /. 180.0
+(** [cosine degree] is cosine of degrees *)
+let cosine degree = degree |> to_radians |> Stdlib.cos
+(** [sine degree] is sine of degrees *)
+let sine degree = degree |> to_radians |> Stdlib.sin
 
 (*TODO returns new state with camel1 or camel2 modified
   originally from: ball *)
-let remove_ball b = 
-  failwith "unimplemented"
+(* let remove_ball b = 
+   failwith "unimplemented" *)
 (* if b.owner = 0 then b.state.camel1.dec_ball_count
    else b.state.camel2.dec_ball_count  *)
 
@@ -48,7 +55,7 @@ let current_square x_or_y pos =
       (out := ix -. 0.5; 
        found := true;)
   done;
-  if !found then !out else failwith "should not occur curr_square"
+  if !found then !out else -1.0
 
 (* let current_x_square pos = 
    print_endline("NEW CALL");
@@ -184,7 +191,7 @@ let vert_collide st pos width =
 
 (** TODO *)
 let corner_collide st pos width = 
-  let w = width/.2.0 in 
+  let w = width /. 2.0 in 
   let x = ref 0 in 
   let y = ref 0 in 
   let xcounter = ref (int_of_float pos.x) in 
@@ -222,34 +229,57 @@ let corner_collide st pos width =
 *)
 
 (* ---------------------BALL BOI--------------------- *)
+(* to-do: remove [bullet] from st *)
+let remove_bullet bullet st = 
+  let blist = st.ball_list in 
+  List.filter (fun x -> x <> bullet) blist
+
+let collision bullet camel = 
+  let dist = distance camel.pos bullet.position in 
+  dist <= camel_width/.2.0 +. ball_width/.2.0 
+
+let camel_collision bullet st = 
+  if collision bullet st.camel1 
+  then {st with camel1_alive = false; ball_list = remove_bullet bullet st}
+  else begin if collision bullet st.camel2 
+    then {st with camel2_alive = false; ball_list = remove_bullet bullet st}
+    else st
+  end 
 
 let move_ball st b = 
   let new_x = Ball.new_ball_pos_x b in 
   let new_y = Ball.new_ball_pos_y b in  
   let next_point = make_position new_x new_y in 
   if horiz_collide st next_point ball_width then
-    let fball = Ball.flip_ball_h {b with position = next_point} in 
+    (* let fball = Ball.flip_ball_h {b with position = next_point} in  *)
+    let fball = Ball.flip_ball_h b in
     let nx = Ball.new_ball_pos_x fball in 
-    let np = make_position nx new_y in 
-    {fball with position = np} 
+    (* let np = make_position nx new_y in  *)
+    let np = make_position nx fball.position.y in 
+    {fball with position = np}
   else if vert_collide st next_point ball_width then 
-    let fball = Ball.flip_ball_v {b with position = next_point}  in 
+    let fball = Ball.flip_ball_v b  in 
     let ny = Ball.new_ball_pos_y fball in 
-    let np = make_position new_x ny in 
+    let np = make_position fball.position.x ny in 
     {fball with position = np} 
   else if corner_collide st next_point ball_width then 
     if (current_square `Y b.position) = ((current_square `Y b.position) |> truncate) then
-      let fball = Ball.flip_ball_h {b with position = next_point} in 
+      let fball = Ball.flip_ball_h b in 
       let nx = Ball.new_ball_pos_x fball in 
-      let np = make_position nx new_y in 
+      let np = make_position nx fball.position.y in 
       {fball with position = np} 
     else 
-      let fball = Ball.flip_ball_v {b with position = next_point}  in 
+      let fball = Ball.flip_ball_v b in 
       let ny = Ball.new_ball_pos_y fball in 
-      let np = make_position new_x ny in 
+      let np = make_position fball.position.x ny in 
       {fball with position = np}
+  else if collision b st.camel1 || collision b st.camel2 then 
+    begin print_endline ("HIIIIIII THERE IS A CAMEL COLLISION");
+      (* camel_collision b st *){b with position = next_point} 
+    end  
   else 
     {b with position = next_point} 
+
 
 
 (* ---------------------CAMEL BOI--------------------- *)
@@ -279,3 +309,73 @@ let move_camel st camel speed =
 
 let move_fwd st camel = {camel with pos = move_camel st camel Camel.fwd_speed}
 let move_rev st camel = {camel with pos = move_camel st camel Camel.rev_speed}
+
+let shoot camel st = 
+  let xpos = camel.pos.x +. ((ball_width /. 2.0 +. camel_width /. 2.0) *. cosine (90.0 -. camel.dir)) in 
+  let ypos = camel.pos.y -. ((ball_width /. 2.0 +. camel_width /. 2.0) *. sine (90.0 -. camel.dir)) in 
+  let new_pos = make_position xpos ypos in 
+  if vert_collide st new_pos ball_width || horiz_collide st new_pos ball_width || corner_collide st new_pos ball_width then 
+    match camel.player_num with 
+    | 1 -> {st with camel1_alive=false}
+    | 2 -> {st with camel2_alive=false}
+    | _ -> failwith "that many players not allowed"
+  else
+    let newball = Ball.init camel camel.dir xpos ypos in 
+    let camel' = {camel with num_bullets=camel.num_bullets+1} in 
+    let st' = {st with ball_list=(newball::st.ball_list)} in 
+    match camel.player_num with 
+    | 1 -> {st' with camel1=camel'}
+    | 2 -> {st' with camel2=camel'}
+    | _ -> failwith "that many players not allowed"
+
+
+(** returns new state with camel moved positions *)
+let move direction st =
+  let new_camel = match direction with 
+    | `Forward -> move_fwd st st.camel1
+    | `Reverse -> move_rev st st.camel1 in
+  print_endline (Camel.to_str new_camel);
+  let st' = {st with camel1 = new_camel} in st'
+
+let rotate d st =
+  (* let new_camel = move_fwd state camel in  *)
+  let new_camel = match d with
+    | `Left -> Camel.turn_left st.camel1
+    | `Right -> Camel.turn_right st.camel1 in
+  print_endline (Camel.to_str new_camel);
+  let st' = {st with camel1 = new_camel} in st'
+
+(**[move_all_balls player st] is the new state after all balls have been moved.*)
+let move_all_balls st = 
+  (* let rec iter_balls blst = function
+     | [] -> blst 
+     | ball::t -> iter_balls ((State.move_ball st ball)::blst) t
+     in let blst' = iter_balls [] (st.ball_list) in  *)
+  let blst' = List.fold_left (fun a x -> (move_ball st x)::a) [] st.ball_list in 
+  {st with ball_list = blst'}
+
+(** [rot_point x y center_x center_y angle] is the 
+    point (x,y) rotated around center pt by angle *)
+let rot_point x y center_x center_y angle = 
+  let x' = x -.center_x in 
+  let y' = y -.center_y in 
+  let rot_x = x'*.(cosine angle) -. y'*.(sine angle) in
+  let rot_y = x'*.(sine angle) +. y'*.(cosine angle) in 
+  (rot_x +. center_x |> int_of_float, rot_y +. center_y |> int_of_float)
+
+
+
+let rec update_state state = 
+  move_all_balls state 
+
+let camel1 = Camel.init 1 120.0 120.0
+let camel2 = Camel.init 2 620.0 420.0
+
+let init_state = {
+  ball_list= [];
+  camel1= camel1;
+  camel2= camel2;
+  camel1_alive= true;
+  camel2_alive= true; 
+  maze = Maze.make_maze 20
+} 

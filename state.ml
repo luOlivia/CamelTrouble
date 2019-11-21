@@ -350,7 +350,8 @@ let rotate d st =
 (**[check_death st balls] is the new state after checking if any ball collides with camels.*)
 let rec check_death st balls =
   match balls with
-  | [] -> {st with ball_list = balls}
+  | [] -> begin print_endline "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~finished checking death bitch"; 
+      {st with ball_list = balls} end
   | ball::t -> if collision ball st.camel1 || collision ball st.camel2
     then (print_endline "*******************************************we are in check_death";
           camel_collision ball st )

@@ -1,0 +1,21 @@
+In order to install:
+
+opam install Graphics
+opam install js_of_ocaml
+opam install js_of_ocaml-lwt
+
+make build 
+#to run the gui: you can control movements with `w` `a` `s` `d`, quit with `0`
+make play 
+
+
+NOTE:
+We encountered difficulty installing Graphics on different devices. Some advice from our
+experience: 
+- on Mac or Linux, you may need XQuartz/11 or the equivalent package for Linux. 
+- Graphics depends on OpenGL (or 'gloo') -> you can check if Graphics has been properly
+installed by attempting to load the 'graphics.cma' file in utop. 
+
+In addition, if you get an error that it cannot find main.byte --> look for it in the _build
+folder and move it to the main directory. Chmod 0755 ./main.byte and it should work.
+

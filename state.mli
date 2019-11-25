@@ -1,4 +1,3 @@
-open Camel 
 
 (** The type [t] represents the state of the game *)
 type t = {
@@ -20,6 +19,10 @@ val wall_width : float
 val wall_height : float
 (** [square_width] is width of the grid squares. *)
 val square_width : float 
+
+(**[xDimension] and [yDimension] make up the dimensions of the play screen in pixels*)
+val xDimension : int 
+val yDimension: int
 
 (**[move_ball st ball] is the new [ball] with new pos 
    and angle after moving one step *)

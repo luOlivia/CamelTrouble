@@ -1,6 +1,7 @@
 open Cell
 
 let num_grid_squares = 7
+let density = 16
 
 (** [wall] of booleans representing the presence of walls. 
     A [cell x y] can have walls:
@@ -201,7 +202,7 @@ let make_maze density =
   (* make_empty_walls () *)
   let walls = ref (make_walls density) in 
   let areas = ref (merge_all !walls) in
-  for i = 0 to 10 do
+  for i = 0 to density - 1 do
     walls := remove_wall !walls !areas.(0);
     areas := merge_all !walls;
   done; 

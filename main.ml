@@ -5,15 +5,10 @@ open Maze
 open Graphics
 open Unix 
 
-let xDimension = 8.0 *. State.wall_width +. 7.0 *. State.square_width |> int_of_float
-let yDimension = xDimension
-
 (* let fake_maze = make_maze 20
    let fake_maze = make_maze 20
    let fake_maze = make_maze 20
    let fake_maze = make_maze 20 *)
-
-
 
 let () = print_endline (State.init_state.maze |> Maze.to_str)
 
@@ -22,7 +17,7 @@ let () = print_endline (State.init_state.maze |> Maze.to_str)
 let draw_camel camel color =
   set_color color;
   let w = 10.0 in
-  let h = 30.0 in
+  let h = camel_width in
   let d = camel.dir in
   let cx = camel.pos.x in 
   let cy = camel.pos.y in
@@ -32,7 +27,7 @@ let draw_camel camel color =
   let br_x, br_y = State.rot_point (cx+.w/.2.) (cy+.h/.2.) cx cy d in 
   let bl_x, bl_y = State.rot_point (cx-.w/.2.) (cy+.h/.2.) cx cy d in
 
-  print_endline ("points "^"("^string_of_int tl_x^","^string_of_int tl_y^")");
+  (* print_endline ("points "^"("^string_of_int tl_x^","^string_of_int tl_y^")"); *)
   fill_poly [|(br_x,br_y);(bl_x,bl_y);(tl_x,tl_y);(tr_x,tr_y)|]
 
 let draw_balls state color = 
@@ -58,7 +53,7 @@ let draw_state state =
       (* horizontal walls *)
       let hlx = (State.square_width +. State.wall_width)*.(i |> float_of_int) +. State.wall_width in 
       let hly = (State.square_width +. State.wall_width)*.((j |> float_of_int)+.1.)  in
-      if Maze.is_wall_below init_state.maze i j then 
+      if Maze.is_wall_below state.maze i j then 
         fill_rect 
           (hlx |> int_of_float) (hly |> int_of_float) 
           (State.wall_height |> int_of_float) (State.wall_width |> int_of_float);
@@ -100,8 +95,6 @@ let move_rev st =
   let st' = {st with camel1 = new_camel} in
   draw_state st'; st' *)
 
-
-
 (** [flush_kp () flushes keypress queue *)
 let flush_kp () = while key_pressed () do
     let c = read_key ()
@@ -113,14 +106,15 @@ let input state =
   else let k = Graphics.read_key () in
     flush_kp ();
     let state' = State.update_state state in
+    print_endline (Char.escaped k);
     match k with
-    | '0' -> print_endline "exit"; exit 0
-    | 'w' -> print_endline "player 1 up"; State.move `Forward state'
-    | 'a' -> print_endline "player 1 left"; State.rotate `Left state'
-    | 's' -> print_endline "player 1 down"; State.move `Reverse state'
-    | 'd' -> print_endline "player 1 right"; State.rotate `Right state'
-    | 'e' -> print_endline "player 1 shooting"; State.shoot state'.camel1 state'
-    | _ -> print_endline "sir pls"; state'
+    | '0' -> exit 0
+    | 'w' -> State.move `Forward state'
+    | 'a' -> State.rotate `Left state'
+    | 's' -> State.move `Reverse state'
+    | 'd' -> State.rotate `Right state'
+    | 'e' -> State.shoot state'.camel1 state'
+    | _ -> state'
 
 (** [run] displays the game window and allows users to quit with key 0
     refactor later bc alex *)
@@ -134,7 +128,7 @@ let rec run state =
 
 let init = Graphics.open_graph "";
   set_window_title "Camel Trouble";
-  resize_window (xDimension) (yDimension);
+  resize_window (State.xDimension) (State.yDimension);
   draw_state State.init_state;
   run State.init_state 
 

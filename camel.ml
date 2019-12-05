@@ -9,7 +9,7 @@ type t = {
 
 let init num x y = {
   player_num=num;
-  num_bullets= 5;
+  num_bullets= 0;
   dir= 0.0;
   pos= make_position x y;
 }

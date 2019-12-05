@@ -23,7 +23,7 @@ let init owner a x y =
     timer= 5000.0;
     owner= owner;
     angle= a;
-    ballspeed= 0.1; (* arbitrary for now*)
+    ballspeed= 0.01; (* arbitrary for now*)
     position= make_position x y;
   }
 

@@ -4,7 +4,6 @@ open Ball
 open Maze
 open Graphics
 open Unix 
-
 (* let fake_maze = make_maze 20
    let fake_maze = make_maze 20
    let fake_maze = make_maze 20
@@ -101,19 +100,24 @@ let flush_kp () = while key_pressed () do
     in ()
   done
 
+
 let input state = 
   if not (Graphics.key_pressed ()) then State.update_state state
   else let k = Graphics.read_key () in
     flush_kp ();
     let state' = State.update_state state in
-    print_endline (Char.escaped k);
     match k with
     | '0' -> exit 0
-    | 'w' -> State.move `Forward state'
-    | 'a' -> State.rotate `Left state'
-    | 's' -> State.move `Reverse state'
-    | 'd' -> State.rotate `Right state'
+    | 'w' -> State.move `Forward state' state.camel1
+    | 'a' -> State.rotate `Left state' state.camel1
+    | 's' -> State.move `Reverse state' state.camel1
+    | 'd' -> State.rotate `Right state' state.camel1
     | 'e' -> State.shoot state'.camel1 state'
+    | 'i' -> State.move `Forward state' state.camel2
+    | 'j' -> State.rotate `Left state' state.camel2
+    | 'k' -> State.move `Reverse state' state.camel2
+    | 'l' -> State.rotate `Right state' state.camel2
+    | 'u' -> State.shoot state'.camel2 state'
     | _ -> state'
 
 (** [run] displays the game window and allows users to quit with key 0
@@ -126,68 +130,28 @@ let rec run state =
   Graphics.auto_synchronize true;
   run new_state
 
-let init = Graphics.open_graph "";
+
+
+(* let init = Graphics.open_graph "";
+   set_window_title "Camel Trouble";
+   resize_window (State.xDimension) (State.yDimension);
+   draw_state State.init_state;
+   run State.init_state  *)
+
+let init () = 
+  draw_state State.init_state; run State.init_state
+
+let main () = 
+  Graphics.open_graph "";
   set_window_title "Camel Trouble";
   resize_window (State.xDimension) (State.yDimension);
-  draw_state State.init_state;
-  run State.init_state 
+  Graphics.set_text_size 300; 
+  Graphics.moveto 50 500;
+  Graphics.draw_string "WELCOME TO";
+  Resources.draw "desert" 10 300;
+  Graphics.draw_string "PRESS ANY KEY TO PLAY";
+  match Graphics.read_key () with 
+  | _ -> init ()
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+let () = main ()

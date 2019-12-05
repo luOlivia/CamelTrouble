@@ -30,20 +30,24 @@ let grid_to_pixel n =
   wall_width *. (n+.1.0) +. square_width*.n +. square_width/.2.
 
 let reinit st = 
-  let x1 = ref (Random.int Maze.num_grid_squares ) in 
+  let x1 = ref (Random.int Maze.num_grid_squares) in 
   let y1 = ref (Random.int Maze.num_grid_squares) in 
   let x2 = ref (Random.int Maze.num_grid_squares) in 
   let y2 = ref (Random.int Maze.num_grid_squares) in 
-  while (Maze.is_wall_above st.maze !x1 !y1 || Maze.is_wall_below st.maze !x1 !y1 || Maze.is_wall_left st.maze !x1 !y1
-         || Maze.is_wall_right st.maze !x1 !y1) do 
+  while ((Maze.is_wall_above st.maze !x1 !y1 || Maze.is_wall_below st.maze !x1 !y1 || Maze.is_wall_left st.maze !x1 !y1
+          || Maze.is_wall_right st.maze !x1 !y1)) do 
     x1 := (Random.int Maze.num_grid_squares);
     y1 := (Random.int Maze.num_grid_squares);
   done;
-  while (Maze.is_wall_above st.maze !x2 !y2 || Maze.is_wall_below st.maze !x2 !y2 || Maze.is_wall_left st.maze !x2 !y2
-         || Maze.is_wall_right st.maze !x2 !y2 && (!x1 = !x2 && !y1 = !y2)) do 
+  while ((Maze.is_wall_above st.maze !x2 !y2 || Maze.is_wall_below st.maze !x2 !y2 || Maze.is_wall_left st.maze !x2 !y2
+          || Maze.is_wall_right st.maze !x2 !y2) && (!x1 = !x2 && !y1 = !y2)) do 
     x2 := (Random.int Maze.num_grid_squares);
     y2 := (Random.int Maze.num_grid_squares);
   done;
+  print_endline ("x2 position: "^(string_of_int !x2));
+  print_endline ("x1 position: "^(string_of_int !x1));
+  print_endline ("y2 position: "^(string_of_int !y2));
+  print_endline ("y1 position: "^(string_of_int !y1));
   (* let camel1' = Camel.init 1 (((float_of_int !x1)/. 7.)*. (float_of_int xDimension)) (((float_of_int !y1)/. 7.)*. (float_of_int yDimension)) in 
      let camel2' = Camel.init 2 (((float_of_int !x2)/. 7.)*. (float_of_int xDimension)) (((float_of_int !y2)/. 7.)*. (float_of_int yDimension)) in  *)
   let camel1' = Camel.init 1 (grid_to_pixel (float_of_int !x1)) (grid_to_pixel (float_of_int !y1)) in
@@ -263,9 +267,8 @@ let corner_collide st pos width =
 
 (* ---------------------BALL BOI--------------------- *)
 (* to-do: remove [ball] from st *)
-(* let remove_balls ball st =
-   let blist = st.ball_list in
-   List.filter (fun x -> x.timer <> 0.0) *)
+let remove_balls balls =
+  List.filter (fun x -> x.timer > 0.0) balls
 
 (** TO-DO: determines if bullet & camel collides based on position*)
 let collision bullet camel =
@@ -413,7 +416,7 @@ let move_all_balls st =
   (* let blst' = List.fold_left (fun a x -> (move_ball st x)::a) [] st.ball_list in
      check_death st blst' *)
   let blst' = (List.fold_left (fun a x -> (move_ball st x)::a) [] st.ball_list
-               |> List.filter (fun x -> x.timer <> 0.0)) in
+               |> remove_balls) in
   check_death st blst' blst'
 
 (** [rot_point x y center_x center_y angle] is the

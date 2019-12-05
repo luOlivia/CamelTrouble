@@ -22,7 +22,7 @@ val square_width : float
 
 (**[xDimension] and [yDimension] make up the dimensions of the play screen in pixels*)
 val xDimension : int 
-val yDimension: int
+val yDimension : int
 
 (**[move_ball st ball] is the new [ball] with new pos 
    and angle after moving one step *)

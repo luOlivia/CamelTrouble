@@ -1,4 +1,4 @@
-MODULES=ball camel cell main maze state test
+MODULES=ball camel cell main maze state test resources
 OBJECTS=$(MODULES:=.cmo)
 MLS=$(MODULES:=.ml)
 MLIS=$(MODULES:=.mli)

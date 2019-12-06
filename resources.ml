@@ -1,4 +1,4 @@
-
+let size = 20
 let desert = [
   "                                                        =--_";
   "                                         .-\"\"\"\"\"\"-.     |* _)";
@@ -74,24 +74,42 @@ let troubletext = [
    "   $$ |   $$ |  $$ | $$$$$$  |\\$$$$$$  |$$$$$$$  |$$$| $$$$$$$$\\ ";
    "   \\__|   \\__|  \\__| \\______/  \\______/ \\_______/ \\__|\\________|"
    ] *)
-let playtext = [
-  "PRESS ANY KEY TO";
-  "   _   _   _   _   _   !";
-  "  / \\ / \\ / \\ / \\ / \\ !";
-  " ( S | T | A | R | T )  !";
-  "  \\_/ \\_/ \\_/ \\_/ \\_/ !"
+let player1 = [
+  "PLAYER ONE";
+  "        _   _   ";
+  "       /  \\ /  \\ ";
+  "      | W | E |  ";
+  "       \\_/  \\_/";
+  "   _   _   _   ";
+  "  /  \\ /  \\ /  \\ ";
+  " | A | S | D | ";
+  "  \\_/ \\_/ \\_/ "
 ]
+let player2 = [
+  "PLAYER TWO";
+  "        _   _   ";
+  "       /  \\ /  \\ ";
+  "      | ⦁ |  ↑ |  ";
+  "       \\_/ \\_/";
+  "   _   _   _   ";
+  "  /  \\ /  \\ /  \\ ";
+  " |← | ↓ |→| ";
+  "  \\_/ \\_/ \\_/ "
+]
+
 
 let rec draw_ascii word x y = 
   match word with
   | [] -> ()
-  | h::t -> Graphics_js.moveto x y; Graphics_js.draw_string h; draw_ascii t x (y-15)
+  | h::t -> Graphics_js.moveto x y; Graphics_js.draw_string h; draw_ascii t x (y-size)
 
 let draw word x y = 
   print_endline "fuckign draw";
+  Graphics.set_text_size size;
   if word = "camel" then draw_ascii cameltext x y
   else if word = "trouble" then draw_ascii troubletext x y
-  else if word = "play" then draw_ascii playtext x y
+  else if word = "player1" then draw_ascii player1 x y
+  else if word = "player2" then draw_ascii player2 x y
   else draw_ascii desert x y
 
 (* let main () = 

@@ -1,8 +1,8 @@
-MODULES=ball camel cell main maze state test position resources 
+MODULES=ball camel cell main maze position resources state test utils
 OBJECTS=$(MODULES:=.cmo)
 MLS=$(MODULES:=.ml)
 MLIS=$(MODULES:=.mli)
-# TEST=test.byte
+TEST=test.byte
 MAIN=main.byte
 OCAMLBUILD=ocamlbuild -use-ocamlfind
 
@@ -13,8 +13,8 @@ default: build
 build:
 	$(OCAMLBUILD) $(MAIN) && js_of_ocaml +graphics.js $(MAIN) 
 	
-# test:
-# 	$(OCAMLBUILD) $(TEST) && ./$(TEST)
+test:
+	$(OCAMLBUILD) $(TEST) && ./$(TEST)
 
 play:
 	$(OCAMLBUILD) $(MAIN) && ./$(MAIN)

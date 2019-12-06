@@ -65,14 +65,17 @@ let draw_balls state color =
   in iter_balls state.ball_list 
 
 let draw_state state = 
+  Resources.draw "player1" 400 350;
+  Resources.draw "player2" 550 350;
   (* set background color to sand *)
-  Graphics_js.set_color (Graphics_js.rgb 255 251 224);
+  Graphics_js.set_color (Graphics_js.rgb 252 213 145);
+  Graphics_js.fill_rect 0 0 xDimension yDimension;
   Graphics_js.fill_rect 0 0 xDimension yDimension;
 
   (* draws walls *)
   let halfw = State.wall_width/.2. in 
   let halfh = State.wall_height/.2. in 
-  Graphics_js.set_color (Graphics_js.rgb 4 145 23);
+  Graphics_js.set_color (Graphics_js.rgb 69 47 67);
 
   for i = 0 to Maze.num_grid_squares - 1 do
     for j = 0 to Maze.num_grid_squares - 1 do
@@ -206,46 +209,38 @@ let rec run time state =
 
 let init () = 
   print_endline "we in init now bois and girls";
-  Graphics_js.set_text_size 50;
+  Graphics_js.set_text_size 10;
   Resources.draw "desert" 250 250;
   draw_state State.init_state; run 0.0 State.init_state
 
-let main () = 
+let press_start evt =
+  let () = match evt##.keyCode with
+    | _  -> print_endline ("hello bitch"); init ()
+  in Js_of_ocaml.Js._true
+
+let rec main () = 
   (* Graphics_js.set_text_size 50;
      Graphics_js.moveto 150 150;
      Graphics_js.draw_string "WELCOME TO";
      Graphics_js.draw_string "PRESS ANY KEY TO PLAY"; *)
-  (* match Graphics_js.read_key with
-     | -> init ()
-     | _ -> init () *)
-  init ()
+  Graphics_js.draw_string "PRESS ANY KEY TO PLAY";
+  let (p : char Lwt.t), r = Lwt.wait () in 
+  Lwt.wakeup r 's';
+  match Graphics_js.read_key with
+  | p -> print_endline ("hello bitch"); init ()
+  | _ -> main ()
+(* init () *)
 
 let _ =  print_endline "starting up";
   Js_of_ocaml.Js.Opt.iter
     (Js_of_ocaml.Dom_html.CoerceTo.canvas (Js_of_ocaml.Dom_html.getElementById "canvas2"))
     Graphics_js.open_canvas
 
-let _ = Js_of_ocaml.Dom_html.addEventListener Js_of_ocaml.Dom_html.document Js_of_ocaml.Dom_html.Event.keydown (Js_of_ocaml.Dom_html.handler keypressed) Js_of_ocaml.Js._true 
-let _ = Js_of_ocaml.Dom_html.addEventListener Js_of_ocaml.Dom_html.document Js_of_ocaml.Dom_html.Event.keyup (Js_of_ocaml.Dom_html.handler keyup) Js_of_ocaml.Js._true 
+(* let _ = Js_of_ocaml.Dom_html.addEventListener Js_of_ocaml.Dom_html.document 
+    Js_of_ocaml.Dom_html.Event.keydown (Js_of_ocaml.Dom_html.handler press_start) Js_of_ocaml.Js._true  *)
+let _ = Js_of_ocaml.Dom_html.addEventListener Js_of_ocaml.Dom_html.document 
+    Js_of_ocaml.Dom_html.Event.keydown (Js_of_ocaml.Dom_html.handler keypressed) Js_of_ocaml.Js._true 
+let _ = Js_of_ocaml.Dom_html.addEventListener Js_of_ocaml.Dom_html.document 
+    Js_of_ocaml.Dom_html.Event.keyup (Js_of_ocaml.Dom_html.handler keyup) Js_of_ocaml.Js._true 
 
-(* 
-let c1 =
-  Js_of_ocaml.Dom_html.addEventListener
-    Js_of_ocaml.Dom_html.document
-    Js_of_ocaml.Dom_html.Event.keydown
-    (Js_of_ocaml.Dom_html.handler (fun ev ->
-         let _ = match ev##.keyCode with
-           | 32 -> input := Board.HardDrop
-           | 90 -> input := Board.Rotate(false)
-           | 88|38 -> input := Board.Rotate(true)
-           | 67 -> input := Board.Swap
-           | 78|37 -> input := Board.Translate(false)
-           | 77|39 -> input := Board.Translate(true)
-           | 66|40 -> input := Board.FastDrop
-           | _ -> ();
-         in
-         Js_of_ocaml.Js._true ))
-    Js_of_ocaml.Js._true *)
-
-let bitch = Resources.draw "desert" 250 250
 let () = main ()

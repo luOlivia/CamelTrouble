@@ -1,24 +1,26 @@
 open Position
+open Utils
 
-type t = {
-  player_num: int;
-  num_bullets: int;
-  dir: float; (* degrees 0 - 360 *)
-  pos: Position.t;
-  shot_time: float; 
-}
+type t = 
+  {
+    player_num: int;
+    num_bullets: int;
+    dir: float; (* degrees 0 - 360 *)
+    pos: Position.t;
+    shot_time: float; 
+  }
 
-let init num x y = {
-  player_num=num;
-  num_bullets= 0;
-  dir= 0.0;
-  pos= make_position x y;
-  shot_time = 0.0; 
-}
+let init player_num x y =
+  {
+    player_num=player_num;
+    num_bullets= 0;
+    dir= 0.0;
+    pos= make_position x y;
+    shot_time = 0.0; 
+  }
 
 (** [rot_speed] is speed the tank rotates in degrees *)
 let rot_speed = 5.0
-
 let fwd_speed = 5.0
 let rev_speed = -3.0
 
@@ -32,10 +34,10 @@ let turn_left camel =
 let to_radians x = x *. Float.pi /. 180.0
 
 let move_horiz x dir speed = 
-  x +. (speed *. ((90.0-.dir) |> to_radians |> Stdlib.cos))
+  x +. (speed *. cosine (90.0-.dir))
 
 let move_vert y dir speed = 
-  y -. (speed *. ((90.0-.dir) |> to_radians |> Stdlib.sin))
+  y -. (speed *. sine (90.0-.dir))
 
 let free_range camel speed = 
   let new_x = move_horiz camel.pos.x camel.dir speed in 

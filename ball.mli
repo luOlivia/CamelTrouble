@@ -20,3 +20,4 @@ val get_position: t -> Position.t
 
 val get_angle: t -> float 
 
+val step_timer : t -> t

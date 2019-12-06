@@ -54,7 +54,6 @@ let reinit st =
 
 (* make_position (Random.int x |> float_of_int) (Random.int y |> float_of_int)  *)
 
-
 (** [to_radians x] is degrees [x] to radians *)
 let to_radians x = x *. Float.pi /. 180.0
 (** [cosine degree] is cosine of degrees *)
@@ -233,28 +232,26 @@ let move_ball st b =
     let nx = Ball.new_ball_pos_x fball in
     (* let np = make_position nx new_y in  *)
     let np = make_position nx fball.position.y in
-    {fball with position = np; timer = fball.timer -. 0.1}
+    {fball with position = np} |> step_timer
   else if vert_collide st next_point ball_width then
     let fball = Ball.flip_ball_v b  in
     let ny = Ball.new_ball_pos_y fball in
     let np = make_position fball.position.x ny in
-    {fball with position = np; timer = fball.timer -. 0.1}
+    {fball with position = np} |> step_timer
   else if corner_collide st next_point ball_width then
     if (current_square `Y b.position) = ((current_square `Y b.position) |> truncate) then
       let fball = Ball.flip_ball_h b in
       let nx = Ball.new_ball_pos_x fball in
       let np = make_position nx fball.position.y in
-      {fball with position = np; timer = fball.timer -. 0.1}
+      {fball with position = np} |> step_timer
     else
       let fball = Ball.flip_ball_v b in
       let ny = Ball.new_ball_pos_y fball in
       let np = make_position fball.position.x ny in
-      {fball with position = np; timer = fball.timer -. 0.1}
+      {fball with position = np} |> step_timer
   else
-    {b with position = next_point; timer = b.timer -. 0.1}
+    {b with position = next_point} |> step_timer
 
-
-(* ---------------------CAMEL BOI--------------------- *)
 let move_camel st camel speed =
   let new_pos = {
     x= Camel.move_horiz camel.pos.x camel.dir speed;

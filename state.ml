@@ -10,6 +10,7 @@ type t = {
   camel2 : Camel.t;
   camel1_alive : bool;
   camel2_alive : bool;
+  game_end : bool;
   maze: Maze.t
 }
 
@@ -47,10 +48,22 @@ let reinit st =
 
   (* let camel1' = Camel.init 1 (((float_of_int !x1)/. 7.)*. (float_of_int xDimension)) (((float_of_int !y1)/. 7.)*. (float_of_int yDimension)) in 
      let camel2' = Camel.init 2 (((float_of_int !x2)/. 7.)*. (float_of_int xDimension)) (((float_of_int !y2)/. 7.)*. (float_of_int yDimension)) in  *)
-  let camel1' = Camel.init 1 (grid_to_pixel (float_of_int !x1)) (grid_to_pixel (float_of_int !y1)) in
-  let camel2' = Camel.init 2 (grid_to_pixel (float_of_int !x2)) (grid_to_pixel (float_of_int !y2)) in 
-  let st' = {st with camel1 = camel1'} in  {st' with camel2 = camel2'}
+  let camel1' = {Camel.blank with pos = Position.make_position 
+                                      (grid_to_pixel (float_of_int !x1)) 
+                                      (grid_to_pixel (float_of_int !y1));
+                                  score = st.camel1.score + (if st.camel1_alive then 1 else 0);
+                                  player_num = 1} in 
+  let camel2' = {Camel.blank with pos = Position.make_position 
+                                      (grid_to_pixel (float_of_int !x2)) 
+                                      (grid_to_pixel (float_of_int !y2));
+                                  score = st.camel2.score + (if st.camel2_alive then 1 else 0);
+                                  player_num = 2} in 
+  print_endline ("Score camel1: "^(camel1'.score |> string_of_int));
+  print_endline ("Score camel2: "^(camel2'.score |> string_of_int));
+  print_endline ("Camel 1 state: "^(string_of_bool st.camel1_alive));
+  print_endline ("Camel 2 state: "^(string_of_bool st.camel2_alive));
 
+  {st with camel1 = camel1'; camel2 = camel2'; game_end=true; camel1_alive = true; camel2_alive = true}
 
 (* make_position (Random.int x |> float_of_int) (Random.int y |> float_of_int)  *)
 
@@ -214,10 +227,10 @@ let collision bullet camel =
     camel 1 or 2. Also generates new maze*)
 let handle_collision bullet st =
   if collision bullet st.camel1
-  then let st' = {st with camel1_alive = true; ball_list = []; maze = Maze.make_maze Maze.density}
-    in reinit st'
+  then let st' = {st with camel1_alive = false; ball_list = []; maze = Maze.make_maze Maze.density}
+    in reinit st' 
   else begin if collision bullet st.camel2
-    then let st' = {st with camel2_alive = true; ball_list = []; maze = Maze.make_maze Maze.density}
+    then let st' = {st with camel2_alive = false; ball_list = []; maze = Maze.make_maze Maze.density}
       in reinit st'
     else st
   end
@@ -380,5 +393,6 @@ let init_state = {
   camel2= camel2;
   camel1_alive= true;
   camel2_alive= true;
+  game_end=false;
   maze = Maze.make_maze Maze.density
 }

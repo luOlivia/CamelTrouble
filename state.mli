@@ -6,6 +6,7 @@ type t = {
   camel2 : Camel.t;
   camel1_alive : bool;
   camel2_alive : bool; 
+  game_end : bool;
   maze: Maze.t
 } 
 

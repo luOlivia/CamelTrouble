@@ -4,15 +4,27 @@ open Utils
 type t = 
   {
     player_num: int;
+    score : int;
     num_bullets: int;
     dir: float; (* degrees 0 - 360 *)
     pos: Position.t;
     shot_time: float; 
   }
 
+let blank = 
+  {
+    player_num=1;
+    score = 0;
+    num_bullets= 0;
+    dir= 0.0;
+    pos= make_position 0. 0.;
+    shot_time = 0.0; 
+  }
+
 let init player_num x y =
   {
     player_num=player_num;
+    score = 0;
     num_bullets= 0;
     dir= 0.0;
     pos= make_position x y;

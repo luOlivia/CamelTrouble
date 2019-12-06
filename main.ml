@@ -5,12 +5,12 @@ open Maze
 open Graphics_js
 open Unix 
 
-
 (* let fake_maze = make_maze 20
    let fake_maze = make_maze 20
    let fake_maze = make_maze 20
    let fake_maze = make_maze 20 *)
 (* let () = print_endline (State.init_state.maze |> Maze.to_str) *)
+
 
 type keys = {
   mutable p1_up : bool;
@@ -37,6 +37,16 @@ let input_keys = {
   p2_down = false;
   p2_shoot = false;
 }
+
+let draw_game_summary st = 
+  Graphics_js.set_color Graphics.white;
+  Graphics_js.fill_rect 0 0 xDimension yDimension
+(* let start_time = Unix.gettimeofday () in
+   let cur_time = ref start_time in 
+   while !cur_time -. start_time < 3. do
+   cur_time := Unix.gettimeofday (); 
+   done *)
+
 (** [draw_camel camel color] is the [camel] drawn 
     on maze in direction [dir] *)
 let draw_camel camel color =
@@ -54,7 +64,7 @@ let draw_camel camel color =
 
   (* print_endline ("points "^"("^string_of_int tl_x^","^string_of_int tl_y^")"); *)
   Graphics_js.fill_poly [|(br_x,br_y);(bl_x,bl_y);(tl_x,tl_y);(tr_x,tr_y)|]
-(* Graphics_js.fill_rect (int_of_float cx) (int_of_float cy) (int_of_float w) (int_of_float h) *)
+(* Graphics_js.fill_rect (int_of_float cx) (int_of_float cy) (intbitch_of_float w) (int_of_float h) *)
 
 let draw_balls state color = 
   Graphics_js.set_color color;
@@ -67,12 +77,19 @@ let draw_balls state color =
 let draw_state state = 
   Resources.draw "player1" 400 350;
   Resources.draw "player2" 550 350;
+
+
   (* set background color to sand *)
   Graphics_js.set_color (Graphics_js.rgb 252 213 145);
   Graphics_js.fill_rect 0 0 xDimension yDimension;
-  Graphics_js.fill_rect 0 0 xDimension yDimension;
+  Graphics_js.set_color Graphics.black;
+  Graphics.moveto (xDimension+10) 10; 
+  Graphics.draw_string ("Player 1 score: "^(string_of_int state.camel1.score));
+  Graphics.moveto (xDimension+10) 30; 
+  Graphics.draw_string ("Player 2 score: "^(string_of_int state.camel2.score));
 
   (* draws walls *)
+
   let halfw = State.wall_width/.2. in 
   let halfh = State.wall_height/.2. in 
   Graphics_js.set_color (Graphics_js.rgb 69 47 67);
@@ -80,31 +97,41 @@ let draw_state state =
   for i = 0 to Maze.num_grid_squares - 1 do
     for j = 0 to Maze.num_grid_squares - 1 do
       (* horizontal walls *)
-      let hlx = (State.square_width +. State.wall_width)*.(i |> float_of_int) +. State.wall_width in 
-      let hly = (State.square_width +. State.wall_width)*.((j |> float_of_int)+.1.)  in
+      let hlx = (State.square_width +. State.wall_width)*.
+                (i |> float_of_int) +. State.wall_width in 
+      let hly = (State.square_width +. State.wall_width)*.
+                ((j |> float_of_int)+.1.)  in
       if Maze.is_wall_below state.maze i j then 
         Graphics_js.fill_rect 
           (hlx |> int_of_float) (hly |> int_of_float) 
-          (State.wall_height |> int_of_float) (State.wall_width |> int_of_float);
+          (State.wall_height |> int_of_float) 
+          (State.wall_width |> int_of_float);
 
       if j = 0 then 
         Graphics_js.fill_rect 
-          (hlx |> int_of_float) (hly -. State.square_width -. State.wall_width |> int_of_float) 
-          (State.wall_height |> int_of_float) (State.wall_width |> int_of_float);
+          (hlx |> int_of_float) 
+          (hly -. State.square_width -. State.wall_width |> int_of_float) 
+          (State.wall_height |> int_of_float) 
+          (State.wall_width |> int_of_float);
 
       (* vertical walls *)  
-      let vlx = (State.square_width +. State.wall_width)*.((i |> float_of_int)+.1.) in 
-      let vly = (State.square_width +. State.wall_width)*.(j |> float_of_int)+. State.wall_width in
+      let vlx = (State.square_width +. State.wall_width)*.
+                ((i |> float_of_int)+.1.) in 
+      let vly = (State.square_width +. State.wall_width)*.
+                (j |> float_of_int)+. State.wall_width in
 
       if Maze.is_wall_right state.maze i j then
         Graphics_js.fill_rect 
           (vlx |> int_of_float) (vly |> int_of_float) 
-          (State.wall_width |> int_of_float) (State.wall_height |> int_of_float);
+          (State.wall_width |> int_of_float) 
+          (State.wall_height |> int_of_float);
 
       if i = 0 then 
         Graphics_js.fill_rect 
-          (vlx -. State.square_width -. State.wall_width |> int_of_float) (vly  |> int_of_float) 
-          (State.wall_width |> int_of_float) (State.wall_height |> int_of_float);
+          (vlx -. State.square_width -. State.wall_width |> int_of_float) 
+          (vly  |> int_of_float) 
+          (State.wall_width |> int_of_float) 
+          (State.wall_height |> int_of_float);
 
     done
   done;
@@ -187,17 +214,36 @@ let calc_fps t0 t1 =
 let last_time = ref 0.
 (** [run] displays the game window and allows users to quit with key 0
     refactor later bc alex *)
+
+
 let rec run time state =
   let fps = calc_fps !last_time time in
   last_time := time;
 
   let new_state = input state in
   Graphics_js.clear_graph (); 
+
+  (* if new_state.game_end then (
+     print_endline "getting to render death";
+     (* draw_game_summary new_state; *)
+     (* Js_of_ocaml.Dom_html.window##requestAnimationFrame(
+       Js_of_ocaml.Js.wrap_callback (fun (t:float) ->  draw_game_summary new_state; )
+       ) |> ignore; *)
+     draw_state new_state;
+
+     Js_of_ocaml.Dom_html.window##requestAnimationFrame(
+      Js_of_ocaml.Js.wrap_callback (fun (t:float) -> run time {new_state with game_end = false} )
+     ) |> ignore ) 
+     else ( *)
+
   draw_state new_state;
 
   Js_of_ocaml.Dom_html.window##requestAnimationFrame(
     Js_of_ocaml.Js.wrap_callback (fun (t:float) -> run time new_state )
-  ) |> ignore
+  ) |> ignore 
+
+(* let tate = ref (Lwt.task ()) in fst !tate  *)
+
 
 
 
@@ -215,7 +261,7 @@ let init () =
 
 let press_start evt =
   let () = match evt##.keyCode with
-    | _  -> print_endline ("hello bitch"); init ()
+    | _  -> print_endline ("Starting up up up"); init ()
   in Js_of_ocaml.Js._true
 
 let rec main () = 
@@ -242,5 +288,6 @@ let _ = Js_of_ocaml.Dom_html.addEventListener Js_of_ocaml.Dom_html.document
     Js_of_ocaml.Dom_html.Event.keydown (Js_of_ocaml.Dom_html.handler keypressed) Js_of_ocaml.Js._true 
 let _ = Js_of_ocaml.Dom_html.addEventListener Js_of_ocaml.Dom_html.document 
     Js_of_ocaml.Dom_html.Event.keyup (Js_of_ocaml.Dom_html.handler keyup) Js_of_ocaml.Js._true 
+
 
 let () = main ()

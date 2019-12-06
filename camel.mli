@@ -1,12 +1,14 @@
 (** The type [t] represents a camel *)
 type t = {
   player_num: int;
+  score : int; 
   num_bullets: int;
   dir: float; (* degrees 0 - 360 *)
   pos: Position.t;
   shot_time: float; 
 }
 
+val blank : t 
 (** [init num x y] is initialized camel before gameplay *)
 val init : int -> float -> float -> t
 

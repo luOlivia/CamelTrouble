@@ -1,4 +1,5 @@
 open Position
+open Utils
 
 (* 
 - timer 
@@ -8,6 +9,10 @@ open Position
 - ballspeed 
 - engine 
 *)
+
+let ball_timer = 10.0
+let ball_speed = 5.0
+let timer_decrement = 0.1
 
 type t = 
   {
@@ -20,10 +25,10 @@ type t =
 
 let init owner a x y = 
   {
-    timer= 20.0;
+    timer= ball_timer;
     owner= owner;
     angle= a;
-    ballspeed= 5.0; (* arbitrary for now*)
+    ballspeed= ball_speed;
     position= make_position x y;
   }
 
@@ -33,14 +38,11 @@ let get_position b =
 let get_angle b = 
   b.angle 
 
-(** [to_radians x] is degrees [x] to radians *)
-let to_radians x = x *. Float.pi /. 180.0
-
 let new_ball_pos_x b = 
-  b.position.x +. (b.ballspeed *. cos(to_radians (90.0-.b.angle)))
+  b.position.x +. (b.ballspeed *. cosine (90.0 -. b.angle))
 
 let new_ball_pos_y b = 
-  b.position.y -. (b.ballspeed *. sin(to_radians (90.0-.b.angle)))
+  b.position.y -. (b.ballspeed *. sine (90.0 -. b.angle))
 
 let flip_ball_h b = 
   if b.angle > 180.0 then 
@@ -48,8 +50,9 @@ let flip_ball_h b =
   else 
     {b with angle = (-1.0) *. b.angle +. 180.0}
 
+let flip_ball_v b = 
+  {b with angle = (-1.0) *. b.angle +. 360.0} 
 
-let flip_ball_v b = {b with angle = (-1.0) *. b.angle +. 360.0} 
-
-let step_timer b = { b with timer = b.timer -. 1.0 }
+let step_timer b = 
+  {b with timer = b.timer -. timer_decrement}
 

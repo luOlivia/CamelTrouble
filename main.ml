@@ -117,6 +117,7 @@ let draw_state state =
   (* draw balls *)
   draw_balls state Graphics_js.black
 
+
 let keypressed evt =
   print_endline "TRIGGERING HERE =======================";
   let () = match evt##.keyCode with
@@ -176,16 +177,54 @@ let flush_kp () = while key_pressed () do
     | 'u' -> State.shoot state'.camel2 state'
     | _ -> state' *)
 
-let input d = d 
+
+
+let input state = 
+  let state' = State.update_state state in
+  let state'' = 
+    if input_keys.p1_shoot then (print_endline "shoooting"; State.shoot state'.camel1 state')
+    else if input_keys.p1_left then State.rotate `Left state' state'.camel1  
+    else if input_keys.p1_right then State.rotate `Right state' state'.camel1
+    else if input_keys.p1_down then State.move `Reverse state' state'.camel1
+    else if input_keys.p1_up then State.move `Forward state' state'.camel1 
+    else state' in 
+  if input_keys.p2_shoot then State.shoot state''.camel2 state''  
+  else if input_keys.p2_left then State.rotate `Left state'' state''.camel2  
+  else if input_keys.p2_right then State.rotate `Right state'' state''.camel2
+  else if input_keys.p2_down then State.move `Reverse state'' state''.camel2
+  else if input_keys.p2_up then State.move `Forward state'' state''.camel2 
+  else state''
+
+(* TODO: REFACTOR!!! *)
+let clear_canvas canvas =
+  let context = canvas##getContext (Js_of_ocaml.Dom_html._2d_) in
+  let cwidth = float_of_int canvas##width in
+  let cheight = float_of_int canvas##height in
+  ignore (context##clearRect(0.,0.,cwidth,cheight))
+
+(* TODO: REFACTOR!!! *)
+let calc_fps t0 t1 =
+  let delta = (t1 -. t0) /. 1000. in
+  1. /. delta
+let last_time = ref 0.
 (** [run] displays the game window and allows users to quit with key 0
     refactor later bc alex *)
-(* let rec run state =
-   let new_state = input state in
-   (* Graphics_js.auto_synchronize false; *)
-   (* Graphics_js.clear_graph ();  *)
-   draw_state new_state;
-   (* Graphics_js.auto_synchronize true; *)
-   run new_state *)
+let rec run time state =
+  let fps = calc_fps !last_time time in
+  last_time := time;
+
+
+  let new_state = input state in
+
+  (* Graphics_js.auto_synchronize false; *)
+  (* Graphics_js.clear_graph ();  *)
+
+  draw_state new_state;
+  (* Graphics_js.auto_synchronize true; *)
+
+  Js_of_ocaml.Dom_html.window##requestAnimationFrame(
+    Js_of_ocaml.Js.wrap_callback (fun (t:float) -> run time state )
+  ) |> ignore
 
 
 
@@ -197,8 +236,7 @@ let input d = d
 
 let init () = 
   print_endline "we in init now bois and girls";
-  draw_state State.init_state
-(* ;run State.init_state *)
+  draw_state State.init_state; run 0.0 State.init_state
 
 let main () = 
 

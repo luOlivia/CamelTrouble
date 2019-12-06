@@ -37,6 +37,12 @@ let input_keys = {
   p2_down = false;
   p2_shoot = false;
 }
+
+
+let my_state = ref State.init_state
+
+
+
 (** [draw_camel camel color] is the [camel] drawn 
     on maze in direction [dir] *)
 let draw_camel camel color =
@@ -67,10 +73,6 @@ let draw_balls state color =
   in iter_balls state.ball_list 
 
 let draw_state state = 
-  (* check if someone died *)
-  (* if state.camel1_alive = false then ()
-     else if state.camel2_alive = false then ()
-     else begin *)
   Resources.draw "player1" 400 350;
   Resources.draw "player2" 550 350;
   (* set background color to sand *)
@@ -112,8 +114,7 @@ let draw_state state =
           (State.wall_width |> int_of_float) (State.wall_height |> int_of_float);
 
     done
-  done; 
-  (* end; *)
+  done;
 
 
   (* draws camel players *)
@@ -193,6 +194,19 @@ let calc_fps t0 t1 =
   1. /. delta
 let last_time = ref 0.
 
+let end_game winner = 
+  Graphics_js.set_color Resources.sand;
+  Graphics_js.fill_rect 0 0 xDimension yDimension;
+  Graphics.set_text_size 30;
+  (* Graphics.draw_string (winner^" WON!"); *)
+  let c = if winner = "PLAYER 1" then Resources.blue_grad else Resources.red_grad in 
+  ignore (Resources.gradient_text c 80 240 
+            (winner^" WON!") (Resources.size+5));
+  let dark = if winner = "PLAYER 1" then Resources.blue1 else Resources.red1 in
+  ignore (Resources.draw_string dark 20 80 120 "press enter to replay");
+  Graphics_js.set_text_size 10;
+  Resources.draw "desert" 10 80
+
 
 (** [run] displays the game window and allows users to quit with key 0
     refactor later bc alex *)
@@ -202,7 +216,11 @@ let rec run time state =
 
   let new_state = input state in
   Graphics_js.clear_graph (); 
-  draw_state new_state;
+  if state.camel1_alive = false then 
+    begin my_state := {new_state with camel1_alive = true}; end_game "PLAYER 2" end
+  else if state.camel2_alive = false then 
+    begin my_state := {new_state with camel2_alive = true}; end_game "PLAYER 1" end
+  else draw_state new_state;
 
   Js_of_ocaml.Dom_html.window##requestAnimationFrame(
     Js_of_ocaml.Js.wrap_callback (fun (t:float) -> run time new_state )
@@ -213,6 +231,7 @@ let rec run time state =
    resize_window (State.xDimension) (State.yDimension);
    draw_state State.init_state;
    run State.init_state  *)
+
 
 let init () = 
   print_endline "we in init now bois and girls";
@@ -231,7 +250,7 @@ let rec main () =
 let press_start evt =
   print_endline "in press start";
   let () = match evt##.keyCode with
-    | 13  -> init ()
+    | 13  -> draw_state !my_state; run 0.0 !my_state (*init ()*)
     | _ -> ()
   in Js_of_ocaml.Js._true
 

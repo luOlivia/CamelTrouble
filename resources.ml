@@ -3,10 +3,23 @@ let size = 20
 (* colors *)
 let sand = Graphics_js.rgb 252 213 145
 let wall_color = Graphics_js.rgb 69 47 67
+
 let purple1 = Graphics_js.rgb 29 3 56
 let purple2 = Graphics_js.rgb 196 135 139
 let purple3 = Graphics_js.rgb 219 147 152(*132 84 110*)
-let purple_grad = List.rev [purple3;purple2;purple1; purple2; purple3]
+let purple_grad = [purple3; purple2; purple1; purple2; purple3]
+
+let blue1 = Graphics_js.rgb 6 10 105
+let blue2 = Graphics_js.rgb 23 27 145
+let blue3 = Graphics_js.rgb 99 102 214
+let blue4 = Graphics_js.rgb 187 189 252
+let blue_grad = [blue3; blue2; blue1; blue2; blue3]
+
+let red1 = Graphics_js.rgb 115 5 14
+let red2 = Graphics_js.rgb 179 30 43
+let red3 = Graphics_js.rgb 212 63 76
+let red4 = Graphics_js.rgb 255 150 159
+let red_grad = [red3; red2; red1; red2; red3]
 
 (** [gradient_text color xpos ypos str gap] prints [str] for each color in [color] *)
 let gradient_text color xpos ypos str gap = 
@@ -16,6 +29,12 @@ let gradient_text color xpos ypos str gap =
         Graphics.draw_string str;
         acc - gap
       end) ypos color
+
+let draw_string color s x y str =
+  Graphics.set_text_size s;
+  Graphics_js.set_color color;
+  Graphics.moveto x y; 
+  Graphics.draw_string str
 
 let desert = [
   "                                           =--_";
@@ -126,14 +145,3 @@ let draw word x y =
   if word = "player1" then draw_ascii player1 x y
   else if word = "player2" then draw_ascii player2 x y
   else draw_ascii desert x y
-
-(* let main () = 
-   print_endline "drawing in resources";
-   draw "desert" 10 300
-
-   let _ =  print_endline "starting up";
-   Js_of_ocaml.Js.Opt.iter
-    (Js_of_ocaml.Dom_html.CoerceTo.canvas (Js_of_ocaml.Dom_html.getElementById "canvas1"))
-    Graphics_js.open_canvas
-
-   let () = main () *)

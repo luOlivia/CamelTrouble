@@ -1,5 +1,6 @@
 open Cell
 
+let _ = Random.self_init ()
 let num_grid_squares = 7
 let density = 16
 

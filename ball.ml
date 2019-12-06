@@ -20,10 +20,10 @@ type t =
 
 let init owner a x y = 
   {
-    timer= 5000.0;
+    timer= 20.0;
     owner= owner;
     angle= a;
-    ballspeed= 0.01; (* arbitrary for now*)
+    ballspeed= 5.0; (* arbitrary for now*)
     position= make_position x y;
   }
 

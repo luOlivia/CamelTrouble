@@ -31,22 +31,31 @@ let make_empty_walls () =
     | _ -> failwith "can only match vertical wall" 
   done; maze
 
+let clip x y = 
+  let x' = if x < 0 then 0 else if x > num_grid_squares then num_grid_squares else x in
+  let y' = if y < 0 then 0 else if y > num_grid_squares then num_grid_squares else y in
+  (x', y')
+
 let is_wall_left maze x y = 
+  let x, y = clip x y in
   match maze.vertical_walls with 
   | Vertical walls -> walls.(x).(y)
   | _ -> failwith "can only match vertical wall"
 
 let is_wall_right maze x y = 
+  let x, y = clip x y in
   match maze.vertical_walls with 
   | Vertical walls -> walls.(x+1).(y)
   | _ -> failwith "can only match vertical wall"
 
 let is_wall_above maze x y = 
+  let x, y = clip x y in
   match maze.horizontal_walls with 
   | Horizontal walls -> walls.(y).(x)
   | _ -> failwith "can only match horizontal wall"
 
 let is_wall_below maze x y =
+  let x, y = clip x y in
   match maze.horizontal_walls with 
   | Horizontal walls -> walls.(y+1).(x)
   | _ -> failwith "can only match horizontal wall"

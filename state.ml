@@ -20,7 +20,7 @@ let rec print_list = function
 let camel_width = 26.0
 let ball_width = 6.0
 let wall_width = 5.0
-let wall_height = 45.5
+let wall_height = 45.0
 let square_width = 50.0
 let xDimension = 8.0 *. wall_width +. 7.0 *. square_width |> int_of_float
 let yDimension = xDimension
@@ -40,7 +40,7 @@ let reinit st =
     y1 := (Random.int Maze.num_grid_squares);
   done;
   while ((Maze.is_wall_above st.maze !x2 !y2 || Maze.is_wall_below st.maze !x2 !y2 || Maze.is_wall_left st.maze !x2 !y2
-          || Maze.is_wall_right st.maze !x2 !y2) && (!x1 = !x2 && !y1 = !y2)) do 
+          || Maze.is_wall_right st.maze !x2 !y2) || (!x1 = !x2 && !y1 = !y2)) do 
     x2 := (Random.int Maze.num_grid_squares);
     y2 := (Random.int Maze.num_grid_squares);
   done;
@@ -77,22 +77,43 @@ let current_square x_or_y pos =
   let out = ref 0.0 in
   for i = 0 to Maze.num_grid_squares-1 do
     let ix = float_of_int i in
-
-    if ((not !found)&& (wall_width *. (ix+.1.0) +. square_width*.ix < coord)
-        && (wall_width *. (ix+.1.0) +. square_width*.(ix+.1.0) > coord))
+    if ((not !found) && (wall_width *. (ix+.1.0) +. square_width*.ix < coord)
+        && ((wall_width *. (ix+.1.0) +. square_width*.(ix+.1.0)) > coord))
     then
       (out := ix;
        found := true;)
   done;
   for i = 0 to Maze.num_grid_squares do
     let ix = float_of_int i in
-    if ((not !found)&& (wall_width *.ix +. square_width*.ix <= coord)
-        && (wall_width*.(ix+.1.0) +. square_width*.(ix+.1.0) > coord))
+    if ((not !found) && (wall_width *.ix +. square_width*.ix <= coord)
+        && ((wall_width*.(ix+.1.0) +. square_width*.(ix+.1.0)) > coord))
     then
       (out := ix -. 0.5;
        found := true;)
   done;
-  if !found then !out else -1.0
+  if !found then !out else 
+    0.0 
+
+(* let current_square x_or_y pos =
+   let coord = match x_or_y with
+    | `X -> pos.x
+    | `Y -> pos.y in
+   let out = ref 0.0 in
+   for i = 0 to Maze.num_grid_squares-1 do
+    let ix = float_of_int i in
+    if ((wall_width *. (ix+.1.0) +. square_width*.ix < coord)
+        && ((wall_width *. (ix+.1.0) +. square_width*.(ix+.1.0)) > coord))
+    then
+      out := ix;
+   done;
+   for i = 0 to Maze.num_grid_squares do
+    let ix = float_of_int i in
+    if ((wall_width *.ix +. square_width*.ix <= coord)
+        && ((wall_width*.(ix+.1.0) +. square_width*.(ix+.1.0)) > coord))
+    then
+      out := ix -. 0.5;
+   done;
+   !out *)
 
 let truncate x = float_of_int (int_of_float x)
 
@@ -124,7 +145,7 @@ let vert_collide st pos width =
      print_endline ("vert y: "^(string_of_float cury)); *)
   let by_left_wall = Maze.is_wall_left st.maze icurx icury in
   let in_left_wall = pos.x -. w <= (rcurx *. square_width) +. (rcurx+.1.0)*.wall_width in
-  let by_right_wall = Maze.is_wall_right st.maze icurx icury in
+  let by_right_wall = Maze.is_wall_right st.maze icurx  icury in
   let in_right_wall = pos.x +. w >= (rcurx+.1.0+.xwall)*.(square_width +. wall_width) in
   (* print_endline ("vert collide: "^(string_of_bool ((by_left_wall && in_left_wall) || (by_right_wall && in_right_wall)))); *)
   (by_left_wall && in_left_wall) || (by_right_wall && in_right_wall)
@@ -132,26 +153,28 @@ let vert_collide st pos width =
 (** TODO *)
 let corner_collide st pos width =
   let w = width /. 2.0 in
-  let x = ref 0 in
-  let y = ref 0 in
-  let xcounter = ref (int_of_float pos.x) in
-  while !xcounter > (wall_width +. square_width/.2.0 |> int_of_float) do
-    xcounter := !xcounter - (int_of_float wall_width) - (int_of_float square_width);
-    x := !x + 1;
+  let x = ref 0. in
+  let y = ref 0. in
+  let xcounter = ref (truncate pos.x) in
+  while !xcounter > (wall_width +. square_width/.2.0) do
+    xcounter := !xcounter -. (wall_width +. square_width);
+    x := !x +. 1.;
   done;
-  let ycounter = ref (int_of_float pos.y) in
-  while !ycounter > (wall_width +. square_width/.2.0 |> int_of_float)do
-    ycounter := !ycounter - (int_of_float wall_width) - (int_of_float square_width);
-    y := !y + 1;
+  let ycounter = ref (truncate pos.y) in
+  while !ycounter > (wall_width +. square_width/.2.0)do
+    ycounter := !ycounter -. (wall_width +. square_width);
+    y := !y +. 1.;
   done;
   (* print_endline ("corner x: "^(string_of_int !x));
      print_endline ("corner y: "^(string_of_int !y)); *)
-  let is_wall_in_corner = ref (Maze.is_wall_above st.maze !x !y || Maze.is_wall_left st.maze !x !y) in
-  if !x > 0 then is_wall_in_corner := !is_wall_in_corner || Maze.is_wall_above st.maze (!x-1) !y;
-  if !y > 0 then is_wall_in_corner := !is_wall_in_corner || Maze.is_wall_left st.maze !x (!y-1);
+  let ix = !x |> int_of_float in 
+  let iy = !y |> int_of_float in 
+  let is_wall_in_corner = ref (Maze.is_wall_above st.maze ix iy || Maze.is_wall_left st.maze ix iy) in
+  if !x > 0. then is_wall_in_corner := !is_wall_in_corner || Maze.is_wall_above st.maze (ix-1) iy;
+  if !y > 0. then is_wall_in_corner := !is_wall_in_corner || Maze.is_wall_left st.maze ix (iy-1);
   if not !is_wall_in_corner then false else
-    let cx = !x |> float_of_int in
-    let cy = !y |> float_of_int in
+    let cx = !x in
+    let cy = !y in
     let w_sq = wall_width +. square_width in
     let p1 = make_position (cx*.w_sq) (cy*.w_sq) in
     let p2 = make_position (cx*.w_sq+.wall_width) (cy*.w_sq) in
@@ -163,10 +186,6 @@ let corner_collide st pos width =
     let d4 = distance p4 pos in
     let dist = min d1 (min d2 (min d3 d4)) in
     dist < w
-
-(**
-   - modifies ball
-*)
 
 (* ---------------------BALL BOI--------------------- *)
 (* to-do: remove [ball] from st *)
@@ -231,10 +250,6 @@ let move_ball st b =
       let ny = Ball.new_ball_pos_y fball in
       let np = make_position fball.position.x ny in
       {fball with position = np; timer = fball.timer -. 0.1}
-      (* else if collision b st.camel1 || collision b st.camel2 then
-         begin print_endline ("HIIIIIII THERE IS A CAMEL COLLISION");
-          (* camel_collision b st *){b with position = next_point}
-         end   *)
   else
     {b with position = next_point; timer = b.timer -. 0.1}
 
@@ -267,25 +282,32 @@ let move_fwd st camel = {camel with pos = move_camel st camel Camel.fwd_speed}
 let move_rev st camel = {camel with pos = move_camel st camel Camel.rev_speed}
 
 let shoot camel st =
-  if camel.num_bullets >= 5 then st else
-    begin
-      let xpos = camel.pos.x +. ((ball_width /. 2.0 +. camel_width /. 2.0) *. cosine (90.0 -. camel.dir)) in
-      let ypos = camel.pos.y -. ((ball_width /. 2.0 +. camel_width /. 2.0) *. sine (90.0 -. camel.dir)) in
-      let new_pos = make_position xpos ypos in
-      if vert_collide st new_pos ball_width || horiz_collide st new_pos ball_width || corner_collide st new_pos ball_width then
-        match camel.player_num with
-        | 1 -> {st with camel1_alive=false}
-        | 2 -> {st with camel2_alive=false}
-        | _ -> failwith "that many players not allowed"
-      else
-        let newball = Ball.init camel camel.dir (xpos) (ypos) in
-        let camel' = {camel with num_bullets=camel.num_bullets+1} in
-        let st' = {st with ball_list=(newball::st.ball_list)} in
-        match camel.player_num with
-        | 1 -> {st' with camel1=camel'}
-        | 2 -> {st' with camel2=camel'}
-        | _ -> failwith "that many players not allowed"
-    end
+  let curr_time = Unix.gettimeofday () in 
+  if curr_time -. camel.shot_time < 0.25 then 
+    st
+  else 
+    begin 
+      let camel = {camel with shot_time = curr_time} in
+      if camel.num_bullets >= 5 then st else
+        begin
+          let xpos = camel.pos.x +. ((ball_width /. 2.0 +. camel_width /. 2.0) *. cosine (90.0 -. camel.dir)) in
+          let ypos = camel.pos.y -. ((ball_width /. 2.0 +. camel_width /. 2.0) *. sine (90.0 -. camel.dir)) in
+          let new_pos = make_position xpos ypos in
+          if vert_collide st new_pos ball_width || horiz_collide st new_pos ball_width || corner_collide st new_pos ball_width then
+            match camel.player_num with
+            | 1 -> {st with camel1_alive=false}
+            | 2 -> {st with camel2_alive=false}
+            | _ -> failwith "that many players not allowed"
+          else
+            let newball = Ball.init camel camel.dir (xpos) (ypos) in
+            let camel' = {camel with num_bullets=camel.num_bullets+1} in
+            let st' = {st with ball_list=(newball::st.ball_list)} in
+            match camel.player_num with
+            | 1 -> {st' with camel1=camel'}
+            | 2 -> {st' with camel2=camel'}
+            | _ -> failwith "that many players not allowed"
+        end
+    end 
 
 
 (** returns new state with camel moved positions *)

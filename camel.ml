@@ -5,6 +5,7 @@ type t = {
   num_bullets: int;
   dir: float; (* degrees 0 - 360 *)
   pos: Position.t;
+  shot_time: float; 
 }
 
 let init num x y = {
@@ -12,6 +13,7 @@ let init num x y = {
   num_bullets= 0;
   dir= 0.0;
   pos= make_position x y;
+  shot_time = 0.0; 
 }
 
 (** [rot_speed] is speed the tank rotates in degrees *)

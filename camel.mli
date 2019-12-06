@@ -4,6 +4,7 @@ type t = {
   num_bullets: int;
   dir: float; (* degrees 0 - 360 *)
   pos: Position.t;
+  shot_time: float; 
 }
 
 (** [init num x y] is initialized camel before gameplay *)

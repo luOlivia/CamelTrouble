@@ -10,10 +10,6 @@ open Unix
    let fake_maze = make_maze 20
    let fake_maze = make_maze 20
    let fake_maze = make_maze 20 *)
-let () = print_endline "passed here
-dsaaaaaaaaaaaa
-asdddddddddddd"
-
 (* let () = print_endline (State.init_state.maze |> Maze.to_str) *)
 
 type keys = {
@@ -70,16 +66,16 @@ let draw_balls state color =
 
 let draw_state state = 
   (* set background color to sand *)
-  (* Graphics_js.set_color (Graphics_js.rgb 255 251 224);
-     Graphics_js.fill_rect 0 0 xDimension yDimension; *)
+  Graphics_js.set_color (Graphics_js.rgb 255 251 224);
+  Graphics_js.fill_rect 0 0 xDimension yDimension;
 
   (* draws walls *)
   let halfw = State.wall_width/.2. in 
   let halfh = State.wall_height/.2. in 
   Graphics_js.set_color (Graphics_js.rgb 4 145 23);
 
-  for i = 0 to 6 do
-    for j = 0 to 6 do
+  for i = 0 to Maze.num_grid_squares - 1 do
+    for j = 0 to Maze.num_grid_squares - 1 do
       (* horizontal walls *)
       let hlx = (State.square_width +. State.wall_width)*.(i |> float_of_int) +. State.wall_width in 
       let hly = (State.square_width +. State.wall_width)*.((j |> float_of_int)+.1.)  in
@@ -111,17 +107,16 @@ let draw_state state =
   done;
 
   (* draws camel players *)
-  draw_camel state.camel1 Graphics_js.black;
-  draw_camel state.camel2 Graphics_js.black;
+  draw_camel state.camel1 Graphics_js.blue;
+  draw_camel state.camel2 Graphics_js.red;
 
   (* draw balls *)
   draw_balls state Graphics_js.black
 
 
 let keypressed evt =
-  print_endline "TRIGGERING HERE =======================";
   let () = match evt##.keyCode with
-    | 38  -> print_endline "hello there bitch";  input_keys.p2_up<- true
+    | 38  -> input_keys.p2_up<- true
     | 39 -> input_keys.p2_right <- true
     | 37 -> input_keys.p2_left <- true
     | 40 -> input_keys.p2_down <- true
@@ -158,31 +153,11 @@ let flush_kp () = while key_pressed () do
   done
 
 
-(* let input state = 
-   if not (Graphics_js.key_pressed ()) then State.update_state state
-   else let k = Graphics_js.read_key () in
-    flush_kp ();
-    let state' = State.update_state state in
-    match k with
-    | '0' -> exit 0
-    | 'w' -> State.move `Forward state' state.camel1
-    | 'a' -> State.rotate `Left state' state.camel1
-    | 's' -> State.move `Reverse state' state.camel1
-    | 'd' -> State.rotate `Right state' state.camel1
-    | 'e' -> State.shoot state'.camel1 state'
-    | 'i' -> State.move `Forward state' state.camel2
-    | 'j' -> State.rotate `Left state' state.camel2
-    | 'k' -> State.move `Reverse state' state.camel2
-    | 'l' -> State.rotate `Right state' state.camel2
-    | 'u' -> State.shoot state'.camel2 state'
-    | _ -> state' *)
-
-
 
 let input state = 
   let state' = State.update_state state in
   let state'' = 
-    if input_keys.p1_shoot then (print_endline "shoooting"; State.shoot state'.camel1 state')
+    if input_keys.p1_shoot then  State.shoot state'.camel1 state'
     else if input_keys.p1_left then State.rotate `Left state' state'.camel1  
     else if input_keys.p1_right then State.rotate `Right state' state'.camel1
     else if input_keys.p1_down then State.move `Reverse state' state'.camel1
@@ -213,17 +188,12 @@ let rec run time state =
   let fps = calc_fps !last_time time in
   last_time := time;
 
-
   let new_state = input state in
-
-  (* Graphics_js.auto_synchronize false; *)
-  (* Graphics_js.clear_graph ();  *)
-
+  Graphics_js.clear_graph (); 
   draw_state new_state;
-  (* Graphics_js.auto_synchronize true; *)
 
   Js_of_ocaml.Dom_html.window##requestAnimationFrame(
-    Js_of_ocaml.Js.wrap_callback (fun (t:float) -> run time state )
+    Js_of_ocaml.Js.wrap_callback (fun (t:float) -> run time new_state )
   ) |> ignore
 
 
@@ -236,16 +206,17 @@ let rec run time state =
 
 let init () = 
   print_endline "we in init now bois and girls";
+  Graphics_js.set_text_size 50;
+  Resources.draw "desert" 250 250;
   draw_state State.init_state; run 0.0 State.init_state
 
 let main () = 
-
-  (* Graphics_js.set_text_size 300; 
-     Graphics_js.moveto 50 500; *)
-  (* Graphics_js.draw_string "WELCOME TO"; *)
-  (* Resources.draw "desert" 10 300; *)
-  (* Graphics_js.draw_string "PRESS ANY KEY TO PLAY"; *)
-  (* match Graphics_js.read_key () with 
+  (* Graphics_js.set_text_size 50;
+     Graphics_js.moveto 150 150;
+     Graphics_js.draw_string "WELCOME TO";
+     Graphics_js.draw_string "PRESS ANY KEY TO PLAY"; *)
+  (* match Graphics_js.read_key with
+     | -> init ()
      | _ -> init () *)
   init ()
 
@@ -276,5 +247,5 @@ let c1 =
          Js_of_ocaml.Js._true ))
     Js_of_ocaml.Js._true *)
 
-
+let bitch = Resources.draw "desert" 250 250
 let () = main ()

@@ -257,10 +257,10 @@ let rec run time state =
    draw_state State.init_state;
    run State.init_state  *)
 
-(* 
+
 let init () = 
   print_endline "we in init now bois and girls";
-  draw_state State.init_state; run 0.0 State.init_state *)
+  draw_state State.init_state; run 0.0 State.init_state
 
 
 let rec main () =

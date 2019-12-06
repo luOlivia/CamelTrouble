@@ -63,7 +63,7 @@ let reinit st =
   print_endline ("Camel 1 state: "^(string_of_bool st.camel1_alive));
   print_endline ("Camel 2 state: "^(string_of_bool st.camel2_alive));
 
-  {st with camel1 = camel1'; camel2 = camel2'; game_end=true; camel1_alive = true; camel2_alive = true}
+  {st with camel1 = camel1'; camel2 = camel2'; game_end=true}
 
 (* make_position (Random.int x |> float_of_int) (Random.int y |> float_of_int)  *)
 
@@ -349,12 +349,6 @@ let rec check_death st aux_balls all_balls =
     then (handle_collision ball st)
     else (check_death st t all_balls)
 
-(* let rec check_death' st balls = *)
-
-(* timer && owner
-   let remove_balls st balls = *)
-
-
 
 (**[move_all_balls player st] is the new state after all balls have been moved.*)
 let move_all_balls st =
@@ -377,7 +371,6 @@ let rot_point x y center_x center_y angle =
   let rot_x = x'*.(cosine angle) -. y'*.(sine angle) in
   let rot_y = x'*.(sine angle) +. y'*.(cosine angle) in
   (rot_x +. center_x |> int_of_float, rot_y +. center_y |> int_of_float)
-
 
 
 let rec update_state state =

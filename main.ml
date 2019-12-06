@@ -58,24 +58,29 @@ let draw_camel camel color =
 
 let draw_balls state color = 
   Graphics_js.set_color color;
-
   let rec iter_balls = function
     | [] -> () 
-    | ball::t -> Graphics_js.fill_circle (ball.position.x |> int_of_float) (ball.position.y |> int_of_float) 3; iter_balls t 
+    | ball::t -> Graphics_js.fill_circle 
+                   (ball.position.x |> int_of_float) 
+                   (ball.position.y |> int_of_float) 3;
+      iter_balls t 
   in iter_balls state.ball_list 
 
 let draw_state state = 
+  (* check if someone died *)
+  (* if state.camel1_alive = false then ()
+     else if state.camel2_alive = false then ()
+     else begin *)
   Resources.draw "player1" 400 350;
   Resources.draw "player2" 550 350;
   (* set background color to sand *)
-  Graphics_js.set_color (Graphics_js.rgb 252 213 145);
-  Graphics_js.fill_rect 0 0 xDimension yDimension;
+  Graphics_js.set_color Resources.sand;
   Graphics_js.fill_rect 0 0 xDimension yDimension;
 
   (* draws walls *)
   let halfw = State.wall_width/.2. in 
   let halfh = State.wall_height/.2. in 
-  Graphics_js.set_color (Graphics_js.rgb 69 47 67);
+  Graphics_js.set_color Resources.wall_color;
 
   for i = 0 to Maze.num_grid_squares - 1 do
     for j = 0 to Maze.num_grid_squares - 1 do
@@ -107,7 +112,9 @@ let draw_state state =
           (State.wall_width |> int_of_float) (State.wall_height |> int_of_float);
 
     done
-  done;
+  done; 
+  (* end; *)
+
 
   (* draws camel players *)
   draw_camel state.camel1 Graphics_js.blue;
@@ -185,6 +192,8 @@ let calc_fps t0 t1 =
   let delta = (t1 -. t0) /. 1000. in
   1. /. delta
 let last_time = ref 0.
+
+
 (** [run] displays the game window and allows users to quit with key 0
     refactor later bc alex *)
 let rec run time state =
@@ -199,8 +208,6 @@ let rec run time state =
     Js_of_ocaml.Js.wrap_callback (fun (t:float) -> run time new_state )
   ) |> ignore
 
-
-
 (* let init = Graphics_js.open_graph "";
    set_window_title "Camel Trouble";
    resize_window (State.xDimension) (State.yDimension);
@@ -209,27 +216,33 @@ let rec run time state =
 
 let init () = 
   print_endline "we in init now bois and girls";
-  Graphics_js.set_text_size 10;
-  Resources.draw "desert" 250 250;
   draw_state State.init_state; run 0.0 State.init_state
 
+
+let rec main () =
+  (* sets intial game start page *)
+  Graphics_js.set_color Resources.sand;
+  Graphics_js.fill_rect 0 0 xDimension yDimension;
+  ignore (Resources.gradient_text Resources.purple_grad 55 225 
+            "PRESS ENTER TO PLAY" (Resources.size+5));
+  Graphics_js.set_text_size 10;
+  Resources.draw "desert" 10 80
+
 let press_start evt =
+  print_endline "in press start";
   let () = match evt##.keyCode with
-    | _  -> print_endline ("hello bitch"); init ()
+    | 13  -> init ()
+    | _ -> ()
   in Js_of_ocaml.Js._true
 
-let rec main () = 
-  (* Graphics_js.set_text_size 50;
-     Graphics_js.moveto 150 150;
-     Graphics_js.draw_string "WELCOME TO";
-     Graphics_js.draw_string "PRESS ANY KEY TO PLAY"; *)
-  Graphics_js.draw_string "PRESS ANY KEY TO PLAY";
-  let (p : char Lwt.t), r = Lwt.wait () in 
-  Lwt.wakeup r 's';
-  match Graphics_js.read_key with
-  | p -> print_endline ("hello bitch"); init ()
-  | _ -> main ()
-(* init () *)
+(* refactoring keydown listeners *)
+let _ = 
+  List.iter (fun f -> begin 
+        ignore(Js_of_ocaml.Dom_html.addEventListener 
+                 Js_of_ocaml.Dom_html.document 
+                 Js_of_ocaml.Dom_html.Event.keydown 
+                 (Js_of_ocaml.Dom_html.handler f) Js_of_ocaml.Js._true )
+      end) [press_start; keypressed]
 
 let _ =  print_endline "starting up";
   Js_of_ocaml.Js.Opt.iter
@@ -237,9 +250,9 @@ let _ =  print_endline "starting up";
     Graphics_js.open_canvas
 
 (* let _ = Js_of_ocaml.Dom_html.addEventListener Js_of_ocaml.Dom_html.document 
-    Js_of_ocaml.Dom_html.Event.keydown (Js_of_ocaml.Dom_html.handler press_start) Js_of_ocaml.Js._true  *)
-let _ = Js_of_ocaml.Dom_html.addEventListener Js_of_ocaml.Dom_html.document 
-    Js_of_ocaml.Dom_html.Event.keydown (Js_of_ocaml.Dom_html.handler keypressed) Js_of_ocaml.Js._true 
+    Js_of_ocaml.Dom_html.Event.keydown (Js_of_ocaml.Dom_html.handler press_start) Js_of_ocaml.Js._true 
+   let _ = Js_of_ocaml.Dom_html.addEventListener Js_of_ocaml.Dom_html.document 
+    Js_of_ocaml.Dom_html.Event.keydown (Js_of_ocaml.Dom_html.handler keypressed) Js_of_ocaml.Js._true  *)
 let _ = Js_of_ocaml.Dom_html.addEventListener Js_of_ocaml.Dom_html.document 
     Js_of_ocaml.Dom_html.Event.keyup (Js_of_ocaml.Dom_html.handler keyup) Js_of_ocaml.Js._true 
 

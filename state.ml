@@ -214,10 +214,10 @@ let collision bullet camel =
     camel 1 or 2. Also generates new maze*)
 let handle_collision bullet st =
   if collision bullet st.camel1
-  then let st' = {st with camel1_alive = true; ball_list = []; maze = Maze.make_maze Maze.density}
+  then let st' = {st with camel1_alive = false; ball_list = []; maze = Maze.make_maze Maze.density}
     in reinit st'
   else begin if collision bullet st.camel2
-    then let st' = {st with camel2_alive = true; ball_list = []; maze = Maze.make_maze Maze.density}
+    then let st' = {st with camel2_alive = false; ball_list = []; maze = Maze.make_maze Maze.density}
       in reinit st'
     else st
   end

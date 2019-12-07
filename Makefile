@@ -1,4 +1,4 @@
-MODULES=ball camel cell main maze position resources state test utils
+MODULES=authors ball camel cell main maze position resources state test utils
 OBJECTS=$(MODULES:=.cmo)
 MLS=$(MODULES:=.ml)
 MLIS=$(MODULES:=.mli)
@@ -23,6 +23,17 @@ play:
 # 	zip cameltrouble.zip *.ml* _tags *.txt *.js *.md *.byte Makefile
 
 docs: docs-public docs-private
+	
+docs-public: build
+	mkdir -p doc.public
+	ocamlfind ocamldoc -I _build -package $(PKGS) \
+		-html -stars -d doc.public $(MLIS)
+
+docs-private: build
+	mkdir -p doc.private
+	ocamlfind ocamldoc -I _build -package $(PKGS) \
+		-html -stars -d doc.private \
+		-inv-merge-ml-mli -m A -hide-warnings $(MLIS) $(MLS)
 
 clean:
 	ocamlbuild -clean

@@ -68,7 +68,7 @@ let draw_balls state color =
     | [] -> () 
     | ball::t -> Graphics_js.fill_circle 
                    (ball.position.x |> int_of_float) 
-                   (ball.position.y |> int_of_float) 3;
+                   (ball.position.y |> int_of_float) (State.ball_width /. 2.0 |> int_of_float);
       iter_balls t 
   in iter_balls state.ball_list 
 

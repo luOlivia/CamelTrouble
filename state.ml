@@ -19,10 +19,10 @@ let rec print_list = function
   | e::l -> print_int e ; print_string " " ; print_list l
 
 let camel_width = 26.0
-let ball_width = 6.0
-let wall_width = 5.0
-let wall_height = 45.0
-let square_width = 50.0
+let ball_width = 10.0
+let wall_width = 8.0
+let wall_height = 50.0
+let square_width = wall_width +. wall_height
 let xDimension = 8.0 *. wall_width +. 7.0 *. square_width |> int_of_float
 let yDimension = xDimension
 

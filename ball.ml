@@ -1,16 +1,7 @@
 open Position
 open Utils
 
-(* 
-- timer 
-- owner 
-- angle 
-- position (type point)
-- ballspeed 
-- engine 
-*)
-
-let ball_timer = 10.0
+let ball_timer = 20.0
 let ball_speed = 5.0
 let timer_decrement = 0.1
 
@@ -20,35 +11,30 @@ type t =
     owner: Camel.t;
     angle: float;
     position: Position.t;
-    ballspeed: float;
+    speed: float;
   }
 
-let init owner a x y = 
+let init owner angle x y = 
   {
-    timer= ball_timer;
-    owner= owner;
-    angle= a;
-    ballspeed= ball_speed;
-    position= make_position x y;
+    timer = ball_timer;
+    owner = owner;
+    angle = angle;
+    speed = ball_speed;
+    position = make_position x y;
   }
-
-let get_position b = 
-  b.position
-
-let get_angle b = 
-  b.angle 
 
 let new_ball_pos_x b = 
-  b.position.x +. (b.ballspeed *. cosine (90.0 -. b.angle))
+  b.position.x +. (b.speed *. cosine (90.0 -. b.angle))
 
 let new_ball_pos_y b = 
-  b.position.y -. (b.ballspeed *. sine (90.0 -. b.angle))
+  b.position.y -. (b.speed *. sine (90.0 -. b.angle))
 
 let flip_ball_h b = 
-  if b.angle > 180.0 then 
-    {b with angle = (-1.0) *. b.angle +. 540.0}
-  else 
-    {b with angle = (-1.0) *. b.angle +. 180.0}
+  let angle' = if b.angle > 180.0 then 
+      (-1.0) *. b.angle +. 540.0
+    else 
+      (-1.0) *. b.angle +. 180.0
+  in {b with angle=angle'}
 
 let flip_ball_v b = 
   {b with angle = (-1.0) *. b.angle +. 360.0} 

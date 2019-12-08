@@ -1,4 +1,7 @@
 
+(** [status] represents the current status that the game is in for the user *)
+type status = Start | Playing | Paused 
+
 (** The type [t] represents the state of the game *)
 type t = {
   ball_list: Ball.t list;
@@ -7,8 +10,15 @@ type t = {
   camel1_alive : bool;
   camel2_alive : bool; 
   game_end : bool;
-  maze: Maze.t
+  maze: Maze.t;
+  status: status
 } 
+
+(** [movement] represents the direction that the Camel moves in *)
+type movement = Forward | Reverse
+
+(** [rotation] represents the direction that the Camel rotates towards *)
+type rotation = CounterClockwise | Clockwise
 
 (** [camel_width] is width of the camel. *)
 val camel_width : float
@@ -30,13 +40,13 @@ val yDimension : int
 val move_ball: t -> Ball.t -> Ball.t 
 
 (** [move_fwd st camel] is [camel] with new pos after moving forwards. *)
-val move_fwd : t -> Camel.t -> Camel.t
+val move_fwd_collide : t -> Camel.t -> Camel.t
 (** [move_rev st camel] is [camel] with new pos after moving backwards. *)
-val move_rev : t -> Camel.t -> Camel.t
+val move_rev_collide : t -> Camel.t -> Camel.t
 
 val shoot : Camel.t -> t -> t
-val move : [< `Forward | `Reverse ] -> t -> Camel.t -> t
-val rotate : [< `Left | `Right ] -> t -> Camel.t -> t
+val move : movement -> t -> Camel.t -> t
+val rotate : rotation -> t -> Camel.t -> t
 
 val rot_point : float -> float -> float -> float -> float -> int * int
 val update_state : t -> t

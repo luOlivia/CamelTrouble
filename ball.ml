@@ -1,27 +1,28 @@
 open Position
 open Utils
 
+(* [ball_timer] is a constant controlling the duration of a ball *)
 let ball_timer = 20.0
+(* [ball_speed] is a constant controlling the speed of a ball *)
 let ball_speed = 5.0
+(* [timer_decrement] is a constant controlling the rate of exprity of a ball *)
 let timer_decrement = 0.1
 
-type t = 
-  {
-    timer: float;
-    owner: Camel.t;
-    angle: float;
-    position: Position.t;
-    speed: float;
-  }
+type t = {
+  timer: float;
+  owner: Camel.t;
+  angle: float;
+  position: Position.t;
+  speed: float;
+}
 
-let init owner angle x y = 
-  {
-    timer = ball_timer;
-    owner = owner;
-    angle = angle;
-    speed = ball_speed;
-    position = make_position x y;
-  }
+let init owner angle x y = {
+  timer = ball_timer;
+  owner = owner;
+  angle = angle;
+  speed = ball_speed;
+  position = Position.init x y;
+}
 
 let new_ball_pos_x b = 
   b.position.x +. (b.speed *. cosine (90.0 -. b.angle))

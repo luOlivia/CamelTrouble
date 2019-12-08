@@ -1,4 +1,4 @@
-(** [ball] is a projectile representing a shot ball *)
+(** [Ball.t] is a represents a shot ball as projectile *)
 type t = 
   {
     (** [timer] is the remaining time of the [ball] *)

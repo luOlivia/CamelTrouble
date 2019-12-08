@@ -1,3 +1,3 @@
 type t = {x: int; y: int}
 
-val make_cell : int -> int -> t
+val init : int -> int -> t

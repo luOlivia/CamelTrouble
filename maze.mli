@@ -1,4 +1,13 @@
-type wall = Horizontal of bool array array | Vertical of bool array array
+(** [wall] of booleans representing the presence of walls. 
+    A [cell x y] can have walls:
+    - above [Horizontal (y)(x)]
+    - below [Horizontal (y+1)(x)]
+    - left  [Vertical (x)(y)]
+    - below [Vertical (x+1)(y)]
+*)
+type wall = 
+  | Horizontal of bool array array 
+  | Vertical of bool array array
 
 type t = {horizontal_walls: wall; vertical_walls: wall}
 

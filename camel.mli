@@ -1,6 +1,9 @@
-(** The type [t] represents a camel *)
+(** [player_num] represents a single of the two possible players in the game *)
+type player_num = One | Two
+
+(** The type [Camel.t] represents a camel *)
 type t = {
-  player_num: int;
+  player_num: player_num;
   score : int; 
   num_bullets: int;
   dir: float; (* degrees 0 - 360 *)
@@ -8,9 +11,8 @@ type t = {
   shot_time: float; 
 }
 
-val blank : t 
-(** [init num x y] is initialized camel before gameplay *)
-val init : int -> float -> float -> t
+(** [init num x y score] is initialized camel before gameplay *)
+val init : player_num -> float -> float -> int -> t
 
 (** [fwd_speed] is speed the tank moves forward *)
 val fwd_speed : float
@@ -32,8 +34,5 @@ val move_vert : float -> float -> float -> float
 (** [free_range camel y dir] is [camel] moved w/o regard to walls *)
 val free_range : t -> float -> t
 
-(** [hit camel] is whether [camel] is alive *)
-(* val hit : t -> bool *)
-
-(** [to_str camel] is string rep of [camel] params *)
+(** [to_str camel] is string representation of [camel] *)
 val to_str : t -> string

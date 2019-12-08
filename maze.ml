@@ -4,13 +4,6 @@ let _ = Random.self_init ()
 let num_grid_squares = 7
 let density = 16
 
-(** [wall] of booleans representing the presence of walls. 
-    A [cell x y] can have walls:
-    - above [Horizontal (y)(x)]
-    - below [Horizontal (y+1)(x)]
-    - left  [Vertical (x)(y)]
-    - below [Vertical (x+1)(y)]
-*)
 type wall = 
   | Horizontal of bool array array 
   | Vertical of bool array array
@@ -85,19 +78,19 @@ let neighbors maze cell =
   let nbrs = [cell] in
   let nbrs' = 
     if not (is_wall_left maze x y) 
-    then (make_cell (x-1) y)::nbrs
+    then (Cell.init (x-1) y)::nbrs
     else nbrs in 
   let nbrs'' = 
     if not (is_wall_right maze x y) 
-    then (make_cell (x+1) y)::nbrs'
+    then (Cell.init (x+1) y)::nbrs'
     else nbrs' in
   let nbrs''' = 
     if not (is_wall_above maze x y) 
-    then (make_cell x (y-1))::nbrs''
+    then (Cell.init x (y-1))::nbrs''
     else nbrs'' in
   let nbrs'''' = 
     if not (is_wall_below maze x y) 
-    then (make_cell x (y+1))::nbrs'''
+    then (Cell.init x (y+1))::nbrs'''
     else nbrs'''
   in nbrs'''' |> Array.of_list
 
@@ -117,19 +110,19 @@ let walled_neighbors maze cell =
   let nbrs = [] in
   let nbrs' = 
     if (is_wall_left maze x y) && x-1 >= 0 
-    then (make_cell (x-1) y)::nbrs
+    then (Cell.init (x-1) y)::nbrs
     else nbrs in 
   let nbrs'' = 
     if (is_wall_right maze x y) && x+1 < num_grid_squares
-    then (make_cell (x+1) y)::nbrs'
+    then (Cell.init (x+1) y)::nbrs'
     else nbrs' in
   let nbrs''' = 
     if not (is_wall_above maze x y) && y-1 >= 0 
-    then (make_cell x (y-1))::nbrs''
+    then (Cell.init x (y-1))::nbrs''
     else nbrs'' in
   let nbrs'''' = 
     if not (is_wall_below maze x y) && y+1 < num_grid_squares
-    then (make_cell x (y+1))::nbrs'''
+    then (Cell.init x (y+1))::nbrs'''
     else nbrs'''
   in nbrs'''' |> Array.of_list
 
@@ -225,7 +218,7 @@ let extract_connections connections_opt =
     Array.fold_left (fun a x -> if x <> None then (a + 1) else a) 
       0 connections_opt in
   let res = 
-    make_cell 0 0
+    Cell.init 0 0
     |> Array.make_matrix len (num_grid_squares * num_grid_squares) in
   let i = ref 0 in 
   let j = ref 0 in

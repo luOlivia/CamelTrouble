@@ -1,4 +1,3 @@
-(* [size] is standard text size *)
 let size = 20
 
 (* maze colors *)
@@ -29,24 +28,19 @@ let red3 = Graphics_js.rgb 212 63 76
 let red4 = Graphics_js.rgb 255 150 159
 let red_grad = [red3; red2; red1; red2; red3]
 
-(** [gradient_text color xpos ypos str gap] prints [str] 
-    for each color in [color] at position ([xpos], [ypos])
-     with line spacing [gap]*)
+
 let gradient_text color xpos ypos str gap = 
   List.fold_left (fun acc color -> begin
         Graphics_js.set_color color; Graphics.moveto xpos acc; 
         Graphics.draw_string str; acc - gap
       end) ypos color
 
-(** [draw_string c s x y str] draws [str] with color [c]
-    and text size [s] at pos [x][y]*)
 let draw_string c s x y str =
   Graphics.set_text_size s;
   Graphics_js.set_color c;
   Graphics.moveto x y; 
   Graphics.draw_string str
 
-(* camel ascii art *)
 let desert = [
   "                                           =--_";
   "                            .-\"\"\"\"-.     |* _)";
@@ -93,7 +87,6 @@ let draw_ascii word x y =
         Graphics_js.moveto x acc; Graphics_js.draw_string s; (acc-size)
       end) y word)
 
-(** [draw word x y] draws [word] at pos [x][y] *)
 let draw word x y = 
   Graphics.set_text_size size;
   if word = "player1" then draw_ascii player1 x y

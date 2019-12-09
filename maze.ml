@@ -1,6 +1,9 @@
 open Cell
+open Utils
 
+(*Initialize random number generator*)
 let _ = Random.self_init ()
+
 let num_grid_squares = 7
 let density = 16
 
@@ -13,6 +16,7 @@ type t =
     horizontal_walls: wall; 
     vertical_walls: wall
   }
+
 
 let make_wall ()
   = Array.make_matrix (num_grid_squares+1) (num_grid_squares+1) false
@@ -141,9 +145,6 @@ let intersect cells1 cells2 =
     else a in 
   List.fold_left f [] cells2 
   |> Array.of_list
-
-let difference l1 l2 = 
-  List.filter (fun x -> not (List.mem x l2)) l1
 
 let area_neighbors maze area = 
   (area

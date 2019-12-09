@@ -6,7 +6,7 @@ type player_num = One | Two
 type t = {
   player_num: player_num;
   score : int;
-  num_bullets: int;
+  num_balls: int;
   dir: float; (* degrees 0 - 360 *)
   pos: Position.t;
   shot_time: float; 
@@ -15,7 +15,7 @@ type t = {
 let init player_num x y score = {
   player_num=player_num;
   score = score;
-  num_bullets= 0;
+  num_balls= 0;
   dir= Random.float 359.0;
   pos= Position.init x y;
   shot_time = 0.0; 
@@ -50,7 +50,7 @@ let to_str camel =
     | One -> "player one"
     | Two -> "player two" in
   player 
-  ^ " num_bullets: " ^ string_of_int camel.num_bullets ^ "\n"
+  ^ " num_balls: " ^ string_of_int camel.num_balls ^ "\n"
   ^ " angle dir: " ^ string_of_float camel.dir ^ "\n"
   ^ " pos: " ^ string_of_float camel.pos.x 
   ^ " " ^ string_of_float camel.pos.y

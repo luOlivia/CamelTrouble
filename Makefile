@@ -1,10 +1,11 @@
-MODULES=authors ball camel cell main maze position resources state test utils
+MODULES=authors ball camel cell main maze position state resources
 OBJECTS=$(MODULES:=.cmo)
 MLS=$(MODULES:=.ml)
 MLIS=$(MODULES:=.mli)
 TEST=test.byte
 MAIN=main.byte
 OCAMLBUILD=ocamlbuild -use-ocamlfind
+PKGS=unix,oUnit,str
 
 
 default: build

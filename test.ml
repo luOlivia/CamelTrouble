@@ -48,7 +48,7 @@ let test_turn_right (*Compares the directions that have been modified*)
     (camel : Camel.t)
     (expected_output : float) : test = 
   name >:: (fun _ -> 
-      assert_equal expected_output (Camel.turn_right camel |> get_dir) )
+      assert_equal expected_output (Camel.turn_right camel |> get_dir))
 
 let test_turn_left (*Compares the directions that have been modified*)
     (name : string)
@@ -73,7 +73,7 @@ let test_init_pos
     (pos : Position.t)
     (expected_output : Position.t) : test = 
   name >:: (fun _ -> 
-      assert_equal expected_output ( (Camel.init One pos.x pos.y 0) |> get_pos) )
+      assert_equal expected_output ((Camel.init One pos.x pos.y 0) |> get_pos))
 
 
 let camel_tests = [
@@ -100,24 +100,54 @@ let camel_tests = [
 ]
 
 (* BALL TEST CASES *)
+(** [ball0] is a ball with no angle *)
 let ball0 = Ball.init camel1 0.0 0.0 0.0
+let pos0 = Position.init (Ball.new_pos_x ball0) (Ball.new_pos_y ball0)
 
+
+let ball1 = {ball0 with angle = 30.0; position = pos0}
+let ball2 = {ball0 with angle = (-30.0); position = pos0}
+
+(** [test_ball_pos name ball expected_output] asserts
+    the quality of [expected_output] with position 
+    of ([Ball.new_pos_x], [Ball.new_pos_y])*)
 let test_ball_pos
     (name : string)
-    (y : float)
-    (dir : float)
-    (speed : float) 
-    (expected_output : int) : test = 
+    (ball : Ball.t)
+    (expected_output : Position.t) : test = 
   name >:: (fun _ -> 
-      assert_equal expected_output (Camel.move_vert y dir speed |> int_of_float) )
+      assert_equal expected_output 
+        (Position.init (ball |> Ball.new_pos_x |> floor) 
+           (ball |> Ball.new_pos_y |> floor))
+    )
+
+(** [test_ball_flip_h name ball expected_output] asserts
+    the quality of [expected_output] with angle
+    of [Ball.flip_h ball] *)
+let test_ball_flip_h
+    (name : string)
+    (ball : Ball.t)
+    (expected_output : float) : test = 
+  name >:: (fun _ -> 
+      assert_equal expected_output 
+        (Ball.flip_h ball).angle
+    )
 
 let ball_tests = [
+  test_ball_pos "move initial ball pos" ball0 (Position.init 0. (-5.));
+  test_ball_pos "move ball pos w angle" ball1 (Position.init 2. (-10.));
+  test_ball_pos "move ball pos w angle" ball2 (Position.init (-3.) (-10.));
+
+  test_ball_flip_h "flip initial ball" ball0 180.;
+  test_ball_flip_h "flip ball w angle" ball1 150.;
+
 
 ]
 
 
 let suite = "search test suite" >::: List.flatten [
-    camel_tests
+    camel_tests;
+    ball_tests
   ]
 
 let _ = run_test_tt_main suite

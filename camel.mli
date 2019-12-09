@@ -5,7 +5,7 @@ type player_num = One | Two
 type t = {
   player_num: player_num;
   score : int; 
-  num_bullets: int;
+  num_balls: int;
   dir: float; (* degrees 0 - 360 *)
   pos: Position.t;
   shot_time: float; 

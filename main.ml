@@ -34,8 +34,10 @@ let input_keys = {
   p2_shoot = false;
 }
 
+(**[commands] represents a player keyboard command*)
 type commands = Player of controls
 
+(**[controls] represents player keyboard commands *)
 and controls = 
   | Shoot
   | Left 
@@ -299,6 +301,5 @@ let _ =  print_endline "starting up";
     Js_of_ocaml.Dom_html.Event.keydown (Js_of_ocaml.Dom_html.handler keypressed) Js_of_ocaml.Js._true  *)
 let _ = Js_of_ocaml.Dom_html.addEventListener Js_of_ocaml.Dom_html.document 
     Js_of_ocaml.Dom_html.Event.keyup (Js_of_ocaml.Dom_html.handler keyup) Js_of_ocaml.Js._true 
-
 
 let () = main ()

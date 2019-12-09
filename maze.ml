@@ -17,7 +17,6 @@ type t =
     vertical_walls: wall
   }
 
-
 let make_wall ()
   = Array.make_matrix (num_grid_squares+1) (num_grid_squares+1) false
 

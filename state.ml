@@ -33,9 +33,13 @@ let square_width = wall_height
 let xDimension = 8.0 *. wall_width +. 7.0 *. square_width |> int_of_float
 let yDimension = xDimension
 
+(**[death_sound] is the sound camels make when they die *)
 let death_sound = Resources.audio "oof"
+(**[shoot_sound] is the sound of camels shooting balls *)
 let shoot_sound = Resources.audio "pew"
 
+(**[any_wall maze x y] is true if the position (x,y) 
+   has a wall in [maze] around it*)
 let any_wall maze x y =
   Maze.is_wall_above maze x y
   || Maze.is_wall_below maze x y
@@ -46,6 +50,8 @@ let any_wall maze x y =
 let grid_to_pixel n = 
   wall_width *. (n+.1.0) +. square_width*.n +. square_width/.2.0
 
+(**[reinit_camel st x y player] is the reinitialized camel of [player]
+   after a round has ended.*)
 let reinit_camel st x y player = 
   Camel.init player 
     (x |> float_of_int |> grid_to_pixel) (y |> float_of_int |> grid_to_pixel)
@@ -55,9 +61,12 @@ let reinit_camel st x y player =
     end
     (Resources.get_input_name player)
 
+(**[reinit_state st camel1 camel2] is the new state with reinitialized
+   [camel1] and [camel2] after a game has ended*)
 let reinit_state st camel1 camel2 =
   {st with camel1; camel2; game_end = true; ball_list = []}
 
+(**[reinit st] is the new state after a game has ended*)
 let rec reinit st = 
   try begin
     let x1 = ref (Random.int Maze.num_grid_squares) in 
@@ -79,6 +88,8 @@ let rec reinit st =
   with 
   | _ -> reinit st
 
+(**[first_square_loop out found coord] is a helper loop for calculating 
+   current square*)
 let first_square_loop out found coord = 
   for i = 0 to Maze.num_grid_squares-1 do
     let idx = i |> float_of_int in
@@ -91,6 +102,8 @@ let first_square_loop out found coord =
     end
   done
 
+(**[second_square_loop out found coord] is a helper loop for calculating 
+   current square*) 
 let second_square_loop out found coord =
   for i = 0 to Maze.num_grid_squares do
     let idx = i |> float_of_int in
@@ -103,6 +116,7 @@ let second_square_loop out found coord =
     end
   done 
 
+(**[current_square axis pos] is the current maze square that the [pos] inhabits*)
 let current_square axis pos =
   let coord = match axis with
     | X -> pos.x
@@ -115,6 +129,8 @@ let current_square axis pos =
 
   if !found then !out else 0.0 
 
+(**[horiz_collide st pos width] is [true] if the current [pos] with [width] 
+   collides with a horizontal wall*)
 let horiz_collide st pos width =
   let cur_y = current_square Y pos in
   let t_cur_y = cur_y |> truncate in
@@ -134,7 +150,8 @@ let horiz_collide st pos width =
 
   (by_top_wall && in_top_wall) || (by_bottom_wall && in_bottom_wall)
 
-
+(**[vert_collide st pos width] is [true] if the current [pos] with [width] 
+   collides with a vertical wall*)
 let vert_collide st pos width =
   let cur_x = current_square X pos in
   let t_cur_x = cur_x |> truncate in
@@ -154,6 +171,7 @@ let vert_collide st pos width =
 
   (by_left_wall && in_left_wall) || (by_right_wall && in_right_wall)
 
+(**[corner_count pos axis] a helper function for corner_collide*)
 let corner_count pos axis = 
   let a = ref 0.0 in 
   let a_count = 
@@ -168,6 +186,7 @@ let corner_count pos axis =
   done;
   !a
 
+(**[in_corner x y pos width] is [true] if this [pos] is in a corner *)
 let in_corner x y pos width =
   let w = wall_width +. square_width in
   let p1 = Position.init (x*.w) (y*.w) in
@@ -178,6 +197,8 @@ let in_corner x y pos width =
   let dist = List.fold_left min max_float ds in
   dist < width /. 2.0 
 
+(**[corner_collide st pos width] is [true] if [pos] with [width] collides with
+   a corner of the maze.*)
 let corner_collide st pos width =
   let x = corner_count pos X in
   let y = corner_count pos Y in
@@ -198,6 +219,8 @@ let corner_collide st pos width =
   if not !is_wall_in_corner then false else
     in_corner x y pos width
 
+(**[count_ball_owners player balls] is the number of balls in play 
+   owned by [player]*)
 let count_ball_owners player balls =
   let f = match player with 
     | One -> fun a x -> if x.owner.player_num = One then 1 else 0

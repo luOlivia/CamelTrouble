@@ -34,31 +34,43 @@ let input_keys = {
   p2_shoot = false;
 }
 
-(**[commands] represents a player keyboard command*)
-type commands = player_num * control
-
 (**[control] represents player keyboard commands *)
-and control = 
+type control = 
   | Shoot
   | Left 
   | Right
   | Up 
   | Down
 
-(* let translate_keys () =
-   let k = input_keys in
-   let ctrls = 
-   [(k.p1_up,(One, Up));(k.p1_left,(One, Left));(k.p2_up,(Two, Up));(k.p2_left,(Two, Left))] in
-   let f (a1, a2) x =
+(**[command] represents a player keyboard command*)
+type command = Camel.player_num * control
+
+let translate_keys () =
+  let k = input_keys in
+  let cmds = 
+    [
+      (k.p1_up,(One, Up));
+      (k.p1_down,(One, Down));
+      (k.p1_left,(One, Left));
+      (k.p1_right,(One, Right));
+      (k.p1_shoot,(One, Shoot));
+      (k.p2_up,(Two, Up));
+      (k.p2_down,(Two, Down));
+      (k.p2_left,(Two, Left));
+      (k.p2_right,(Two, Right));
+      (k.p2_shoot,(Two, Shoot))
+    ] in
+  let f (a1, a2) x =
     match fst x with 
     | false -> (a1, a2)
     | true -> begin
-      match snd x with 
-      | One, ctrl -> ctrl::a1
-      | Two, ctrl -> ctrl::a2
+        match snd x with 
+        | One, ctrl -> ctrl::a1, a2
+        | Two, ctrl -> a1, ctrl::a2
       end
+  in
+  List.fold_left f ([], []) (cmds)
 
-   List.fold_left f ([], []) ctrls *)
 
 (** [current_state] repsame state *)
 let current_state = ref State.init_state
@@ -103,7 +115,7 @@ let draw_balls state color =
   List.iter f state.ball_list
 
 (** [draw_state] draws the current [state] of the game *)
-let draw_state state = 
+let draw_state state fps = 
   Resources.draw "player1" 450 350;
   Resources.draw "player2" 600 350;
 
@@ -113,9 +125,9 @@ let draw_state state =
 
   (* prints score keeping *)
   Resources.draw_string Graphics.black 20 (xDimension+10) 30 
-    ("Player 1 score: " ^ (state.camel1.score |> string_of_int));
+    (state.camel1.player_name^"'s score: " ^ (state.camel1.score |> string_of_int));
   Resources.draw_string Graphics.black 20 (xDimension+10) 10 
-    ("Player 2 score: " ^ (state.camel2.score |> string_of_int));
+    (state.camel2.player_name^"'s score: " ^ (state.camel2.score |> string_of_int));
 
   (* draws walls *)
   Graphics_js.set_color Resources.wall_color;
@@ -167,7 +179,8 @@ let draw_state state =
   draw_camel state.camel2 Resources.camel_c2 Resources.camel_c2_hump;
 
   (* draw balls *)
-  draw_balls state Graphics_js.black
+  draw_balls state Graphics_js.black;
+  Resources.draw_string Graphics.black 10 (xDimension+10) (xDimension-10) ((string_of_float (Utils.truncate fps))^" frames per second") 
 
 (**[keypressed] is an eventlistener that updates the state of the [input_keys]
    in the [evt] that any key is pressed. *)
@@ -203,36 +216,57 @@ let keyup evt =
     | _ -> ()
   in Js_of_ocaml.Js._true
 
-(* let translate_keys () =
-   let k = input_keys in
-   let ctrls = [(k.left,CLeft);(k.right,CRight);(k.up,CUp);(k.down,CDown)] in
-   List.fold_left (fun a x -> if fst x then (snd x)::a else a) [] ctrls *)
+(* let handle_p1_ctrls p1_ctrls =  *)
 
-(**[input state] is the new [state] based on changes to *)
-let input state = 
-  let state' = State.update_state state in
-  let state'' = 
+let input st = 
+  let st' = State.update_state st in 
+  let p1_ctrls, p2_ctrls = translate_keys () in
+  let st'' = match List.nth_opt p1_ctrls 0 with 
+    | None -> st' 
+    | Some ctrl ->
+      begin match ctrl with 
+        | Shoot -> State.shoot st'.camel1 st'
+        | Left -> State.rotate CounterClockwise st' st'.camel1  
+        | Right -> State.rotate Clockwise st' st'.camel1
+        | Down -> State.move Reverse st' st'.camel1
+        | Up -> State.move Forward st' st'.camel1 
+      end in 
+  match List.nth_opt p2_ctrls 0 with 
+  | None -> st''
+  | Some ctrl ->
+    begin match ctrl with 
+      | Shoot -> State.shoot st''.camel2 st''
+      | Left -> State.rotate CounterClockwise st'' st''.camel2
+      | Right -> State.rotate Clockwise st'' st''.camel2
+      | Down -> State.move Reverse st'' st''.camel2
+      | Up -> State.move Forward st'' st''.camel2
+    end
+
+(* *[input state] is the new [state] based on changes to
+   let input state = 
+   let state' = State.update_state state in
+   let state'' = 
     if input_keys.p1_shoot then State.shoot state'.camel1 state'
     else if input_keys.p1_left then State.rotate CounterClockwise state' state'.camel1  
     else if input_keys.p1_right then State.rotate Clockwise state' state'.camel1
     else if input_keys.p1_down then State.move Reverse state' state'.camel1
     else if input_keys.p1_up then State.move Forward state' state'.camel1 
     else state' in 
-  if input_keys.p2_shoot then State.shoot state''.camel2 state''  
-  else if input_keys.p2_left then State.rotate CounterClockwise state'' state''.camel2  
-  else if input_keys.p2_right then State.rotate Clockwise state'' state''.camel2
-  else if input_keys.p2_down then State.move Reverse state'' state''.camel2
-  else if input_keys.p2_up then State.move Forward state'' state''.camel2 
-  else state''
+   if input_keys.p2_shoot then State.shoot state''.camel2 state''  
+   else if input_keys.p2_left then State.rotate CounterClockwise state'' state''.camel2  
+   else if input_keys.p2_right then State.rotate Clockwise state'' state''.camel2
+   else if input_keys.p2_down then State.move Reverse state'' state''.camel2
+   else if input_keys.p2_up then State.move Forward state'' state''.camel2 
+   else state'' *)
 
-let end_game winner = 
+let end_game st winner = 
   Graphics_js.set_color Resources.sand;
   Graphics_js.fill_rect 0 0 xDimension yDimension;
   Graphics.set_text_size 30;
   (* Graphics.draw_string (winner^" WON!"); *)
   let c, player, dark = match winner with
-    | One -> Resources.blue_grad, "PLAYER 1", Resources.blue1
-    | Two -> Resources.red_grad, "PLAYER 2", Resources.red1 in 
+    | One -> Resources.blue_grad, st.camel1.player_name, Resources.blue1
+    | Two -> Resources.red_grad, st.camel2.player_name, Resources.red1 in 
   ignore (Resources.gradient_text c 80 240 
             (player^" WON!") (Resources.size+5));
   ignore (Resources.draw_string dark 20 80 120 "press enter to replay");
@@ -253,27 +287,20 @@ let rec run time state =
   let new_state = input state in
   Graphics_js.clear_graph (); 
   if not state.camel1_alive then 
-    begin current_state := {new_state with camel1_alive = true; ball_list = []; status = Paused}; end_game Two end
+    begin current_state := {new_state with camel1_alive = true; ball_list = []; status = Paused}; end_game new_state Two end
   else if not state.camel2_alive then 
-    begin current_state := {new_state with camel2_alive = true; ball_list = []; status = Paused}; end_game One end
-  else (draw_state new_state;
+    begin current_state := {new_state with camel2_alive = true; ball_list = []; status = Paused}; end_game new_state One end
+  else (draw_state new_state fps;
         Js_of_ocaml.Dom_html.window##requestAnimationFrame(
-          Js_of_ocaml.Js.wrap_callback (fun (t:float) -> run time new_state )
+          Js_of_ocaml.Js.wrap_callback (fun (time:float) -> run time new_state )
         ) |> ignore ) 
 
-(* let tate = ref (Lwt.task ()) in fst !tate  *)
 
-
-(* let init = Graphics_js.open_graph "";
-   set_window_title "Camel Trouble";
-   resize_window (State.xDimension) (State.yDimension);
-   draw_state State.init_state;
-   run State.init_state  *)
 
 
 let init () = 
   print_endline "we in init now bois and girls";
-  draw_state State.init_state; run 0.0 State.init_state
+  draw_state State.init_state 0.0; run 0.0 State.init_state
 
 
 let rec main () =
@@ -297,7 +324,7 @@ let is_enter evt =
                    player_name = Resources.get_input_name One};
          camel2 = {(!current_state).camel2 with 
                    player_name = Resources.get_input_name Two};}; 
-      draw_state !current_state; run 0.0 !current_state (*init ()*)
+      draw_state !current_state 0.0; run 0.0 !current_state (*init ()*)
     end
   | _ -> ()
 
@@ -329,4 +356,4 @@ let _ = Js_of_ocaml.Dom_html.addEventListener Js_of_ocaml.Dom_html.document
 (* let _ = Js_of_ocaml.Dom_html.addEventListener Js_of_ocaml.Dom_html.document 
     Js_of_ocaml.Dom_html.Event. (Js_of_ocaml.Dom_html.handler pause_button) Js_of_ocaml.Js._true  *)
 
-let () = main ()
+let () = main () 

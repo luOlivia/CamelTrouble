@@ -1,6 +1,5 @@
 open OUnit2
 open Maze
-
 (* CAMEL TEST CASES *)
 
 (** [test_move name x dir speed f expected_output] asserts
@@ -62,7 +61,7 @@ let test_init_pos
   name >:: (fun _ -> 
       assert_equal expected_output (Camel.init One pos.x pos.y 0 "").pos)
 
-
+(** [camel_tests] is test cases for camel module *)
 let camel_tests = [
   test_move "Don't move - speed 0" 0. 1. 0. Camel.move_horiz 0;
   test_move "Move - speed 1"  1. 1. 1. Camel.move_horiz 1; 
@@ -133,6 +132,7 @@ let test_ball_timer
       assert_equal expected_output 
         (Ball.step_timer ball).timer)
 
+(** [ball_tests] is test cases for ball module *)
 let ball_tests = [
   test_ball_pos "move initial ball pos" ball0 (Position.init 0. (-5.));
   test_ball_pos "move ball pos w angle" ball1 (Position.init 2. (-10.));
@@ -160,6 +160,7 @@ let test_pos_dist
   name >:: (fun _ -> 
       assert_equal expected_output (Position.distance pos1 pos2) )
 
+(** [position_tests] is test cases for position module *)
 let position_tests = [
   test_pos_dist "euclidean distance between (0,0) and (0,0)"
     (Position.init 0. 0.) (Position.init 0. 0.) 0.;
@@ -181,6 +182,7 @@ let test_util_trig
   name >:: (fun _ -> 
       assert_equal expected_output (f degree |> int_of_float) )
 
+(** [util_tests] is test cases for util module *)
 let util_tests = [
   test_util_trig "Test cosine degree function with PI/2"
     90. Utils.cosine (Stdlib.cos (Float.pi /. 2.) |> int_of_float);
@@ -223,6 +225,13 @@ let v_wall = Vertical [| [| true; true; true |];
 (** [maze0] is an example maze *)
 let maze0 = {horizontal_walls = h_wall; vertical_walls = v_wall}
 
+(** [h1] is horizontal walls of example maze 1*)
+let h1 = Horizontal [|[| true |]|]
+(** [v1] is vertical walls of example maze 1 *)
+let v1 = Vertical [|[| true |]|]
+(** [maze0] is an example maze *)
+let maze1 = {horizontal_walls = h1; vertical_walls = v1}
+
 (** [test_walls name f m x y expected_output] asserts
     the quality of [expected_output] with [f m x y] *)
 let test_walls 
@@ -235,6 +244,7 @@ let test_walls
   name >:: (fun _ -> 
       assert_equal expected_output (f m x y))
 
+(** [maze_tests] is test cases for maze module *)
 let maze_tests = [
   test_init_maze "non-empty walls in maze" 10 true;
   test_init_maze "empty walls in maze" 0 true;
@@ -243,33 +253,44 @@ let maze_tests = [
   test_walls "wall_below" Maze.is_wall_below maze0 0 0 true;
   test_walls "wall_left" Maze.is_wall_left maze0 0 0 true;
   test_walls "wall_right" Maze.is_wall_right maze0 0 0 true;
+  test_walls "center no wall_above" Maze.is_wall_above maze0 1 1 false;
+  test_walls "center no wall_below" Maze.is_wall_below maze0 1 1 false;
+  test_walls "center no wall_left" Maze.is_wall_left maze0 1 1 false;
+  test_walls "center no wall_right" Maze.is_wall_right maze0 1 1 false;
+  test_walls "corner wall_above" Maze.is_wall_above maze0 2 2 false;
+  test_walls "corner wall_left" Maze.is_wall_left maze0 2 2 false;
 
-  test_walls "no wall_above" Maze.is_wall_above maze0 1 1 false;
-  test_walls "no wall_below" Maze.is_wall_below maze0 1 1 false;
-  test_walls "no wall_left" Maze.is_wall_left maze0 1 1 false;
-  test_walls "no wall_right" Maze.is_wall_right maze0 1 1 false;
+  test_walls "wall_above" Maze.is_wall_above maze1 0 0 true;
+  test_walls "wall_left" Maze.is_wall_left maze1 0 0 true;
 ]
 
 
 
 (* STATE TEST CASES *)
-let state0 = State.init_state
+(* let state0 = {
+   ball_list = [];
+   camel1 = camel1;
+   camel2 = camel1;
+   camel1_alive = true;
+   camel2_alive = true;
+   game_end = false;
+   maze = Maze.make_maze Maze.density;
+   status = State.Start; 
+   } *)
 
-             (* let test_rotate 
-                 (name : string)
-                 (rot : State.rotation)
-                 (st : State.t)
-                 (camel : Camel.t)
-                 (expected_output : Camel.t) : test = 
-                name >:: (fun _ -> 
-                   assert_equal expected_output (State.rotate rot st camel).camel1) *) *)
+(* let test_rotate 
+    (name : string)
+    (rot : State.rotation)
+    (st : State.t)
+    (camel : Camel.t)
+    (expected_output : Camel.t) : test = 
+   name >:: (fun _ -> 
+      assert_equal expected_output (State.rotate rot st camel).camel1) *)
 
+(* let state_tests = [
+   test_rotate "rotate clockwise" State.Clockwise state0 camel1 camel2;
 
-let state_tests = [
-  (* test_rotate "rotate clockwise" State.Clockwise state0 camel1 camel2; *)
-
-]
-
+   ] *)
 
 let suite = "search test suite" >::: List.flatten [
     camel_tests;
@@ -277,7 +298,7 @@ let suite = "search test suite" >::: List.flatten [
     position_tests;
     util_tests;
     maze_tests;
-    state_tests
+    (* state_tests *)
   ]
 
 let _ = run_test_tt_main suite

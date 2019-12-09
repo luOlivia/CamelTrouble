@@ -1,5 +1,34 @@
+(* TEST PLAN 
+   In testing CamelTrouble, we invoked both OUnit tests and play testing.
+   We automatically tested the modules Camel, Ball, Position, Util, and Maze as
+   they build the core components of our game. Specifically, we tested that 
+   movement functions correctly calculated new positions based on current 
+   position and object angle. We also tested that our helper functions to 
+   calculate cosine, sine angles, and truncation produced the correct output.
+   For maze, we verified that certain walls exist based on a Maze object. 
+
+   Test cases for ball movement was developed through glass-box testing in 
+   order to cover the different angle cases to be path complete. The same 
+   was done for camel movement. For Maze, we used black-box testing because 
+   maze generation is inherently random, so we checked that the maze could 
+   actually be generated and not enter an infinite loop. We also created a 
+   maze example to test wall placements with black-box testing.  
+
+   Main, state, and resources were play-tested for accuracy due to the 
+   constantly changing state. We tested that each camel could move via 
+   keyboard input, camels and balls cannot move through walls, and camels 
+   die on collision with balls. Since these features are central to the 
+   gameplay, we can manually verify that these events occur and our system 
+   is correct. The resources module handles the graphical drawings on our gui,
+    so we could verify that they were displaying correctly manually. 
+
+   Overall, gameplay proceeds as expected. Therefore in conjunction with our 
+   OUnit tests, we can demonstrate the correctness of our system.
+*)
+
 open OUnit2
 open Maze
+
 (* CAMEL TEST CASES *)
 
 (** [test_move name x dir speed f expected_output] asserts
@@ -61,6 +90,15 @@ let test_init_pos
   name >:: (fun _ -> 
       assert_equal expected_output (Camel.init One pos.x pos.y 0 "").pos)
 
+(** [test_camel_str name camel expected_output] asserts
+    the quality of [expected_output] with [Camel.to_str camel] *)
+let test_camel_str 
+    (name : string)
+    (camel : Camel.t)
+    (expected_output : string) : test = 
+  name >:: (fun _ -> 
+      assert_equal expected_output (Camel.to_str camel))
+
 (** [camel_tests] is test cases for camel module *)
 let camel_tests = [
   test_move "Don't move - speed 0" 0. 1. 0. Camel.move_horiz 0;
@@ -82,7 +120,9 @@ let camel_tests = [
   test_init_pos "test init position (0,0)" 
     (Position.init 0.0 0.0) camel1.pos; 
   test_init_pos "test init position (6,0)" 
-    (Position.init 6.0 0.0) (Position.init 6.0 0.0); 
+    (Position.init 6.0 0.0) (Position.init 6.0 0.0);
+  test_camel_str "camel to string" camel1 
+    "player one num_balls: 0\n angle dir: 0.\n pos: 0. 0."; 
 ]
 
 (* BALL TEST CASES *)
@@ -99,6 +139,8 @@ let ball2 = {ball0 with angle = (-30.); position = pos0}
 let ball3 = {ball0 with angle = 190.; position = pos0}
 (** [ball4] is ball with empty timer *)
 let ball4 = {ball0 with timer = 0.}
+(** [ball5] is ball with full angle *)
+let ball5 = {ball0 with angle = 360.; position = pos0}
 
 (** [test_ball_pos name ball expected_output] asserts
     the quality of [expected_output] with position 
@@ -141,8 +183,10 @@ let ball_tests = [
   test_ball_flip "flip horiz initial ball" ball0 Ball.flip_h 180.;
   test_ball_flip "flip horiz ball w angle" ball1 Ball.flip_h 150.;
   test_ball_flip "flip horiz ball w large angle" ball3 Ball.flip_h 350.;
+  test_ball_flip "flip horiz ball w full angle" ball5 Ball.flip_h 180.;
   test_ball_flip "flip vert initial ball" ball0 Ball.flip_v 360.;
   test_ball_flip "flip vert ball w angle" ball1 Ball.flip_v 330.;
+  test_ball_flip "flip vert ball w full angle" ball5 Ball.flip_v 0.;
 
   test_ball_timer "decrement full timer" ball0 19.9;
   test_ball_timer "decrement empty timer" ball4 (-0.1);
@@ -182,6 +226,15 @@ let test_util_trig
   name >:: (fun _ -> 
       assert_equal expected_output (f degree |> int_of_float) )
 
+(** [test_util_trunc name x expected_output] asserts
+    the quality of [expected_output] with [Utils.truncate x] *)
+let test_util_trunc 
+    (name : string)
+    (x : float)
+    (expected_output : float) : test = 
+  name >:: (fun _ -> 
+      assert_equal expected_output (Utils.truncate x))
+
 (** [util_tests] is test cases for util module *)
 let util_tests = [
   test_util_trig "Test cosine degree function with PI/2"
@@ -192,6 +245,8 @@ let util_tests = [
     90. Utils.sine (Stdlib.sin (Float.pi /. 2.) |> int_of_float);
   test_util_trig "Test sine degree function with PI"
     180. Utils.sine (Stdlib.sin (Float.pi) |> int_of_float);
+  test_util_trunc "truncate 5.2" 5.2 5.;
+  test_util_trunc "truncate 5.2" (-5.2) (-5.);
 ]
 
 (* MAZE TEST CASES *)
@@ -244,6 +299,16 @@ let test_walls
   name >:: (fun _ -> 
       assert_equal expected_output (f m x y))
 
+(** [test_camel_str name camel expected_output] asserts
+    the quality of [expected_output] with [Camel.to_str camel] *)
+let test_maze_str 
+    (name : string)
+    (m : Maze.t)
+    (expected_output : string) : test = 
+  name >:: (fun _ -> 
+      print_endline (Maze.to_str m);
+      assert_equal expected_output (Maze.to_str m))
+
 (** [maze_tests] is test cases for maze module *)
 let maze_tests = [
   test_init_maze "non-empty walls in maze" 10 true;
@@ -260,37 +325,9 @@ let maze_tests = [
   test_walls "corner wall_above" Maze.is_wall_above maze0 2 2 false;
   test_walls "corner wall_left" Maze.is_wall_left maze0 2 2 false;
 
-  test_walls "wall_above" Maze.is_wall_above maze1 0 0 true;
-  test_walls "wall_left" Maze.is_wall_left maze1 0 0 true;
+  test_walls "single cell wall_above" Maze.is_wall_above maze1 0 0 true;
+  test_walls "single cell wall_left" Maze.is_wall_left maze1 0 0 true;
 ]
-
-
-
-(* STATE TEST CASES *)
-(* let state0 = {
-   ball_list = [];
-   camel1 = camel1;
-   camel2 = camel1;
-   camel1_alive = true;
-   camel2_alive = true;
-   game_end = false;
-   maze = Maze.make_maze Maze.density;
-   status = State.Start; 
-   } *)
-
-(* let test_rotate 
-    (name : string)
-    (rot : State.rotation)
-    (st : State.t)
-    (camel : Camel.t)
-    (expected_output : Camel.t) : test = 
-   name >:: (fun _ -> 
-      assert_equal expected_output (State.rotate rot st camel).camel1) *)
-
-(* let state_tests = [
-   test_rotate "rotate clockwise" State.Clockwise state0 camel1 camel2;
-
-   ] *)
 
 let suite = "search test suite" >::: List.flatten [
     camel_tests;
@@ -298,7 +335,6 @@ let suite = "search test suite" >::: List.flatten [
     position_tests;
     util_tests;
     maze_tests;
-    (* state_tests *)
   ]
 
 let _ = run_test_tt_main suite

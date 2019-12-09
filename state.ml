@@ -157,44 +157,49 @@ let vert_collide st pos width =
 
   (by_left_wall && in_left_wall) || (by_right_wall && in_right_wall)
 
+let corner_count pos axis = 
+  let a = ref 0.0 in 
+  let a_count = 
+    begin match axis with 
+      | X -> pos.x
+      | Y -> pos.y
+    end |> truncate |> ref in
+
+  while !a_count > (wall_width +. square_width/.2.0) do
+    a_count := !a_count -. (wall_width +. square_width);
+    a := !a +. 1.;
+  done;
+  !a
+
+let in_corner x y pos width =
+  let w = wall_width +. square_width in
+  let p1 = Position.init (x*.w) (y*.w) in
+  let p2 = Position.init (x*.w+.wall_width) (y*.w) in
+  let p3 = Position.init (x*.w) (y*.w+.wall_width) in
+  let p4 = Position.init (x*.w+.wall_width) (y*.w+.wall_width) in
+  let ds = List.map (distance pos) [p1;p2;p3;p4] in
+  let dist = List.fold_left min max_float ds in
+  dist < width /. 2.0 
 
 let corner_collide st pos width =
-  let x = ref 0.0 in
-  let x_count = ref (pos.x |> truncate) in
-  while !x_count > (wall_width +. square_width/.2.0) do
-    x_count := !x_count -. (wall_width +. square_width);
-    x := !x +. 1.;
-  done;
+  let x = corner_count pos X in
+  let y = corner_count pos Y in
 
-  let y = ref 0.0 in
-  let y_count = ref (pos.y |> truncate) in
-  while !y_count > (wall_width +. square_width/.2.0)do
-    y_count := !y_count -. (wall_width +. square_width);
-    y := !y +. 1.;
-  done;
-
-  let ix = !x |> int_of_float in 
-  let iy = !y |> int_of_float in 
+  let ix = x |> int_of_float in 
+  let iy = y |> int_of_float in 
   let is_wall_in_corner = 
     ref (Maze.is_wall_above st.maze ix iy 
          || Maze.is_wall_left st.maze ix iy) in
 
-  if !x > 0.0 
+  if x > 0.0 
   then is_wall_in_corner := 
       (!is_wall_in_corner || Maze.is_wall_above st.maze (ix-1) iy);
-  if !y > 0.0 
+  if y > 0.0 
   then is_wall_in_corner := 
       (!is_wall_in_corner || Maze.is_wall_left st.maze ix (iy-1));
 
   if not !is_wall_in_corner then false else
-    let w = wall_width +. square_width in
-    let p1 = Position.init (!x*.w) (!y*.w) in
-    let p2 = Position.init (!x*.w+.wall_width) (!y*.w) in
-    let p3 = Position.init (!x*.w) (!y*.w+.wall_width) in
-    let p4 = Position.init (!x*.w+.wall_width) (!y*.w+.wall_width) in
-    let ds = List.map (distance pos) [p1;p2;p3;p4] in
-    let dist = List.fold_left min max_float ds in
-    dist < width /. 2.0 
+    in_corner x y pos width
 
 let count_ball_owners player balls =
   let f = match player with 
@@ -219,57 +224,63 @@ let remove_balls st =
 let is_collision ball camel =
   distance camel.pos ball.position <= camel_width/.2.0 +. ball_width/.2.0
 
-let handle_collision ball st =
+let kill st = function
+  | One -> {
+      st with 
+      camel1_alive = false; 
+      ball_list = []; 
+      maze = Maze.make_maze Maze.density
+    }
+  | Two -> {
+      st with 
+      camel2_alive = false; 
+      ball_list = []; 
+      maze = Maze.make_maze Maze.density
+    }
+
+let handle_death_collision ball st =
   if is_collision ball st.camel1
-  then {
-    st with 
-    camel1_alive = false; 
-    ball_list = []; 
-    maze = Maze.make_maze Maze.density
-  } |> reinit
+  then kill st One |> reinit
   else if is_collision ball st.camel2
-  then {
-    st with 
-    camel2_alive = false; 
-    ball_list = []; 
-    maze = Maze.make_maze Maze.density
-  } |> reinit
+  then kill st Two |> reinit
   else st
+
+let handle_horiz_ball b = 
+  let b' = Ball.flip_h b in
+  let x' = Ball.new_pos_x b' in
+  let p = Position.init x' b'.position.y in
+  {b' with position = p} |> step_timer
+
+let handle_vert_ball b = 
+  let b' = Ball.flip_v b  in
+  let y' = Ball.new_pos_y b' in
+  let p = Position.init b'.position.x y' in
+  {b' with position = p} |> step_timer
+
+let handle_corner_ball b =
+  if (current_square Y b.position) = (current_square Y b.position |> truncate) 
+  then
+    handle_horiz_ball b
+  else
+    handle_vert_ball b
 
 let move_ball st b =
   let x = Ball.new_pos_x b in
   let y = Ball.new_pos_y b in  
   let next_point = Position.init x y in
   if horiz_collide st next_point ball_width then
-    let b' = Ball.flip_h b in
-    let x' = Ball.new_pos_x b' in
-    let p = Position.init x' b'.position.y in
-    {b' with position = p} |> step_timer
+    handle_horiz_ball b
   else if vert_collide st next_point ball_width then
-    let b' = Ball.flip_v b  in
-    let y' = Ball.new_pos_y b' in
-    let p = Position.init b'.position.x y' in
-    {b' with position = p} |> step_timer
+    handle_vert_ball b
   else if corner_collide st next_point ball_width then
-    if (current_square Y b.position) = (current_square Y b.position |> truncate) 
-    then
-      let b' = Ball.flip_h b in
-      let x' = Ball.new_pos_x b' in
-      let p = Position.init x' b'.position.y in
-      {b' with position = p} |> step_timer
-    else
-      let b' = Ball.flip_v b in
-      let y' = Ball.new_pos_y b' in
-      let p = Position.init b'.position.x y' in
-      {b' with position = p} |> step_timer
+    handle_corner_ball b
   else
     {b with position = next_point} |> step_timer
 
 let move_camel st camel speed =
-  let new_pos = {
-    x= Camel.move_horiz camel.pos.x camel.dir speed;
-    y= Camel.move_vert camel.pos.y camel.dir speed
-  } in
+  let new_pos = Position.init 
+      (Camel.move_horiz camel.pos.x camel.dir speed)
+      (Camel.move_vert camel.pos.y camel.dir speed) in
   let after_corner = if corner_collide st new_pos camel_width
     then
       let h_pos = {new_pos with x = Camel.move_horiz new_pos.x camel.dir speed} in
@@ -293,8 +304,11 @@ let move_camel st camel speed =
     else after_corner
   in after_walls
 
-let move_fwd_collide st camel = {camel with pos = move_camel st camel Camel.fwd_speed}
-let move_rev_collide st camel = {camel with pos = move_camel st camel Camel.rev_speed}
+let move_fwd_collide st camel = 
+  {camel with pos = move_camel st camel Camel.fwd_speed}
+
+let move_rev_collide st camel = 
+  {camel with pos = move_camel st camel Camel.rev_speed}
 
 let shoot camel st =
   let curr_time = Unix.gettimeofday () in 
@@ -349,7 +363,7 @@ let rec check_death st aux_balls all_balls =
   | [] -> begin (*print_endline "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~finished checking death bitch";*)
       {st with ball_list = all_balls} end
   | ball::t -> if (is_collision ball st.camel1 || is_collision ball st.camel2)
-    then (handle_collision ball st)
+    then (handle_death_collision ball st)
     else (check_death st t all_balls)
 
 

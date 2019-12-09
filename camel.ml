@@ -5,19 +5,21 @@ type player_num = One | Two
 
 type t = {
   player_num: player_num;
-  score : int;
+  player_name: string;
+  score: int;
   num_balls: int;
   dir: float; (* degrees 0 - 360 *)
   pos: Position.t;
   shot_time: float; 
 }
 
-let init player_num x y score = {
-  player_num=player_num;
+let init num x y score name = {
+  player_num = num;
+  player_name = name;
   score = score;
-  num_balls= 0;
-  dir= Random.float 359.0;
-  pos= Position.init x y;
+  num_balls = 0;
+  dir = Random.float 359.0;
+  pos = Position.init x y;
   shot_time = 0.0; 
 }
 

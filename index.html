@@ -11,7 +11,17 @@
     }
 
     body {
-      background-image: url("/resources/desert_bg.jpg")
+      background-image: url("./resources/desert_bg.jpg")
+    }
+
+    textarea {
+      width: 150px;
+      height: 20px;
+      background: transparent;
+      color: white;
+      margin: auto;
+      border-color: white;
+      display: block;
     }
 
     img {
@@ -23,10 +33,10 @@
 
 <body>
   <div>
-    <img src="/resources/gameheader.png">
+    <img src="./resources/gameheader.png">
   </div>
-  <textarea id="p1name" width=200 height=20>Player 1 name</textarea>
-  <textarea id="p2name" width=200 height=20>Player 1 name</textarea>
+  <textarea id="p1name">Player 1 name</textarea>
+  <textarea id="p2name">Player 2 name</textarea>
   <canvas id="canvas2" width=950 height=450>
     <script src="main.js"></script>
   </canvas>

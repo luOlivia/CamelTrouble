@@ -21,19 +21,19 @@ val density : int
 (**[maze_maze density] creates a maze using a given wall [density]*)
 val make_maze : int -> t
 
-(**[is_wall_left maze maze x y] is [true] if there is a wall on the left in 
+(**[is_wall_left maze x y] is [true] if there is a wall on the left in 
    the grid square represented by x and y, and [false] otherwise *)
 val is_wall_left : t -> int -> int -> bool
 
-(**[is_wall_right maze maze x y] is [true] if there is a wall on the right in 
+(**[is_wall_right maze x y] is [true] if there is a wall on the right in 
    the grid square represented by x and y, and [false] otherwise *)
 val is_wall_right : t -> int -> int -> bool
 
-(**[is_wall_above maze maze x y] is [true] if there is a wall on the top of
+(**[is_wall_above maze x y] is [true] if there is a wall on the top of
    the grid square represented by x and y, and [false] otherwise *)
 val is_wall_above : t -> int -> int -> bool
 
-(**[is_wall_below maze maze x y] is [true] if there is a wall on the bottom of 
+(**[is_wall_below maze x y] is [true] if there is a wall on the bottom of 
    the grid square represented by x and y, and [false] otherwise *)
 val is_wall_below : t -> int -> int -> bool
 

@@ -23,6 +23,7 @@ let camel1 : Camel.t =  {
   dir = 0.0; (* degrees 0 - 360 *)
   pos = Position.init 0.0 0.0;
   shot_time = 0.0; 
+  player_name = ""
 }
 (** [camel2] is 90 degree right camel *)
 let camel2 = Camel.turn_right camel1 
@@ -50,7 +51,7 @@ let test_init_pn
     (pnum : Camel.player_num)
     (expected_output : Camel.player_num) : test = 
   name >:: (fun _ -> 
-      assert_equal expected_output (Camel.init pnum 0. 0. 0).player_num)
+      assert_equal expected_output (Camel.init pnum 0. 0. 0 "").player_num)
 
 (** [test_init_pos name pos expected_output] asserts
     the quality of [expected_output] with new camel's [pos] *)
@@ -59,7 +60,7 @@ let test_init_pos
     (pos : Position.t)
     (expected_output : Position.t) : test = 
   name >:: (fun _ -> 
-      assert_equal expected_output (Camel.init One pos.x pos.y 0).pos)
+      assert_equal expected_output (Camel.init One pos.x pos.y 0 "").pos)
 
 
 let camel_tests = [
@@ -194,30 +195,61 @@ let util_tests = [
 
 (* MAZE TEST CASES *)
 
+(** [check_empty walls] is whether [walls] is non-empty *)
 let check_empty walls =
   match walls with 
   | Horizontal a -> (Array.length a) <> 0
   | Vertical a -> (Array.length a) <> 0
 
-(** TO DOOOOOOOO [test_util_trig name degree f expected_output] asserts
-    the quality of [expected_output] with [f degree] check arr walls aren't empty *)
+(** [test_init_maze name d expected_output] asserts
+    the quality of [expected_output] with successful wall generation 
+    in initializing maze w density [d] *)
 let test_init_maze 
     (name : string)
     (d : int)
     (expected_output : bool) : test = 
   name >:: (fun _ -> 
-      (* let m = Maze.make_maze d in
-         match m.horizontal_walls with 
-         | Horizontal a -> (length a) <> 0
-         | Vertical a -> (length a) <> 0 *)
-      assert_equal expected_output (m.horizontal_walls <> None) )
+      let m = Maze.make_maze d in 
+      assert_equal expected_output 
+        ((check_empty m.horizontal_walls) && (check_empty m.vertical_walls)))
+
+(** [h_wall] is horizontal walls of example maze *)
+let h_wall = Horizontal [| [| true; true; true |]; 
+                           [| true; false; false |]; 
+                           [| false; false; false |] |]
+(** [v_wall] is vertical walls of example maze *)
+let v_wall = Vertical [| [| true; true; true |]; 
+                         [| true; false; false |]; 
+                         [| false; false; false |] |]
+(** [maze0] is an example maze *)
+let maze0 = {horizontal_walls = h_wall; vertical_walls = v_wall}
+
+(** [test_walls name f m x y expected_output] asserts
+    the quality of [expected_output] with [f m x y] *)
+let test_walls 
+    (name : string)
+    (f : Maze.t -> int -> int -> bool)
+    (m : Maze.t)
+    (x : int)
+    (y : int)
+    (expected_output : bool) : test = 
+  name >:: (fun _ -> 
+      assert_equal expected_output (f m x y))
 
 let maze_tests = [
+  test_init_maze "non-empty walls in maze" 10 true;
+  test_init_maze "empty walls in maze" 0 true;
 
+  test_walls "wall_above" Maze.is_wall_above maze0 0 0 true;
+  test_walls "wall_below" Maze.is_wall_below maze0 0 0 true;
+  test_walls "wall_left" Maze.is_wall_left maze0 0 0 true;
+  test_walls "wall_right" Maze.is_wall_right maze0 0 0 true;
+
+  test_walls "no wall_above" Maze.is_wall_above maze0 1 1 false;
+  test_walls "no wall_below" Maze.is_wall_below maze0 1 1 false;
+  test_walls "no wall_left" Maze.is_wall_left maze0 1 1 false;
+  test_walls "no wall_right" Maze.is_wall_right maze0 1 1 false;
 ]
-
-
-
 
 let suite = "search test suite" >::: List.flatten [
     camel_tests;

@@ -73,7 +73,8 @@ let draw_camel camel color hump =
   Graphics_js.fill_circle (int_of_float cx) (int_of_float cy) 4;
   Graphics_js.fill_circle (tl_x-1) (tl_y-1) 3;
   Graphics_js.fill_circle (tr_x-1) (tr_y-1) 3;
-  Resources.draw_string Graphics.black 10 (int_of_float cx) (int_of_float cy) (Resources.get_input_name camel.player_num)
+  Resources.draw_string Graphics.black 10 ((int_of_float cx)-20) 
+    ((int_of_float cy) + 15) camel.player_name
 
 
 (** [draw_balls] draws all active balls in [state] onto the canvas.*)
@@ -264,23 +265,31 @@ let rec main () =
   (* sets intial game start page *)
   Graphics_js.set_color Resources.sand;
   Graphics_js.fill_rect 0 0 xDimension yDimension;
+  Resources.draw_string Graphics.black 15 60 255 "set player names above";
+  Graphics_js.set_text_size 25;
   ignore (Resources.gradient_text Resources.purple_grad 60 225 
             "PRESS ENTER TO PLAY" (Resources.size+5));
   Graphics_js.set_text_size 10;
   Resources.draw "desert" 10 80
 
+let is_enter evt = 
+  match evt##.keyCode with
+  | 13  -> begin
+      current_state := 
+        {!current_state with 
+         status = Playing; 
+         camel1 = {(!current_state).camel1 with 
+                   player_name = Resources.get_input_name One};
+         camel2 = {(!current_state).camel2 with 
+                   player_name = Resources.get_input_name Two};}; 
+      draw_state !current_state; run 0.0 !current_state (*init ()*)
+    end
+  | _ -> ()
+
 let press_start evt =
   print_endline "in press start";
   match !current_state.status with 
-  | Start | Paused -> begin
-      let () = match evt##.keyCode with
-        | 13  -> begin
-            current_state := {!current_state with status = Playing};  
-            draw_state !current_state; run 0.0 !current_state (*init ()*)
-          end
-        | _ -> ()
-      in Js_of_ocaml.Js._true
-    end 
+  | Start | Paused -> let () = is_enter evt in Js_of_ocaml.Js._true
   | _ ->  Js_of_ocaml.Js._true
 
 (* refactoring keydown listeners *)

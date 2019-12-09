@@ -1,3 +1,5 @@
+open Camel
+
 (* [size] is standard text size *)
 val size : int
 
@@ -48,4 +50,4 @@ val draw : string -> int -> int -> unit
 (**[audio name] plays audio from file of [name].wav*)
 val audio : string -> unit -> unit
 
-val get_input_name : Camel.player_num -> string
+val get_input_name : player_num -> string

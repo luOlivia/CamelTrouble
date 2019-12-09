@@ -53,6 +53,7 @@ let reinit_camel st x y player =
       | One -> st.camel1.score + (if st.camel1_alive then 1 else 0)
       | Two -> st.camel2.score + (if st.camel2_alive then 1 else 0)
     end
+    (Resources.get_input_name player)
 
 let reinit_state st camel1 camel2 =
   {st with camel1; camel2; game_end = true; ball_list = []}
@@ -82,7 +83,6 @@ let current_square axis pos =
   let coord = match axis with
     | X -> pos.x
     | Y -> pos.y in
-
   let found = ref false in
   let out = ref 0.0 in
 
@@ -285,58 +285,31 @@ let any_collision st pos width =
   || vert_collide st pos width
 
 let translated_pos st default_pos h_pos v_pos width = 
-  if any_collision st h_pos width
-  then begin
-    if any_collision st v_pos width
-    then default_pos 
-    else v_pos
-  end
-  else h_pos
+  match any_collision st h_pos width, any_collision st v_pos width with 
+  | true, true -> default_pos
+  | true, false -> v_pos 
+  | false, true | false, false -> h_pos
 
 let after_corner st prev_pos next_pos width = 
   if corner_collide st prev_pos camel_width
   then next_pos
   else prev_pos
 
-(* let move_camel st camel speed =
-   let new_pos = Position.init 
-      (Camel.move_horiz camel.pos.x camel.dir speed)
-      (Camel.move_vert camel.pos.y camel.dir speed) in
-   let h_pos = horiz_pos camel speed in 
-   let v_pos = vert_pos camel speed in
-   let t_pos = translated_pos st new_pos h_pos v_pos camel_width in
-   let c_pos = after_corner st new_pos t_pos camel_width in
-   if horiz_collide st c_pos camel_width && 
-     vert_collide st c_pos camel_width
-   then camel.pos (* collision, don't move *)
-   else c_pos *)
-
 let move_camel st camel speed =
   let new_pos = Position.init 
       (Camel.move_horiz camel.pos.x camel.dir speed)
       (Camel.move_vert camel.pos.y camel.dir speed) in
-  let after_corner = if corner_collide st new_pos camel_width
-    then
-      let h_pos = {new_pos with x = Camel.move_horiz new_pos.x camel.dir speed} in
-      if (corner_collide st h_pos camel_width 
-          || horiz_collide st h_pos camel_width
-          || vert_collide st h_pos camel_width)
-      then
-        let v_pos = {h_pos with y = Camel.move_vert new_pos.y camel.dir speed} in
-        if (corner_collide st v_pos camel_width 
-            || horiz_collide st v_pos camel_width 
-            || vert_collide st v_pos camel_width)
-        then new_pos else v_pos
-      else h_pos
-    else new_pos in
-  let after_walls = if (horiz_collide st after_corner camel_width && 
-                        vert_collide st after_corner camel_width)
-    then camel.pos (* collision, don't move *)
-    else
-    if horiz_collide st after_corner camel_width then {camel.pos with x = Camel.move_horiz camel.pos.x camel.dir speed}
-    else if vert_collide st after_corner camel_width then {camel.pos with y = Camel.move_vert camel.pos.y camel.dir speed}
-    else after_corner
-  in after_walls
+  let h_pos = horiz_pos camel speed in 
+  let v_pos = vert_pos camel speed in
+  let t_pos = translated_pos st new_pos h_pos v_pos camel_width in
+  let c_pos = after_corner st new_pos t_pos camel_width in
+  let h_col = horiz_collide st c_pos camel_width in 
+  let v_col = vert_collide st c_pos camel_width in
+  match h_col, v_col with 
+  | true, true -> camel.pos
+  | true, false -> h_pos
+  | false, true -> v_pos
+  | false, false -> c_pos
 
 let move_fwd_collide st camel = 
   {camel with pos = move_camel st camel Camel.fwd_speed}
@@ -344,72 +317,69 @@ let move_fwd_collide st camel =
 let move_rev_collide st camel = 
   {camel with pos = move_camel st camel Camel.rev_speed}
 
+let ball_shot_xy camel = 
+  let total_width = ball_width /. 4.0 +. camel_width /. 2.0 in
+  let x = camel.pos.x +. (total_width *. cosine (90.0 -. camel.dir)) in
+  let y = camel.pos.y -. (total_width *. sine (90.0 -. camel.dir)) in
+  x, y
+
+let handle_shot camel st = 
+  shoot_sound ();
+  let x, y = ball_shot_xy camel in
+  if any_collision st (Position.init x y) ball_width then
+    kill st camel.player_num |> reinit
+  else
+    let ball = Ball.init camel camel.dir x y in
+    let camel' = {camel with num_balls=camel.num_balls+1} in
+    let st' = {st with ball_list=ball::st.ball_list} in
+    match camel.player_num with
+    | One -> {st' with camel1=camel'}
+    | Two -> {st' with camel2=camel'}
+
 let shoot camel st = 
   let curr_time = Unix.gettimeofday () in 
   if curr_time -. camel.shot_time < 0.25 then st
-  else 
-    begin 
-      let camel = {camel with shot_time = curr_time} in
-      if camel.num_balls >= 5 then st else
-        begin
-          shoot_sound ();
-          let xpos = camel.pos.x +. ((ball_width /. 4.0 +. camel_width /. 2.0) *. cosine (90.0 -. camel.dir)) in
-          let ypos = camel.pos.y -. ((ball_width /. 4.0 +. camel_width /. 2.0) *. sine (90.0 -. camel.dir)) in
-          let new_pos = Position.init xpos ypos in
-          if vert_collide st new_pos ball_width || horiz_collide st new_pos ball_width || corner_collide st new_pos ball_width then
-            kill st camel.player_num |> reinit
-          else
-            let newball = Ball.init camel camel.dir (xpos) (ypos) in
-            let camel' = {camel with num_balls=camel.num_balls+1} in
-            let st' = {st with ball_list=(newball::st.ball_list)} in
-            match camel.player_num with
-            | One -> {st' with camel1=camel'}
-            | Two -> {st' with camel2=camel'}
-        end
-    end 
+  else begin 
+    let camel' = {camel with shot_time = curr_time} in
+    if camel'.num_balls >= 5 
+    then st 
+    else handle_shot camel' st
+  end 
 
 (** returns new state with camel moved positions *)
 let move direction st camel =
-  let new_camel = match direction with
+  let camel' = match direction with
     | Forward -> move_fwd_collide st camel
     | Reverse -> move_rev_collide st camel in
-  match camel.player_num with 
-  | One -> {st with camel1 = new_camel}
-  | Two -> {st with camel2 = new_camel}
+  match camel.player_num with
+  | One -> {st with camel1 = camel'}
+  | Two -> {st with camel2 = camel'}
 
 let rotate d st camel =
-  (* let new_camel = move_fwd_collide state camel in  *)
-  let new_camel = match d with
+  let camel' = match d with
     | CounterClockwise -> Camel.turn_left camel
     | Clockwise -> Camel.turn_right camel in
   match camel.player_num with 
-  | One -> {st with camel1 = new_camel}
-  | Two -> {st with camel2 = new_camel}
-
-
+  | One -> {st with camel1 = camel'}
+  | Two -> {st with camel2 = camel'}
 
 (**[check_death st balls] is the new state after checking if any ball collides with camels.*)
-let rec check_death st aux_balls all_balls =
-  match aux_balls with
-  | [] -> begin
-      {st with ball_list = all_balls} end
-  | ball::t -> if (is_collision ball st.camel1 || is_collision ball st.camel2)
-    then (handle_death_collision ball st)
-    else (check_death st t all_balls)
-
+let check_death st =
+  let rec check_death' st aux_balls all_balls =
+    match aux_balls with
+    | [] -> {st with ball_list = all_balls}
+    | ball::t -> 
+      if is_collision ball st.camel1 || is_collision ball st.camel2
+      then handle_death_collision ball st
+      else check_death' st t all_balls
+  in check_death' st st.ball_list st.ball_list
 
 (**[move_all_balls player st] is the new state after all balls have been moved.*)
 let move_all_balls st =
-  (* let rec iter_balls blst = function
-     | [] -> blst
-     | ball::t -> iter_balls ((State.move_ball st ball)::blst) t
-     in let blst' = iter_balls [] (st.ball_list) in  *)
-  (* let blst' = List.fold_left (fun a x -> (move_ball st x)::a) [] st.ball_list in
-     check_death st blst' *)
-  let blst' = (List.fold_left (fun a x -> (move_ball st x)::a) [] st.ball_list) in
-  let st' = {st with ball_list = blst'} in
-  let st'' = remove_balls st' in
-  check_death st'' st''.ball_list st''.ball_list
+  let balls = List.fold_left (fun a x -> (move_ball st x)::a) [] st.ball_list in
+  {st with ball_list = balls}
+  |> remove_balls
+  |> check_death
 
 (** [rot_point x y center_x center_y angle] is the
     point (x,y) rotated around center pt by angle *)
@@ -423,8 +393,8 @@ let rot_point x y center_x center_y angle =
 let rec update_state state =
   move_all_balls state
 
-let init_camel1 = Camel.init One 0.0 0.0 ~-1
-let init_camel2 = Camel.init Two 0.0 0.0 ~-1
+let init_camel1 = Camel.init One 0.0 0.0 ~-1 (Resources.get_input_name One)
+let init_camel2 = Camel.init Two 0.0 0.0 ~-1 (Resources.get_input_name Two)
 
 let init_state = {
   ball_list = [];

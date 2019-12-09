@@ -111,7 +111,4 @@ let get_input_name (player: Camel.player_num) =
     | One -> "p1name"
     | Two -> "p2name" in 
   let input_elt = getElementById Js_of_ocaml.Dom_html.CoerceTo.textarea elt_name in 
-  (* (Js_of_ocaml.Js.coerce 
-     (Js_of_ocaml.Dom_html.getElementById elt_name) 
-     Js_of_ocaml.Dom_html.CoerceTo.input (fun _ -> assert false)) in *)
   Js_of_ocaml.Js.to_string input_elt##.value

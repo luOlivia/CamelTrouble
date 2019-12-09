@@ -4,6 +4,7 @@ type player_num = One | Two
 (** The type [Camel.t] represents a camel *)
 type t = {
   player_num: player_num;
+  player_name: string;
   score : int; 
   num_balls: int;
   dir: float; (* degrees 0 - 360 *)
@@ -12,7 +13,7 @@ type t = {
 }
 
 (** [init num x y score] is initialized camel before gameplay *)
-val init : player_num -> float -> float -> int -> t
+val init : player_num -> float -> float -> int -> string -> t
 
 (** [fwd_speed] is speed the tank moves forward *)
 val fwd_speed : float

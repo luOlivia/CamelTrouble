@@ -1,32 +1,21 @@
 open OUnit2
 open Maze
 
-let make_test_temp 
-    (name : string)
-    (filename : string) 
-    (expected_output : bool) : test = 
-  name >:: (fun _ -> 
-      assert_equal expected_output ((fun d -> true) "") )
-
 (* CAMEL TEST CASES *)
-let test_move_horiz 
+
+(** [test_move name x dir speed f expected_output] asserts
+    the quality of [expected_output] with [f x dir speed] *)
+let test_move 
     (name : string)
     (x : float)
     (dir : float)
     (speed : float) 
+    (f : float -> float -> float -> float)
     (expected_output : int) : test = 
   name >:: (fun _ -> 
-      assert_equal expected_output (Camel.move_horiz x dir speed |> int_of_float) )
+      assert_equal expected_output (f x dir speed |> int_of_float))
 
-let test_move_vert 
-    (name : string)
-    (y : float)
-    (dir : float)
-    (speed : float) 
-    (expected_output : int) : test = 
-  name >:: (fun _ -> 
-      assert_equal expected_output (Camel.move_vert y dir speed |> int_of_float) )
-
+(** [camel1] is initial camel *)
 let camel1 : Camel.t =  {
   player_num = One;
   score = 0;
@@ -35,48 +24,51 @@ let camel1 : Camel.t =  {
   pos = Position.init 0.0 0.0;
   shot_time = 0.0; 
 }
+(** [camel2] is 90 degree right camel *)
 let camel2 = Camel.turn_right camel1 
+(** [camel3] is 180 degree right camel *)
 let camel3 = Camel.turn_right camel2 
-
+(** [camel2l] is 90 degree left camel *)
 let camel2l = Camel.turn_left camel1 
+(** [camel3l] is 180 degree left camel *)
 let camel3l = Camel.turn_left camel2l
 
-let get_dir (cam:Camel.t) = cam.dir 
-
-let test_turn (*Compares the directions that have been modified*)
+(** [test_turn name camel f expected_output] asserts
+    the quality of [expected_output] with direction of [f camel] *)
+let test_turn
     (name : string)
     (camel : Camel.t)
     (f : Camel.t -> Camel.t)
     (expected_output : float) : test = 
   name >:: (fun _ -> 
-      assert_equal expected_output (f camel |> get_dir))
+      assert_equal expected_output (f camel).dir)
 
-let get_pn (camel: Camel.t) = camel.player_num
-
+(** [test_init_pn name pnum expected_output] asserts
+    the quality of [expected_output] with new camel's [pnum] *)
 let test_init_pn 
     (name : string)
     (pnum : Camel.player_num)
     (expected_output : Camel.player_num) : test = 
   name >:: (fun _ -> 
-      assert_equal expected_output (( Camel.init pnum 0. 0. 0) |> get_pn) )
+      assert_equal expected_output (Camel.init pnum 0. 0. 0).player_num)
 
-let get_pos (camel: Camel.t) = camel.pos 
-
+(** [test_init_pos name pos expected_output] asserts
+    the quality of [expected_output] with new camel's [pos] *)
 let test_init_pos 
     (name : string)
     (pos : Position.t)
     (expected_output : Position.t) : test = 
   name >:: (fun _ -> 
-      assert_equal expected_output ((Camel.init One pos.x pos.y 0) |> get_pos))
+      assert_equal expected_output (Camel.init One pos.x pos.y 0).pos)
 
 
 let camel_tests = [
-  test_move_horiz "Don't move - speed 0" 0. 1. 0. 0;
-  test_move_horiz "Move - speed 1"  1. 1. 1. 1; 
-  test_move_horiz "Move faster - speed 50"  1. 10. 50. 9; 
-  test_move_vert "Don't move - speed 0" 0. 1. 0. 0;
-  test_move_vert "Move - speed 5"  1. 5. 5. (-3); 
-  test_move_vert "Move - speed 5"  1. 2. 7. (-5);
+  test_move "Don't move - speed 0" 0. 1. 0. Camel.move_horiz 0;
+  test_move "Move - speed 1"  1. 1. 1. Camel.move_horiz 1; 
+  test_move "Move faster - speed 50"  1. 10. 50. Camel.move_horiz 9; 
+  test_move "Don't move - speed 0" 0. 1. 0. Camel.move_vert 0;
+  test_move "Move - speed 5"  1. 5. 5. Camel.move_vert (-3); 
+  test_move "Move - speed 5"  1. 2. 7. Camel.move_vert (-5);
   test_turn "Turn right - dir=0" camel1 Camel.turn_right (-5.);  
   test_turn "Turn right - dir=-5" camel2 Camel.turn_right (-10.); 
   test_turn "Turn right - dir=-10" camel3 Camel.turn_right (-15.); 
@@ -94,6 +86,7 @@ let camel_tests = [
 ]
 
 (* BALL TEST CASES *)
+
 (** [ball0] is a ball with no angle *)
 let ball0 = Ball.init camel1 0. 0. 0.
 (** [pos0] is new pos after moving ball *)
@@ -104,6 +97,8 @@ let ball1 = {ball0 with angle = 30.; position = pos0}
 let ball2 = {ball0 with angle = (-30.); position = pos0}
 (** [ball3] is ball with large angle *)
 let ball3 = {ball0 with angle = 190.; position = pos0}
+(** [ball4] is ball with empty timer *)
+let ball4 = {ball0 with timer = 0.}
 
 (** [test_ball_pos name ball expected_output] asserts
     the quality of [expected_output] with position 
@@ -118,8 +113,7 @@ let test_ball_pos
            (ball |> Ball.new_pos_y |> floor)))
 
 (** [test_ball_flip name f ball expected_output] asserts
-    the quality of [expected_output] with angle
-    of [f ball] *)
+    the quality of [expected_output] with angle of [f ball] *)
 let test_ball_flip
     (name : string)
     (ball : Ball.t)
@@ -150,8 +144,11 @@ let ball_tests = [
   test_ball_flip "flip vert ball w angle" ball1 Ball.flip_v 330.;
 
   test_ball_timer "decrement full timer" ball0 19.9;
+  test_ball_timer "decrement empty timer" ball4 (-0.1);
 
 ]
+
+(* POSITION TEST CASES *)
 
 (** [test_pos_dist name pos1 pos2 expected_output] asserts
     the quality of [expected_output] with [Position.distance pos1 pos2] *)
@@ -171,6 +168,8 @@ let position_tests = [
   test_pos_dist "euclidean distance between (0,0) and (3,4)"
     (Position.init 0. 0.) (Position.init 3. 4.) 5.;
 ]
+
+(* UTILS TEST CASES *)
 
 (** [test_util_trig name degree f expected_output] asserts
     the quality of [expected_output] with [f degree] *)
@@ -193,11 +192,39 @@ let util_tests = [
     180. Utils.sine (Stdlib.sin (Float.pi) |> int_of_float);
 ]
 
+(* MAZE TEST CASES *)
+
+let check_empty walls =
+  match walls with 
+  | Horizontal a -> (Array.length a) <> 0
+  | Vertical a -> (Array.length a) <> 0
+
+(** TO DOOOOOOOO [test_util_trig name degree f expected_output] asserts
+    the quality of [expected_output] with [f degree] check arr walls aren't empty *)
+let test_init_maze 
+    (name : string)
+    (d : int)
+    (expected_output : bool) : test = 
+  name >:: (fun _ -> 
+      (* let m = Maze.make_maze d in
+         match m.horizontal_walls with 
+         | Horizontal a -> (length a) <> 0
+         | Vertical a -> (length a) <> 0 *)
+      assert_equal expected_output (m.horizontal_walls <> None) )
+
+let maze_tests = [
+
+]
+
+
+
+
 let suite = "search test suite" >::: List.flatten [
     camel_tests;
     ball_tests;
     position_tests;
-    util_tests
+    util_tests;
+    maze_tests
   ]
 
 let _ = run_test_tt_main suite

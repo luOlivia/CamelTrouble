@@ -92,3 +92,26 @@ let draw word x y =
   if word = "player1" then draw_ascii player1 x y
   else if word = "player2" then draw_ascii player2 x y
   else draw_ascii desert x y
+
+let audio name () =
+  let elt = Js_of_ocaml.Dom_html.createAudio Js_of_ocaml.Dom_html.document in
+  elt##.src := (Js_of_ocaml.Js.string ("sounds/" ^ name ^ ".wav"));
+  elt##play
+
+let getElementById coerce id =
+  match Js_of_ocaml.Js.Opt.to_option @@ Js_of_ocaml.Dom_html.document##getElementById (Js_of_ocaml.Js.string id) with
+  | None -> failwith id
+  | Some x -> match Js_of_ocaml.Js.Opt.to_option @@ coerce x with
+    | None -> failwith id
+    | Some x -> x
+
+let get_input_name (player: Camel.player_num) = 
+  let elt_name = 
+    match player with
+    | One -> "p1name"
+    | Two -> "p2name" in 
+  let input_elt = getElementById Js_of_ocaml.Dom_html.CoerceTo.textarea elt_name in 
+  (* (Js_of_ocaml.Js.coerce 
+     (Js_of_ocaml.Dom_html.getElementById elt_name) 
+     Js_of_ocaml.Dom_html.CoerceTo.input (fun _ -> assert false)) in *)
+  Js_of_ocaml.Js.to_string input_elt##.value

@@ -256,30 +256,33 @@ let merge_all maze =
   done;
   extract_connections connections_opt
 
-let make_maze density = 
-  (* make_empty_walls () *)
-  let walls = ref (make_random_walls density) in 
-  let areas = ref (merge_all !walls) in
-  for i = 0 to density - 1 do
-    walls := remove_wall !walls !areas.(0);
-    areas := merge_all !walls;
-  done; 
+let rec make_maze density = 
+  try begin
+    let walls = ref (make_random_walls density) in 
+    let areas = ref (merge_all !walls) in
+    for i = 0 to density - 1 do
+      walls := remove_wall !walls !areas.(0);
+      areas := merge_all !walls;
+    done; 
 
-  for i = 0 to num_grid_squares do 
-    begin
-      match !walls.horizontal_walls with
-      | Horizontal walls -> 
-        walls.(0).(i) <- true; walls.(num_grid_squares).(i) <- true
-      | _ -> failwith "can only match horizontal wall";
-    end;
-    begin
-      match !walls.vertical_walls with
-      | Vertical walls -> 
-        walls.(0).(i) <- true; walls.(num_grid_squares).(i) <- true
-      | _ -> failwith "can only match vertical wall" 
-    end
-  done; 
-  !walls
+    for i = 0 to num_grid_squares do 
+      begin
+        match !walls.horizontal_walls with
+        | Horizontal walls -> 
+          walls.(0).(i) <- true; walls.(num_grid_squares).(i) <- true
+        | _ -> failwith "can only match horizontal wall";
+      end;
+      begin
+        match !walls.vertical_walls with
+        | Vertical walls -> 
+          walls.(0).(i) <- true; walls.(num_grid_squares).(i) <- true
+        | _ -> failwith "can only match vertical wall" 
+      end
+    done; 
+    !walls
+  end
+  with 
+  | _ -> make_maze density
 
 let to_str maze = 
   let lines = Array.make (num_grid_squares+1) "" in 

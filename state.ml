@@ -33,51 +33,47 @@ let square_width = wall_height
 let xDimension = 8.0 *. wall_width +. 7.0 *. square_width |> int_of_float
 let yDimension = xDimension
 
+let death_sound = Resources.audio "oof"
+let shoot_sound = Resources.audio "pew"
+
+let any_wall maze x y =
+  Maze.is_wall_above maze x y
+  || Maze.is_wall_below maze x y
+  || Maze.is_wall_left maze x y
+  || Maze.is_wall_right maze x y
+
 (** [grid_to_pixel n]  *)
 let grid_to_pixel n = 
   wall_width *. (n+.1.0) +. square_width*.n +. square_width/.2.0
+
+let reinit_camel st x y player = 
+  Camel.init player 
+    (x |> float_of_int |> grid_to_pixel) (y |> float_of_int |> grid_to_pixel)
+    begin match player with
+      | One -> st.camel1.score + (if st.camel1_alive then 1 else 0)
+      | Two -> st.camel2.score + (if st.camel2_alive then 1 else 0)
+    end
+
+let reinit_state st camel1 camel2 =
+  {st with camel1; camel2; game_end = true; ball_list = []}
 
 let rec reinit st = 
   try begin
     let x1 = ref (Random.int Maze.num_grid_squares) in 
     let y1 = ref (Random.int Maze.num_grid_squares) in 
-    let x2 = ref (Random.int Maze.num_grid_squares) in 
-    let y2 = ref (Random.int Maze.num_grid_squares) in 
-
-    while (
-      Maze.is_wall_above st.maze !x1 !y1 
-      || Maze.is_wall_below st.maze !x1 !y1 
-      || Maze.is_wall_left st.maze !x1 !y1
-      || Maze.is_wall_right st.maze !x1 !y1
-    ) do 
+    while any_wall st.maze !x1 !y1 do 
       x1 := (Random.int Maze.num_grid_squares);
       y1 := (Random.int Maze.num_grid_squares);
     done;
 
-    while (
-      Maze.is_wall_above st.maze !x2 !y2 
-      || Maze.is_wall_below st.maze !x2 !y2 
-      || Maze.is_wall_left st.maze !x2 !y2
-      || Maze.is_wall_right st.maze !x2 !y2 
-      || (!x1 = !x2 && !y1 = !y2)
-    ) do 
+    let x2 = ref (Random.int Maze.num_grid_squares) in 
+    let y2 = ref (Random.int Maze.num_grid_squares) in 
+    while any_wall st.maze !x2 !y2 || (!x1 = !x2 && !y1 = !y2) do
       x2 := (Random.int Maze.num_grid_squares);
       y2 := (Random.int Maze.num_grid_squares);
     done;
-
-    let camel1' = Camel.init One 
-        (!x1 |> float_of_int |> grid_to_pixel) 
-        (!y1 |> float_of_int |> grid_to_pixel) 
-        (st.camel1.score + (if st.camel1_alive then 1 else 0)) in
-    let camel2' = Camel.init Two 
-        (!x2 |> float_of_int |> grid_to_pixel) 
-        (!y2 |> float_of_int |> grid_to_pixel) 
-        (st.camel2.score + (if st.camel2_alive then 1 else 0)) in
-    {st with 
-     camel1 = camel1'; 
-     camel2 = camel2'; 
-     game_end=true; 
-     ball_list = []}
+    death_sound ();
+    reinit_state st (reinit_camel st !x1 !y1 One) (reinit_camel st !x2 !y2 Two)
   end
   with 
   | _ -> reinit st
@@ -277,6 +273,44 @@ let move_ball st b =
   else
     {b with position = next_point} |> step_timer
 
+let horiz_pos camel speed = 
+  {camel.pos with x = Camel.move_horiz camel.pos.x camel.dir speed}
+
+let vert_pos camel speed = 
+  {camel.pos with y = Camel.move_vert camel.pos.y camel.dir speed}
+
+let any_collision st pos width =
+  corner_collide st pos width 
+  || horiz_collide st pos width
+  || vert_collide st pos width
+
+let translated_pos st default_pos h_pos v_pos width = 
+  if any_collision st h_pos width
+  then begin
+    if any_collision st v_pos width
+    then default_pos 
+    else v_pos
+  end
+  else h_pos
+
+let after_corner st prev_pos next_pos width = 
+  if corner_collide st prev_pos camel_width
+  then next_pos
+  else prev_pos
+
+(* let move_camel st camel speed =
+   let new_pos = Position.init 
+      (Camel.move_horiz camel.pos.x camel.dir speed)
+      (Camel.move_vert camel.pos.y camel.dir speed) in
+   let h_pos = horiz_pos camel speed in 
+   let v_pos = vert_pos camel speed in
+   let t_pos = translated_pos st new_pos h_pos v_pos camel_width in
+   let c_pos = after_corner st new_pos t_pos camel_width in
+   if horiz_collide st c_pos camel_width && 
+     vert_collide st c_pos camel_width
+   then camel.pos (* collision, don't move *)
+   else c_pos *)
+
 let move_camel st camel speed =
   let new_pos = Position.init 
       (Camel.move_horiz camel.pos.x camel.dir speed)
@@ -310,23 +344,20 @@ let move_fwd_collide st camel =
 let move_rev_collide st camel = 
   {camel with pos = move_camel st camel Camel.rev_speed}
 
-let shoot camel st =
+let shoot camel st = 
   let curr_time = Unix.gettimeofday () in 
-  if curr_time -. camel.shot_time < 0.25 then 
-    st
+  if curr_time -. camel.shot_time < 0.25 then st
   else 
     begin 
       let camel = {camel with shot_time = curr_time} in
       if camel.num_balls >= 5 then st else
         begin
+          shoot_sound ();
           let xpos = camel.pos.x +. ((ball_width /. 4.0 +. camel_width /. 2.0) *. cosine (90.0 -. camel.dir)) in
           let ypos = camel.pos.y -. ((ball_width /. 4.0 +. camel_width /. 2.0) *. sine (90.0 -. camel.dir)) in
           let new_pos = Position.init xpos ypos in
           if vert_collide st new_pos ball_width || horiz_collide st new_pos ball_width || corner_collide st new_pos ball_width then
-            begin match camel.player_num with
-              | One -> {st with camel1_alive=false; ball_list = []; maze = Maze.make_maze Maze.density}
-              | Two -> {st with camel2_alive=false; ball_list = []; maze = Maze.make_maze Maze.density}
-            end |> reinit
+            kill st camel.player_num |> reinit
           else
             let newball = Ball.init camel camel.dir (xpos) (ypos) in
             let camel' = {camel with num_balls=camel.num_balls+1} in
@@ -360,7 +391,7 @@ let rotate d st camel =
 (**[check_death st balls] is the new state after checking if any ball collides with camels.*)
 let rec check_death st aux_balls all_balls =
   match aux_balls with
-  | [] -> begin (*print_endline "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~finished checking death bitch";*)
+  | [] -> begin
       {st with ball_list = all_balls} end
   | ball::t -> if (is_collision ball st.camel1 || is_collision ball st.camel2)
     then (handle_death_collision ball st)
@@ -405,3 +436,4 @@ let init_state = {
   maze = Maze.make_maze Maze.density;
   status = Start; 
 } |> reinit
+

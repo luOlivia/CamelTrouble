@@ -146,7 +146,6 @@ let ball_tests = [
 
   test_ball_timer "decrement full timer" ball0 19.9;
   test_ball_timer "decrement empty timer" ball4 (-0.1);
-
 ]
 
 (* POSITION TEST CASES *)
@@ -251,12 +250,34 @@ let maze_tests = [
   test_walls "no wall_right" Maze.is_wall_right maze0 1 1 false;
 ]
 
+
+
+(* STATE TEST CASES *)
+let state0 = State.init_state
+
+             (* let test_rotate 
+                 (name : string)
+                 (rot : State.rotation)
+                 (st : State.t)
+                 (camel : Camel.t)
+                 (expected_output : Camel.t) : test = 
+                name >:: (fun _ -> 
+                   assert_equal expected_output (State.rotate rot st camel).camel1) *) *)
+
+
+let state_tests = [
+  (* test_rotate "rotate clockwise" State.Clockwise state0 camel1 camel2; *)
+
+]
+
+
 let suite = "search test suite" >::: List.flatten [
     camel_tests;
     ball_tests;
     position_tests;
     util_tests;
-    maze_tests
+    maze_tests;
+    state_tests
   ]
 
 let _ = run_test_tt_main suite

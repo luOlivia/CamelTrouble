@@ -79,6 +79,30 @@ let rec reinit st =
   with 
   | _ -> reinit st
 
+let first_square_loop out found coord = 
+  for i = 0 to Maze.num_grid_squares-1 do
+    let idx = i |> float_of_int in
+    if (not !found) 
+    && (wall_width*.(idx+.1.0) +. square_width*.idx < coord)
+    && ((wall_width*.(idx+.1.0) +. square_width*.(idx+.1.0)) > coord)
+    then begin 
+      out := idx; 
+      found := true; 
+    end
+  done
+
+let second_square_loop out found coord =
+  for i = 0 to Maze.num_grid_squares do
+    let idx = i |> float_of_int in
+    if (not !found) 
+    && (wall_width*.idx +. square_width*.idx <= coord)
+    && ((wall_width*.(idx+.1.0) +. square_width*.(idx+.1.0)) > coord)
+    then begin
+      out := idx -. 0.5;
+      found := true;
+    end
+  done 
+
 let current_square axis pos =
   let coord = match axis with
     | X -> pos.x
@@ -86,31 +110,8 @@ let current_square axis pos =
   let found = ref false in
   let out = ref 0.0 in
 
-  for i = 0 to Maze.num_grid_squares-1 do
-    let idx = i |> float_of_int in
-    if (
-      (not !found) 
-      && (wall_width*.(idx+.1.0) +. square_width*.idx < coord)
-      && ((wall_width*.(idx+.1.0) +. square_width*.(idx+.1.0)) > coord)
-    )
-    then begin 
-      out := idx; 
-      found := true; 
-    end
-  done;
-
-  for i = 0 to Maze.num_grid_squares do
-    let idx = i |> float_of_int in
-    if (
-      (not !found) 
-      && (wall_width*.idx +. square_width*.idx <= coord)
-      && ((wall_width*.(idx+.1.0) +. square_width*.(idx+.1.0)) > coord)
-    )
-    then begin
-      out := idx -. 0.5;
-      found := true;
-    end
-  done;
+  first_square_loop out found coord;
+  second_square_loop out found coord;
 
   if !found then !out else 0.0 
 
@@ -363,7 +364,8 @@ let rotate d st camel =
   | One -> {st with camel1 = camel'}
   | Two -> {st with camel2 = camel'}
 
-(**[check_death st balls] is the new state after checking if any ball collides with camels.*)
+(**[check_death st balls] is the new state after checking if any ball collides 
+   with camels *)
 let check_death st =
   let rec check_death' st aux_balls all_balls =
     match aux_balls with
@@ -374,9 +376,10 @@ let check_death st =
       else check_death' st t all_balls
   in check_death' st st.ball_list st.ball_list
 
-(**[move_all_balls player st] is the new state after all balls have been moved.*)
+(**[move_all_balls player st] is the new state after all balls have been moved *)
 let move_all_balls st =
-  let balls = List.fold_left (fun a x -> (move_ball st x)::a) [] st.ball_list in
+  let balls = 
+    List.fold_left (fun a x -> (move_ball st x)::a) [] st.ball_list in
   {st with ball_list = balls}
   |> remove_balls
   |> check_death
@@ -406,4 +409,3 @@ let init_state = {
   maze = Maze.make_maze Maze.density;
   status = Start; 
 } |> reinit
-

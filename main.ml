@@ -35,15 +35,30 @@ let input_keys = {
 }
 
 (**[commands] represents a player keyboard command*)
-type commands = Player of controls
+type commands = player_num * control
 
-(**[controls] represents player keyboard commands *)
-and controls = 
+(**[control] represents player keyboard commands *)
+and control = 
   | Shoot
   | Left 
   | Right
   | Up 
   | Down
+
+(* let translate_keys () =
+   let k = input_keys in
+   let ctrls = 
+   [(k.p1_up,(One, Up));(k.p1_left,(One, Left));(k.p2_up,(Two, Up));(k.p2_left,(Two, Left))] in
+   let f (a1, a2) x =
+    match fst x with 
+    | false -> (a1, a2)
+    | true -> begin
+      match snd x with 
+      | One, ctrl -> ctrl::a1
+      | Two, ctrl -> ctrl::a2
+      end
+
+   List.fold_left f ([], []) ctrls *)
 
 (** [current_state] repsame state *)
 let current_state = ref State.init_state
@@ -71,8 +86,8 @@ let draw_camel camel color hump =
   Graphics_js.fill_ellipse (bl_x + (br_x-bl_x)/2) (bl_y + (br_y-bl_y)/2) 2 5;
   Graphics_js.set_color hump;
   Graphics_js.fill_circle (int_of_float cx) (int_of_float cy) 4;
-  Graphics_js.fill_circle (tl_x-1) (tl_y-1) 3;
-  Graphics_js.fill_circle (tr_x-1) (tr_y-1) 3;
+  Graphics_js.fill_circle (tl_x-1) (tl_y-1) 2;
+  Graphics_js.fill_circle (tr_x-1) (tr_y-1) 2;
   Resources.draw_string Graphics.black 10 ((int_of_float cx)-20) 
     ((int_of_float cy) + 15) camel.player_name
 
@@ -310,5 +325,8 @@ let _ = Js_of_ocaml.Dom_html.createAudio Js_of_ocaml.Dom_html.document
 
 let _ = Js_of_ocaml.Dom_html.addEventListener Js_of_ocaml.Dom_html.document 
     Js_of_ocaml.Dom_html.Event.keyup (Js_of_ocaml.Dom_html.handler keyup) Js_of_ocaml.Js._true 
+
+(* let _ = Js_of_ocaml.Dom_html.addEventListener Js_of_ocaml.Dom_html.document 
+    Js_of_ocaml.Dom_html.Event. (Js_of_ocaml.Dom_html.handler pause_button) Js_of_ocaml.Js._true  *)
 
 let () = main ()

@@ -35,7 +35,7 @@ let flip_h b =
       (-1.0) *. b.angle +. 540.0
     else 
       (-1.0) *. b.angle +. 180.0
-  in {b with angle=angle'}
+  in {b with angle= angle'}
 
 let flip_v b = 
   {b with angle = (-1.0) *. b.angle +. 360.0} 

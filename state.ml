@@ -38,8 +38,8 @@ let death_sound = Resources.audio "oof"
 (**[shoot_sound] is the sound of camels shooting balls *)
 let shoot_sound = Resources.audio "pew"
 
-(**[any_wall maze x y] is true if the position (x,y) 
-   has a wall in [maze] around it*)
+(** [any_wall maze x y] is true if the position [(x,y)]
+    has a wall in [maze] around it *)
 let any_wall maze x y =
   Maze.is_wall_above maze x y
   || Maze.is_wall_below maze x y
@@ -50,8 +50,8 @@ let any_wall maze x y =
 let grid_to_pixel n = 
   wall_width *. (n+.1.0) +. square_width*.n +. square_width/.2.0
 
-(**[reinit_camel st x y player] is the reinitialized camel of [player]
-   after a round has ended.*)
+(** [reinit_camel st x y player] is the reinitialized camel of [player] in game
+    state [st] at position [(x, y)] after a round has ended *)
 let reinit_camel st x y player = 
   Camel.init player 
     (x |> float_of_int |> grid_to_pixel) (y |> float_of_int |> grid_to_pixel)
@@ -226,6 +226,7 @@ let count_ball_owners player balls =
     | One -> fun a x -> if x.owner.player_num = One then 1 else 0
     | Two -> fun a x -> if x.owner.player_num = Two then 1 else 0
   in List.fold_left f 0 balls
+
 
 let remove_balls st =
   let alive_balls = List.filter (fun x -> x.timer > 0.0) st.ball_list in

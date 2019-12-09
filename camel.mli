@@ -12,7 +12,7 @@ type t = {
   shot_time: float; 
 }
 
-(** [init num x y score] is initialized camel before gameplay *)
+(** [init num x y score name] is initialized camel before gameplay *)
 val init : player_num -> float -> float -> int -> string -> t
 
 (** [fwd_speed] is speed the tank moves forward *)
@@ -26,13 +26,15 @@ val turn_right : t -> t
 (** [turn_left camel] is [camel] with left rotation *)
 val turn_left : t -> t
 
-(** [move_horiz x dir] is [x] pos after moving horizontally *)
+(** [move_horiz x dir speed] is the position after moving 
+    horizontally from [x] with [speed] *)
 val move_horiz : float -> float -> float -> float
 
-(** [move_vert y dir] is [y] pos after moving vertically *)
+(** [move_vert y dir speed] is the position after 
+    moving vertically from [y] with [speed] *)
 val move_vert : float -> float -> float -> float
 
-(** [free_range camel y dir] is [camel] moved w/o regard to walls *)
+(** [free_range camel speed] is [camel] moved without regard to walls *)
 val free_range : t -> float -> t
 
 (** [to_str camel] is string representation of [camel] *)

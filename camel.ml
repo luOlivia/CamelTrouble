@@ -25,7 +25,6 @@ let init num x y score name = {
 
 (** [rot_speed] is speed the tank rotates in degrees *)
 let rot_speed = 5.0
-(** *)
 let fwd_speed = 5.0
 let rev_speed = -3.0
 

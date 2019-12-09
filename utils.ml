@@ -5,6 +5,7 @@ let cosine degree = degree |> to_radians |> Stdlib.cos
 
 let sine degree = degree |> to_radians |> Stdlib.sin
 
+(** [print_list lst] is [lst] printed *)
 let rec print_list = function 
     [] -> ()
   | e::l -> print_int e ; print_string " " ; print_list l

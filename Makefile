@@ -21,7 +21,7 @@ play:
 	$(OCAMLBUILD) $(MAIN) && ./$(MAIN)
 
 zip:
-	zip cameltrouble.zip *.ml* _tags *.txt *.js *.md *.byte *.html *.wav *.jpg *.jpeg *.png Makefile 
+	zip -r cameltrouble.zip *.ml* _tags *.txt *.js *.md *.byte *.html Makefile resources sounds sprites
 
 docs: docs-public docs-private
 	

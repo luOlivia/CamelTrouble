@@ -21,7 +21,8 @@ type keys = {
   mutable p2_shoot : bool;
 }
 
-(** [input_keys] is the default state of the game keys, with none pressed *)
+(** [input_keys] is the default state of the game keys, with none pressed 
+    initially *)
 let input_keys = {
   p1_up = false;
   p1_left = false;
@@ -35,7 +36,7 @@ let input_keys = {
   p2_shoot = false;
 }
 
-(**[control] represents player keyboard commands *)
+(** [control] represents player keyboard commands *)
 type control = 
   | Shoot
   | Left 
@@ -43,9 +44,10 @@ type control =
   | Up 
   | Down
 
-(**[command] represents a player keyboard command*)
+(** [command] represents a player keyboard command*)
 type command = Camel.player_num * control
 
+(** [map_keys ()] maps input keys to controls *)
 let map_keys () =
   let k = input_keys in
   let cmds = 
@@ -71,24 +73,29 @@ let map_keys () =
       end in
   List.fold_left f ([], []) (cmds)
 
-(** [current_state] repsame state *)
+(** [current_state] is the game state at any point *)
 let current_state = ref State.init_state
 
+(** [get_fps t0 t1] is the fps between [t0] and [t1] *)
 let get_fps t0 t1 =
   1.0 /. ((t1 -. t0) /. 1000.0)
+(** [prev_time] is the time for the previous frame *)
 let prev_time = ref 0.0
+(** [fps] is the current frames-per-second *)
 let fps = ref 0.0
 
+(** [draw_players ()] draws two players to the screen *)
 let draw_players () = 
   Resources.draw "player1" 450 350;
   Resources.draw "player2" 600 350
 
+(** [draw_background ()] draws the background to the screen *)
 let draw_background () =
   Graphics_js.set_color Resources.sand;
   Graphics_js.fill_rect 0 0 xDimension yDimension
 
-(** [draw_camel camel color] draws the [camel] 
-      on the maze in direction [dir] *)
+(** [draw_camel camel color hump] draws the [camel] 
+      on the maze with a [color] and [hump] *)
 let draw_camel camel color hump =
   Graphics_js.set_color color;
 
@@ -116,6 +123,7 @@ let draw_camel camel color hump =
     ((int_of_float cy) + 15) camel.player_name
 
 
+(** [draw_scores state] draws the scores to the screen given [state] *)
 let draw_scores state = 
   Resources.draw_string Graphics.black 20 (xDimension+10) 30 
     (state.camel1.player_name^"'s score: " ^ 
@@ -124,14 +132,18 @@ let draw_scores state =
     (state.camel2.player_name^"'s score: " ^ 
      (state.camel2.score |> string_of_int))
 
+(** [wall_pos_over idx] is a wall over [idx] *)
 let wall_pos_over idx = 
   (State.square_width +. State.wall_width)*.
   (idx |> float_of_int) +. State.wall_width
 
+(** [wall_pos_up idx] is a wall above [idx] *)
 let wall_pos_up idx = 
   (State.square_width +. State.wall_width)*.
   ((idx |> float_of_int)) 
 
+(** [draw_horz_default hlx hly] draws horizontal walls on the 
+    screen that are always present at [hlx] [hly] *)
 let draw_horz_default hlx hly = 
   Graphics_js.fill_rect 
     (hlx |> int_of_float) 
@@ -139,18 +151,24 @@ let draw_horz_default hlx hly =
     (State.wall_height |> int_of_float) 
     (State.wall_width |> int_of_float)
 
+(** [draw_horz hlx hly] draws horizontal walls on the 
+    screen at [hlx] [hly] *)
 let draw_horz_wall hlx hly = 
   Graphics_js.fill_rect 
     (hlx |> int_of_float) (hly |> int_of_float) 
     (State.wall_height |> int_of_float) 
     (State.wall_width |> int_of_float)
 
+(** [draw_vert hlx hly] draws vertical walls on the 
+    screen at [vlx] [vly] *)
 let draw_vert_wall vlx vly = 
   Graphics_js.fill_rect 
     (vlx |> int_of_float) (vly |> int_of_float) 
     (State.wall_width |> int_of_float) 
     (State.wall_height |> int_of_float)
 
+(** [draw_vert_default hlx hly] draws vertical walls on the 
+    screen that are always present at [vlx] [vly] *)
 let draw_vert_default vlx vly = 
   Graphics_js.fill_rect 
     (vlx -. State.square_width -. State.wall_width |> int_of_float) 
@@ -158,7 +176,7 @@ let draw_vert_default vlx vly =
     (State.wall_width |> int_of_float) 
     (State.wall_height |> int_of_float)
 
-
+(** [draw_walls state] draws walls on the screen given [state] *)
 let draw_walls state = 
   Graphics_js.set_color Resources.wall_color;
   for i = 0 to Maze.num_grid_squares - 1 do
@@ -176,11 +194,12 @@ let draw_walls state =
     done
   done
 
+(** [draw_all_camels state] draws camels on the screen given [state] *)
 let draw_all_camels state =
   draw_camel state.camel1 Resources.camel_c1 Resources.camel_c1_hump;
   draw_camel state.camel2 Resources.camel_c2 Resources.camel_c2_hump
 
-(** [draw_balls] draws all active balls in [state] onto the canvas.*)
+(** [draw_balls state] draws all active balls in [state] onto the canvas *)
 let draw_balls state = 
   Graphics_js.set_color Graphics_js.black;
   let f ball = 
@@ -190,11 +209,12 @@ let draw_balls state =
       (State.ball_width /. 2.0 |> int_of_float) in
   List.iter f state.ball_list
 
+(** [draw_fps ()] draws the current frame-per-second count to the screen *)
 let draw_fps () =
   Resources.draw_string Graphics.black 10 (xDimension+10) (xDimension-10) 
     ((!fps |> truncate |> string_of_float)^" frames per second") 
 
-(** [draw_state] draws the current [state] of the game *)
+(** [draw_state state] draws the current [state] of the game *)
 let draw_state state = 
   draw_players ();
   draw_background ();
@@ -204,7 +224,7 @@ let draw_state state =
   draw_balls state;
   draw_fps ()
 
-(**[keypressed] is an eventlistener that updates the state of the [input_keys]
+(** [keypressed evt] is an eventlistener that updates the state of the [input_keys]
    in the [evt] that any key is pressed. *)
 let keypressed evt =
   let () = match evt##.keyCode with
@@ -221,7 +241,7 @@ let keypressed evt =
     | _ -> ()
   in Js_of_ocaml.Js._true
 
-(**[keyup] is an eventlistener that updates the state of the [input_keys] in
+(** [keyup evt] is an eventlistener that updates the state of the [input_keys] in
    the [evt] that any key is unpressed.*)
 let keyup evt =
   let () = match evt##.keyCode with
@@ -238,6 +258,8 @@ let keyup evt =
     | _ -> ()
   in Js_of_ocaml.Js._true
 
+(** [handle_ctrls player ctrls st] is the updated state for [player] who inputted 
+    controls [ctrls] in a given [st] *)
 let handle_ctrls player ctrls st = 
   let camel = match player with
     | One -> st.camel1
@@ -253,6 +275,7 @@ let handle_ctrls player ctrls st =
       | Up -> State.move Forward st camel
     end
 
+(** [input st] is the new state after handling input in [st] *)
 let input st = 
   let player_1_ctrls, player_2_ctrls = map_keys () in
   st 
@@ -260,6 +283,8 @@ let input st =
   |> handle_ctrls One player_1_ctrls
   |> handle_ctrls Two player_2_ctrls
 
+(** [end_game] is the new state and screen after a player 
+    [winner] wins in [st] *)
 let end_game st winner = 
   Graphics_js.set_color Resources.sand;
   Graphics_js.fill_rect 0 0 xDimension yDimension;
@@ -274,13 +299,16 @@ let end_game st winner =
   Graphics_js.set_text_size 10;
   Resources.draw "desert" 10 80
 
+(** [handle_death_screen st player] changes the game state after 
+    [player] dies in [st] *)
 let handle_death_screen st player = 
   let st' = {st with ball_list=[]; status=Paused} in
   match player with 
   | One -> current_state := {st' with camel1_alive=true}; end_game st Two
   | Two -> current_state := {st' with camel2_alive=true}; end_game st One
 
-(** [run] displays the game window and allows users to quit with key 0*)
+(** [run time state] displays and runs the game window at a given 
+    [time] and [state] *)
 let rec run time state =
   fps := get_fps !prev_time time;
   prev_time := time;
@@ -298,9 +326,11 @@ let rec run time state =
     ) |> ignore 
   end
 
+(** [init ()] initializes the game state *)
 let init () = 
   draw_state State.init_state; run 0.0 State.init_state
 
+(** [main ()] begins the game *)
 let rec main () =
   (* sets intial game start page *)
   Graphics_js.set_color Resources.sand;
@@ -312,6 +342,7 @@ let rec main () =
   Graphics_js.set_text_size 10;
   Resources.draw "desert" 10 80
 
+(** [is_enter evt] handles input [evt] of pressing the enter key *)
 let is_enter evt = 
   match evt##.keyCode with
   | 13  -> begin
@@ -326,13 +357,14 @@ let is_enter evt =
     end
   | _ -> ()
 
+(** [press_start evt] starts the game on a relevantly inputted [evt] *)
 let press_start evt =
-  print_endline "in press start";
   match !current_state.status with 
   | Start | Paused -> let () = is_enter evt in Js_of_ocaml.Js._true
   | _ ->  Js_of_ocaml.Js._true
 
-(* refactoring keydown listeners *)
+(* below are Js_of_caml listeners, used to receive live inputs from
+   tke keyboard *)
 let _ = 
   List.iter (fun f -> begin 
         ignore(Js_of_ocaml.Dom_html.addEventListener 
@@ -341,7 +373,7 @@ let _ =
                  (Js_of_ocaml.Dom_html.handler f) Js_of_ocaml.Js._true )
       end) [press_start; keypressed]
 
-let _ =  print_endline "starting up";
+let _ = 
   Js_of_ocaml.Js.Opt.iter
     (Js_of_ocaml.Dom_html.CoerceTo.canvas 
        (Js_of_ocaml.Dom_html.getElementById "canvas2"))

@@ -117,7 +117,11 @@ let second_square_loop out found coord =
     end
   done 
 
+<<<<<<< HEAD
 (** [current_square axis pos] is the current maze square that the [pos] inhabits*)
+=======
+(**[current_square axis pos] is the current maze square that [pos] inhabits*)
+>>>>>>> 5e488b073c1e692c918dc096a8d22e210ca0b021
 let current_square axis pos =
   let coord = match axis with
     | X -> pos.x
@@ -228,7 +232,11 @@ let count_ball_owners player balls =
     | Two -> fun a x -> if x.owner.player_num = Two then 1 else 0
   in List.fold_left f 0 balls
 
+<<<<<<< HEAD
 (** [remove_balls st] is [st] with all expired balls removed from the [ball_list]*)
+=======
+(**[remove_balls st] is [st] with all expired balls removed from [ball_list]*)
+>>>>>>> 5e488b073c1e692c918dc096a8d22e210ca0b021
 let remove_balls st =
   let alive_balls = List.filter (fun x -> x.timer > 0.0) st.ball_list in
   let expired_balls = difference st.ball_list alive_balls in 
@@ -393,7 +401,6 @@ let shoot camel st =
     else handle_shot camel' st
   end 
 
-(** returns new state with camel moved positions *)
 let move direction st camel =
   let camel' = match direction with
     | Forward -> move_fwd_collide st camel
@@ -430,8 +437,6 @@ let move_all_balls st =
   |> remove_balls
   |> check_death
 
-(** [rot_point x y center_x center_y angle] is the
-    point (x,y) rotated around center pt by angle *)
 let rot_point x y center_x center_y angle =
   let x' = x -. center_x in
   let y' = y -. center_y in

@@ -47,7 +47,7 @@ let desert = [
   "                           /          \\    /  /";
   "                          /            \\_/  /";
   "                         /|                /";
-  "\/\\                       / |    ____    _.-\" ";
+  " /\\                       / |    ____    _.-\" ";
   " \'-_            _       (   \\  |\\  /\\  ||    ";
   "'   `\'-._   .-\'\"/'.      \"   | |/ /  | |/    ";
   " '.      _-\"   (   \'-_       \\ | /   \\ |     ";
@@ -98,7 +98,8 @@ let audio name () =
   elt##.src := (Js_of_ocaml.Js.string ("sounds/" ^ name ^ ".wav"));
   elt##play
 
-let getElementById coerce id =
+(** [getElementById coerce id] is the type of html [id] element *)
+let get_element_by_id coerce id =
   match Js_of_ocaml.Js.Opt.to_option @@ 
     Js_of_ocaml.Dom_html.document##getElementById (Js_of_ocaml.Js.string id) 
   with
@@ -112,5 +113,5 @@ let get_input_name (player: Camel.player_num) =
     match player with
     | One -> "p1name"
     | Two -> "p2name" in 
-  let input_elt = getElementById Js_of_ocaml.Dom_html.CoerceTo.textarea elt_name 
+  let input_elt = get_element_by_id Js_of_ocaml.Dom_html.CoerceTo.textarea elt_name 
   in Js_of_ocaml.Js.to_string input_elt##.value

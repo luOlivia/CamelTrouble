@@ -124,47 +124,51 @@ let draw_scores state =
     (state.camel2.player_name^"'s score: " ^ 
      (state.camel2.score |> string_of_int))
 
+let wall_pos idx = 
+  (State.square_width +. State.wall_width)*.
+  (idx |> float_of_int) +. State.wall_width
+
+let draw_horz_default hlx hly = 
+  Graphics_js.fill_rect 
+    (hlx |> int_of_float) 
+    (hly -. State.square_width -. State.wall_width |> int_of_float) 
+    (State.wall_height |> int_of_float) 
+    (State.wall_width |> int_of_float)
+
+let draw_horz_wall hlx hly = 
+  Graphics_js.fill_rect 
+    (hlx |> int_of_float) (hly |> int_of_float) 
+    (State.wall_height |> int_of_float) 
+    (State.wall_width |> int_of_float)
+
+let draw_vert_wall vlx vly = 
+  Graphics_js.fill_rect 
+    (vlx |> int_of_float) (vly |> int_of_float) 
+    (State.wall_width |> int_of_float) 
+    (State.wall_height |> int_of_float)
+
+let draw_vert_default vlx vly = 
+  Graphics_js.fill_rect 
+    (vlx -. State.square_width -. State.wall_width |> int_of_float) 
+    (vly  |> int_of_float) 
+    (State.wall_width |> int_of_float) 
+    (State.wall_height |> int_of_float)
+
+
 let draw_walls state = 
   Graphics_js.set_color Resources.wall_color;
-
   for i = 0 to Maze.num_grid_squares - 1 do
     for j = 0 to Maze.num_grid_squares - 1 do
       (* horizontal walls *)
-      let hlx = (State.square_width +. State.wall_width)*.
-                (i |> float_of_int) +. State.wall_width in 
-      let hly = (State.square_width +. State.wall_width)*.
-                (j + 1 |> float_of_int) in
-      if Maze.is_wall_below state.maze i j then 
-        Graphics_js.fill_rect 
-          (hlx |> int_of_float) (hly |> int_of_float) 
-          (State.wall_height |> int_of_float) 
-          (State.wall_width |> int_of_float);
-
-      if j = 0 then 
-        Graphics_js.fill_rect 
-          (hlx |> int_of_float) 
-          (hly -. State.square_width -. State.wall_width |> int_of_float) 
-          (State.wall_height |> int_of_float) 
-          (State.wall_width |> int_of_float);
-
+      let hlx = wall_pos i in  
+      let hly = wall_pos (j+1) in
+      if Maze.is_wall_below state.maze i j then draw_horz_wall hlx hly;
+      if j = 0 then draw_horz_default hlx hly; 
       (* vertical walls *)  
-      let vlx = (State.square_width +. State.wall_width)*.
-                ((i + 1 |> float_of_int)) in 
-      let vly = (State.square_width +. State.wall_width)*.
-                (j |> float_of_int)+. State.wall_width in
-
-      if Maze.is_wall_right state.maze i j then
-        Graphics_js.fill_rect 
-          (vlx |> int_of_float) (vly |> int_of_float) 
-          (State.wall_width |> int_of_float) 
-          (State.wall_height |> int_of_float);
-
-      if i = 0 then 
-        Graphics_js.fill_rect 
-          (vlx -. State.square_width -. State.wall_width |> int_of_float) 
-          (vly  |> int_of_float) 
-          (State.wall_width |> int_of_float) 
-          (State.wall_height |> int_of_float);
+      let vlx = wall_pos (i+1) in 
+      let vly = wall_pos j in 
+      if Maze.is_wall_right state.maze i j then draw_vert_wall vlx vly;
+      if i = 0 then draw_vert_default vlx vly; 
     done
   done
 
@@ -335,15 +339,14 @@ let _ =
 
 let _ =  print_endline "starting up";
   Js_of_ocaml.Js.Opt.iter
-    (Js_of_ocaml.Dom_html.CoerceTo.canvas (Js_of_ocaml.Dom_html.getElementById "canvas2"))
+    (Js_of_ocaml.Dom_html.CoerceTo.canvas 
+       (Js_of_ocaml.Dom_html.getElementById "canvas2"))
     Graphics_js.open_canvas
 
 let _ = Js_of_ocaml.Dom_html.createAudio Js_of_ocaml.Dom_html.document
 
 let _ = Js_of_ocaml.Dom_html.addEventListener Js_of_ocaml.Dom_html.document 
-    Js_of_ocaml.Dom_html.Event.keyup (Js_of_ocaml.Dom_html.handler keyup) Js_of_ocaml.Js._true 
-
-(* let _ = Js_of_ocaml.Dom_html.addEventListener Js_of_ocaml.Dom_html.document 
-    Js_of_ocaml.Dom_html.Event. (Js_of_ocaml.Dom_html.handler pause_button) Js_of_ocaml.Js._true  *)
+    Js_of_ocaml.Dom_html.Event.keyup (Js_of_ocaml.Dom_html.handler keyup) 
+    Js_of_ocaml.Js._true 
 
 let () = main () 

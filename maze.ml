@@ -17,9 +17,11 @@ type t =
     vertical_walls: wall
   }
 
+(** [make_wall ()] is a wall *)
 let make_wall ()
   = Array.make_matrix (num_grid_squares+1) (num_grid_squares+1) false
 
+(** [make_empty_walls ()] initializes all empty walls *)
 let make_empty_walls () = 
   let maze = {
     horizontal_walls = Horizontal (make_wall ());
@@ -41,6 +43,8 @@ let make_empty_walls () =
   done; 
   maze
 
+(** [clip x y] is [x] and [y] 
+    between 0 and num_grid_squares *)
 let clip x y = 
   let x' = 
     if x < 0 then 0 
@@ -75,6 +79,7 @@ let is_wall_below maze x y =
   | Horizontal walls -> walls.(y+1).(x)
   | _ -> failwith "can only match horizontal wall"
 
+(** [neighbors maze cell] is neighbors of [cell] in [maze] *)
 let neighbors maze cell = 
   let x = cell.x in
   let y = cell.y in 
@@ -97,6 +102,8 @@ let neighbors maze cell =
     else nbrs'''
   in nbrs'''' |> Array.of_list
 
+(** [is_neighbors cell1 cell2] is whether [cell1] 
+    and [cell2] are neighbors *)
 let is_neighbors cell1 cell2 = 
   let x1 = cell1.x in
   let y1 = cell1.y in 
@@ -107,6 +114,8 @@ let is_neighbors cell1 cell2 =
   || (x2=x1 && y2-1=y1)
   || (x2=x1 && y2+1=y1)
 
+(** [walled_neighbors maze cell] is neighbors of [cell] 
+    with walls in [maze] *)
 let walled_neighbors maze cell = 
   let x = cell.x in
   let y = cell.y in 
@@ -129,12 +138,16 @@ let walled_neighbors maze cell =
     else nbrs'''
   in nbrs'''' |> Array.of_list
 
+(** [union cells1 cells2] is set-like array union 
+    of [cells1] and [cells2] *)
 let union cells1 cells2 = 
   Array.append cells1 cells2 
   |> Array.to_list 
   |> List.sort_uniq Stdlib.compare 
   |> Array.of_list
 
+(** [intersect cells1 cells2] is set-like array intersection 
+    of [cells1] and [cells2] *)
 let intersect cells1 cells2 =
   let cells1 = Array.to_list cells1 in 
   let cells2 = Array.to_list cells2 in 
@@ -145,6 +158,7 @@ let intersect cells1 cells2 =
   List.fold_left f [] cells2 
   |> Array.of_list
 
+(** [area_neighbors maze area] is the neighbors of [area] in [maze]*)
 let area_neighbors maze area = 
   (area
    |> Array.map (fun x -> walled_neighbors maze x) 
@@ -154,12 +168,14 @@ let area_neighbors maze area =
     (area |> Array.to_list) 
   |> Array.of_list
 
+(** [choose_random neighbors] is random neighboring walls from [neighbors] *)
 let choose_random neighbors = 
   neighbors 
   |> Array.length 
   |> Random.int 
   |> Array.get neighbors
 
+(** [get_adjacent chosen area] is adjacent cells in [area] to [chosen] *)
 let get_adjacent chosen area =
   let adjacent_cell = 
     List.find_opt (fun x -> is_neighbors chosen x) (Array.to_list area) in
@@ -167,6 +183,7 @@ let get_adjacent chosen area =
   | None -> 0, 0
   | Some cell -> cell.x, cell.y 
 
+(** [remove_wall maze area] is [maze] without enclosed [area] *)
 let remove_wall maze area =
   let neighbors = area_neighbors maze area in
   for i = 0 to 1 do
@@ -184,6 +201,7 @@ let remove_wall maze area =
   done; 
   maze
 
+(** [make_random_walls density] is random walls with [density] *)
 let make_random_walls density = 
   let maze = make_empty_walls () in 
   for i = 0 to density - 1 do
@@ -201,6 +219,7 @@ let make_random_walls density =
     | _ -> failwith "can only match vertical wall"
   done; maze
 
+(** [get_connections maze] is [maze] connections from cells *)
 let get_connections maze = 
   let connections = Array.make (num_grid_squares * num_grid_squares) [||] in
   for i = 0 to num_grid_squares - 1 do
@@ -209,10 +228,12 @@ let get_connections maze =
     done
   done; connections
 
+(** [extract_opt x] is a value from [x] *)
 let extract_opt = function
   | Some y -> y
   | None -> failwith "cannot use on None"
 
+(** [extract_connections connections_opt] is all connections in maze *)
 let extract_connections connections_opt = 
   let len = 
     Array.fold_left (fun a x -> if x <> None then (a + 1) else a) 
@@ -232,6 +253,7 @@ let extract_connections connections_opt =
   done; 
   res
 
+(** [merge maze] is a [maze] with all connections *)
 let merge_all maze = 
   let init_connections = get_connections maze in
   let connections_opt = Array.map (fun x -> Some x) init_connections in

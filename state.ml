@@ -227,7 +227,7 @@ let count_ball_owners player balls =
     | Two -> fun a x -> if x.owner.player_num = Two then 1 else 0
   in List.fold_left f 0 balls
 
-
+(**[remove_balls st] is [st] with all expired balls removed from the [ball_list]*)
 let remove_balls st =
   let alive_balls = List.filter (fun x -> x.timer > 0.0) st.ball_list in
   let expired_balls = difference st.ball_list alive_balls in 
@@ -242,9 +242,12 @@ let remove_balls st =
    camel1=camel1'; 
    camel2=camel2'}
 
+(**[is_collision ball camel] is [true] if [ball] is currently in [camel]*)
 let is_collision ball camel =
   distance camel.pos ball.position <= camel_width/.2.0 +. ball_width/.2.0
 
+(**[kill st player_num] is [st] with [camel1alive] = false if [player_num] is 
+   One and [camel2alive] = false if [player_num] is Two*)
 let kill st = function
   | One -> {
       st with 
@@ -259,6 +262,8 @@ let kill st = function
       maze = Maze.make_maze Maze.density
     }
 
+(**[handle_death_collision ball st] is the state after handling collisions
+   in [move_ball]*)
 let handle_death_collision ball st =
   if is_collision ball st.camel1
   then kill st One |> reinit
@@ -266,18 +271,21 @@ let handle_death_collision ball st =
   then kill st Two |> reinit
   else st
 
+(**[handle_horiz_ball b] is the ball [b] after a horizontal collision*)
 let handle_horiz_ball b = 
   let b' = Ball.flip_h b in
   let x' = Ball.new_pos_x b' in
   let p = Position.init x' b'.position.y in
   {b' with position = p} |> step_timer
 
+(**[handle_vert_ball b] is the ball [b] after a vertical collision*)
 let handle_vert_ball b = 
   let b' = Ball.flip_v b  in
   let y' = Ball.new_pos_y b' in
   let p = Position.init b'.position.x y' in
   {b' with position = p} |> step_timer
 
+(**[handle_corner_ball b] is the ball [b] after a corner collision*)
 let handle_corner_ball b =
   if (current_square Y b.position) = (current_square Y b.position |> truncate) 
   then
@@ -285,6 +293,8 @@ let handle_corner_ball b =
   else
     handle_vert_ball b
 
+(**[move_ball st b] is [b] with a new position and angle of movement after 
+   moving by one unit. *)
 let move_ball st b =
   let x = Ball.new_pos_x b in
   let y = Ball.new_pos_y b in  
@@ -298,28 +308,35 @@ let move_ball st b =
   else
     {b with position = next_point} |> step_timer
 
+(**[horiz_pos camel speed] is the [camel] with new horz positions after moving*)
 let horiz_pos camel speed = 
   {camel.pos with x = Camel.move_horiz camel.pos.x camel.dir speed}
 
+(**[vert_pos camel speed] is the [camel] with new vert positions after moving*)
 let vert_pos camel speed = 
   {camel.pos with y = Camel.move_vert camel.pos.y camel.dir speed}
 
+(**[any_collision st pos width] is [true] if there are any collisions*)
 let any_collision st pos width =
   corner_collide st pos width 
   || horiz_collide st pos width
   || vert_collide st pos width
 
+(**[translated_pos st default_pos h_pos v_pos width] is pos after collision*)
 let translated_pos st default_pos h_pos v_pos width = 
   match any_collision st h_pos width, any_collision st v_pos width with 
   | true, true -> default_pos
   | true, false -> v_pos 
   | false, true | false, false -> h_pos
 
+(**[after_corner st prev_pos next_pos width] is the pos after corner collide*)
 let after_corner st prev_pos next_pos width = 
   if corner_collide st prev_pos camel_width
   then next_pos
   else prev_pos
 
+(**[move_camel st camel speed] is new position of [camel] after a move action
+   at a specific [speed] *)
 let move_camel st camel speed =
   let new_pos = Position.init 
       (Camel.move_horiz camel.pos.x camel.dir speed)
@@ -336,18 +353,22 @@ let move_camel st camel speed =
   | false, true -> v_pos
   | false, false -> c_pos
 
+(**[move_fwd_collide st camel] is the new [camel] after moving forward*)
 let move_fwd_collide st camel = 
   {camel with pos = move_camel st camel Camel.fwd_speed}
 
+(**[move_rev_collide st camel] is the new [camel] after moving behind*)
 let move_rev_collide st camel = 
   {camel with pos = move_camel st camel Camel.rev_speed}
 
+(**[ball_shot_xy camel] is the new pos of [camel] after *)
 let ball_shot_xy camel = 
   let total_width = ball_width /. 4.0 +. camel_width /. 2.0 in
   let x = camel.pos.x +. (total_width *. cosine (90.0 -. camel.dir)) in
   let y = camel.pos.y -. (total_width *. sine (90.0 -. camel.dir)) in
   x, y
 
+(**[handle_shot camel st] is the [st] after a [camel] is shot*)
 let handle_shot camel st = 
   shoot_sound ();
   let x, y = ball_shot_xy camel in
@@ -388,7 +409,7 @@ let rotate d st camel =
   | One -> {st with camel1 = camel'}
   | Two -> {st with camel2 = camel'}
 
-(**[check_death st balls] is the new state after checking if any ball collides 
+(**[check_death st balls] is the new [st] after checking if any [balls] collide 
    with camels *)
 let check_death st =
   let rec check_death' st aux_balls all_balls =
@@ -400,7 +421,7 @@ let check_death st =
       else check_death' st t all_balls
   in check_death' st st.ball_list st.ball_list
 
-(**[move_all_balls player st] is the new state after all balls have been moved *)
+(**[move_all_balls st] is the new [st] after all balls have been moved *)
 let move_all_balls st =
   let balls = 
     List.fold_left (fun a x -> (move_ball st x)::a) [] st.ball_list in
@@ -417,10 +438,13 @@ let rot_point x y center_x center_y angle =
   let rot_y = x'*.(sine angle) +. y'*.(cosine angle) in
   (rot_x +. center_x |> int_of_float, rot_y +. center_y |> int_of_float)
 
+(**[update_state state] is the new [state] after moving all balls*)
 let rec update_state state =
   move_all_balls state
 
+(**[init_camel1] is the initial state of player 1's camel*)
 let init_camel1 = Camel.init One 0.0 0.0 ~-1 (Resources.get_input_name One)
+(**[init_camel2] is the initial state of player 2's camel*)
 let init_camel2 = Camel.init Two 0.0 0.0 ~-1 (Resources.get_input_name Two)
 
 let init_state = {

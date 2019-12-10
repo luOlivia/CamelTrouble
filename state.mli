@@ -41,14 +41,25 @@ val move_ball: t -> Ball.t -> Ball.t
 
 (** [move_fwd st camel] is [camel] with new pos after moving forwards. *)
 val move_fwd_collide : t -> Camel.t -> Camel.t
+
 (** [move_rev st camel] is [camel] with new pos after moving backwards. *)
 val move_rev_collide : t -> Camel.t -> Camel.t
 
+(**[shoot camel st] is the new [st] after [camel] has shot a ball*)
 val shoot : Camel.t -> t -> t
+
+(**[move direction st camel] is the new [st] with [camel] position moved*)
 val move : movement -> t -> Camel.t -> t
+
+(**[rotate d st camel] is the new [st] after rotating [camel] in direction [d]*)
 val rotate : rotation -> t -> Camel.t -> t
 
+(** [rot_point x y center_x center_y angle] is the point [x] and [y] rotated 
+    around center [center_x] [center_y]pt by [angle] *)
 val rot_point : float -> float -> float -> float -> float -> int * int
+
+(**[update_state state] is the new [state] after moving all balls*)
 val update_state : t -> t
 
+(**[init_state] is the initial state*)
 val init_state : t

@@ -124,9 +124,13 @@ let draw_scores state =
     (state.camel2.player_name^"'s score: " ^ 
      (state.camel2.score |> string_of_int))
 
-let wall_pos idx = 
+let wall_pos_over idx = 
   (State.square_width +. State.wall_width)*.
   (idx |> float_of_int) +. State.wall_width
+
+let wall_pos_up idx = 
+  (State.square_width +. State.wall_width)*.
+  ((idx |> float_of_int)) 
 
 let draw_horz_default hlx hly = 
   Graphics_js.fill_rect 
@@ -160,13 +164,13 @@ let draw_walls state =
   for i = 0 to Maze.num_grid_squares - 1 do
     for j = 0 to Maze.num_grid_squares - 1 do
       (* horizontal walls *)
-      let hlx = wall_pos i in  
-      let hly = wall_pos (j+1) in
+      let hlx = wall_pos_over i in  
+      let hly = wall_pos_up (j+1) in
       if Maze.is_wall_below state.maze i j then draw_horz_wall hlx hly;
       if j = 0 then draw_horz_default hlx hly; 
       (* vertical walls *)  
-      let vlx = wall_pos (i+1) in 
-      let vly = wall_pos j in 
+      let vlx = wall_pos_up (i+1) in 
+      let vly = wall_pos_over j in 
       if Maze.is_wall_right state.maze i j then draw_vert_wall vlx vly;
       if i = 0 then draw_vert_default vlx vly; 
     done

@@ -20,8 +20,8 @@ test:
 play:
 	$(OCAMLBUILD) $(MAIN) && ./$(MAIN)
 
-# zip:
-# 	zip cameltrouble.zip *.ml* _tags *.txt *.js *.md *.byte Makefile
+zip:
+	zip cameltrouble.zip *.ml* _tags *.txt *.js *.md *.byte Makefile
 
 docs: docs-public docs-private
 	

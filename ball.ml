@@ -1,11 +1,11 @@
 open Position
 open Utils
 
-(* [ball_timer] is a constant controlling the duration of a ball *)
+(** [ball_timer] is a constant controlling the duration of a ball *)
 let ball_timer = 20.0
-(* [ball_speed] is a constant controlling the speed of a ball *)
+(** [ball_speed] is a constant controlling the speed of a ball *)
 let ball_speed = 5.0
-(* [timer_decrement] is a constant controlling the rate of exprity of a ball *)
+(** [timer_decrement] is a constant controlling the rate of exprity of a ball *)
 let timer_decrement = 0.1
 
 type t = {

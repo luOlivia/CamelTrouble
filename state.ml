@@ -90,7 +90,7 @@ let rec reinit st =
   | _ -> reinit st
 
 (** [first_square_loop out found coord] is a helper loop for calculating 
-   current square *)
+    current square *)
 let first_square_loop out found coord = 
   for i = 0 to Maze.num_grid_squares-1 do
     let idx = i |> float_of_int in
@@ -104,7 +104,7 @@ let first_square_loop out found coord =
   done
 
 (** [second_square_loop out found coord] is a helper loop for calculating 
-   current square *) 
+    current square *) 
 let second_square_loop out found coord =
   for i = 0 to Maze.num_grid_squares do
     let idx = i |> float_of_int in
@@ -117,11 +117,11 @@ let second_square_loop out found coord =
     end
   done 
 
-<<<<<<< HEAD
-(** [current_square axis pos] is the current maze square that the [pos] inhabits*)
-=======
-(**[current_square axis pos] is the current maze square that [pos] inhabits*)
->>>>>>> 5e488b073c1e692c918dc096a8d22e210ca0b021
+            <<<<<<< HEAD
+            (** [current_square axis pos] is the current maze square that the [pos] inhabits*)
+            =======
+            (**[current_square axis pos] is the current maze square that [pos] inhabits*)
+            >>>>>>> 5e488b073c1e692c918dc096a8d22e210ca0b021
 let current_square axis pos =
   let coord = match axis with
     | X -> pos.x
@@ -232,11 +232,7 @@ let count_ball_owners player balls =
     | Two -> fun a x -> if x.owner.player_num = Two then 1 else 0
   in List.fold_left f 0 balls
 
-<<<<<<< HEAD
 (** [remove_balls st] is [st] with all expired balls removed from the [ball_list]*)
-=======
-(**[remove_balls st] is [st] with all expired balls removed from [ball_list]*)
->>>>>>> 5e488b073c1e692c918dc096a8d22e210ca0b021
 let remove_balls st =
   let alive_balls = List.filter (fun x -> x.timer > 0.0) st.ball_list in
   let expired_balls = difference st.ball_list alive_balls in 
@@ -345,7 +341,7 @@ let after_corner st prev_pos next_pos width =
   else prev_pos
 
 (** [move_camel st camel speed] is new position of [camel] after a move action
-   at a specific [speed] *)
+    at a specific [speed] *)
 let move_camel st camel speed =
   let new_pos = Position.init 
       (Camel.move_horiz camel.pos.x camel.dir speed)
@@ -418,7 +414,7 @@ let rotate d st camel =
   | Two -> {st with camel2 = camel'}
 
 (** [check_death st balls] is the new [st] after checking if any [balls] collide 
-   with camels *)
+    with camels *)
 let check_death st =
   let rec check_death' st aux_balls all_balls =
     match aux_balls with

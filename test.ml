@@ -1,13 +1,13 @@
 (* TEST PLAN 
    In testing CamelTrouble, we invoked both OUnit tests and play testing.
-   We automatically tested the modules Camel, Ball, Position, Util, and Maze as
+   We Unit tested the modules Camel, Ball, Position, Util, and Maze as
    they build the core components of our game. Specifically, we tested that 
    movement functions correctly calculated new positions based on current 
    position and object angle. We also tested that our helper functions to 
    calculate cosine, sine angles, and truncation produced the correct output.
    For maze, we verified that certain walls exist based on a Maze object. 
 
-   Test cases for ball movement was developed through glass-box testing in 
+   Test cases for ball movement were developed through glass-box testing in 
    order to cover the different angle cases to be path complete. The same 
    was done for camel movement. For Maze, we used black-box testing because 
    maze generation is inherently random, so we checked that the maze could 
@@ -20,7 +20,7 @@
    die on collision with balls. Since these features are central to the 
    gameplay, we can manually verify that these events occur and our system 
    is correct. The resources module handles the graphical drawings on our gui,
-    so we could verify that they were displaying correctly manually. 
+   so we could verify that they were displaying correctly manually. 
 
    Overall, gameplay proceeds as expected. Therefore in conjunction with our 
    OUnit tests, we can demonstrate the correctness of our system.

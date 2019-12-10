@@ -1,4 +1,4 @@
-MODULES=ball resources camel cell main maze position state
+MODULES=authors ball resources camel cell main maze position state
 OBJECTS=$(MODULES:=.cmo)
 MLS=$(MODULES:=.ml)
 MLIS=$(MODULES:=.mli)
@@ -12,7 +12,7 @@ default: build
 	utop
 
 build:
-	$(OCAMLBUILD) $(MAIN) && js_of_ocaml +graphics.js $(MAIN) 
+	$(OCAMLBUILD) $(OBJECTS) && js_of_ocaml +graphics.js $(MAIN) 
 	
 test:
 	$(OCAMLBUILD) $(TEST) && ./$(TEST)

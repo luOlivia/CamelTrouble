@@ -1,3 +1,5 @@
+(** A camel that can be controlled to move across a map *)
+
 (** [player_num] represents a single of the two possible players in the game *)
 type player_num = One | Two
 
@@ -11,7 +13,7 @@ type t = {
   score : int; 
   (** [num_balls] is the number of balls currently out of [Camel.t] *)
   num_balls: int;
-  (** [dir] is the angle pointed by [Camel.t], and is in [[0.0, 360.0)] *)
+  (** [dir] is the angle pointed by [Camel.t], and is in between 0.0, 360.0 *)
   dir: float; 
   (** [pos] is the position of [Camel.t] *)
   pos: Position.t;

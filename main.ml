@@ -92,7 +92,7 @@ let draw_players () =
 (** [draw_background ()] draws the background to the screen *)
 let draw_background () =
   Graphics_js.set_color Resources.sand;
-  Graphics_js.fill_rect 0 0 xDimension yDimension
+  Graphics_js.fill_rect 0 0 x_dimension y_dimension
 
 (** [draw_camel camel color hump] draws the [camel] 
       on the maze with a [color] and [hump] *)
@@ -125,10 +125,10 @@ let draw_camel camel color hump =
 
 (** [draw_scores state] draws the scores to the screen given [state] *)
 let draw_scores state = 
-  Resources.draw_string Graphics.black 20 (xDimension+10) 30 
+  Resources.draw_string Graphics.black 20 (x_dimension+10) 30 
     (state.camel1.player_name^"'s score: " ^ 
      (state.camel1.score |> string_of_int));
-  Resources.draw_string Graphics.black 20 (xDimension+10) 10 
+  Resources.draw_string Graphics.black 20 (x_dimension+10) 10 
     (state.camel2.player_name^"'s score: " ^ 
      (state.camel2.score |> string_of_int))
 
@@ -211,7 +211,7 @@ let draw_balls state =
 
 (** [draw_fps ()] draws the current frame-per-second count to the screen *)
 let draw_fps () =
-  Resources.draw_string Graphics.black 10 (xDimension+10) (xDimension-10) 
+  Resources.draw_string Graphics.black 10 (x_dimension+10) (x_dimension-10) 
     ((!fps |> truncate |> string_of_float)^" frames per second") 
 
 (** [draw_state state] draws the current [state] of the game *)
@@ -287,7 +287,7 @@ let input st =
     [winner] wins in [st] *)
 let end_game st winner = 
   Graphics_js.set_color Resources.sand;
-  Graphics_js.fill_rect 0 0 xDimension yDimension;
+  Graphics_js.fill_rect 0 0 x_dimension y_dimension;
   Graphics.set_text_size 30;
   (* Graphics.draw_string (winner^" WON!"); *)
   let c, player, dark = match winner with
@@ -334,7 +334,7 @@ let init () =
 let rec main () =
   (* sets intial game start page *)
   Graphics_js.set_color Resources.sand;
-  Graphics_js.fill_rect 0 0 xDimension yDimension;
+  Graphics_js.fill_rect 0 0 x_dimension y_dimension;
   Resources.draw_string Graphics.black 15 60 255 "set player names above";
   Graphics_js.set_text_size 25;
   Resources.gradient_text Resources.purple_grad 60 225 

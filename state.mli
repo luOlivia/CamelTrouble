@@ -1,3 +1,4 @@
+(** The game state and interactions with it *)
 
 (** [status] represents the current status that the game is in for the user *)
 type status = Start | Playing | Paused 
@@ -31,12 +32,12 @@ val wall_height : float
 (** [square_width] is width of the grid squares. *)
 val square_width : float 
 
-(** [xDimension] and [yDimension] make up the dimensions of the play screen in pixels *)
-val xDimension : int 
-val yDimension : int
+(** [x_dimension] and [y_dimension] make up the dimensions of the play screen in pixels *)
+val x_dimension : int 
+val y_dimension : int
 
 (** [move_ball st ball] is the new [ball] with new pos 
-   and angle after moving one step *)
+    and angle after moving one step *)
 val move_ball: t -> Ball.t -> Ball.t 
 
 (** [move_fwd st camel] is [camel] with new pos after moving forwards. *)

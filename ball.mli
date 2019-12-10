@@ -1,3 +1,5 @@
+(** A ball projectile moving across a map *)
+
 (** [Ball.t] is a represents a shot ball as projectile *)
 type t = 
   {

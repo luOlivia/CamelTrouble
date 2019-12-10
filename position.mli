@@ -1,5 +1,7 @@
-(** [t] is the position in a 2D cartesian coordinate system represented by 
-    (x,y) *)
+(** A position on a 2-dimensional cartesian plane *)
+
+(** [Position.t] is the position in a 2D cartesian coordinate system 
+    abstractly represented by (x,y) *)
 type t = {x: float; y: float}
 
 (** [distance p1 p2] is the euclidean distance between [p1] and [p2]*)

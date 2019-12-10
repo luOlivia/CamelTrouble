@@ -1,3 +1,5 @@
+(** Common utility methods *)
+
 (** [cosine degree] is cosine of degrees *)
 val cosine : float -> float
 

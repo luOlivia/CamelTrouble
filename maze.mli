@@ -1,3 +1,5 @@
+(** A maze used as the playing ground for the game *)
+
 (** [wall] of booleans representing the presence of walls. 
     A [cell x y] can have walls:
     - above [Horizontal (y)(x)]
@@ -22,19 +24,19 @@ val density : int
 val make_maze : int -> t
 
 (** [is_wall_left maze x y] is [true] if there is a wall on the left in 
-   the grid square represented by x and y, and [false] otherwise *)
+    the grid square represented by x and y, and [false] otherwise *)
 val is_wall_left : t -> int -> int -> bool
 
 (** [is_wall_right maze x y] is [true] if there is a wall on the right in 
-   the grid square represented by x and y, and [false] otherwise *)
+    the grid square represented by x and y, and [false] otherwise *)
 val is_wall_right : t -> int -> int -> bool
 
 (** [is_wall_above maze x y] is [true] if there is a wall on the top of
-   the grid square represented by x and y, and [false] otherwise *)
+    the grid square represented by x and y, and [false] otherwise *)
 val is_wall_above : t -> int -> int -> bool
 
 (** [is_wall_below maze x y] is [true] if there is a wall on the bottom of 
-   the grid square represented by x and y, and [false] otherwise *)
+    the grid square represented by x and y, and [false] otherwise *)
 val is_wall_below : t -> int -> int -> bool
 
 (** [to_str maze] is a string representation of the [maze]*)

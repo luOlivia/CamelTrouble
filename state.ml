@@ -31,8 +31,8 @@ let ball_width = 10.0
 let wall_width = 8.0
 let wall_height = 50.0
 let square_width = wall_height
-let xDimension = 8.0 *. wall_width +. 7.0 *. square_width |> int_of_float
-let yDimension = xDimension
+let x_dimension = 8.0 *. wall_width +. 7.0 *. square_width |> int_of_float
+let y_dimension = x_dimension
 
 (** [death_sound] is the sound camels make when they die *)
 let death_sound = Resources.audio "oof"

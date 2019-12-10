@@ -1,3 +1,5 @@
+(** A cell on a map *)
+
 (** [Cell.t] is a represents a cell in maze *)
 type t = {x: int; y: int}
 

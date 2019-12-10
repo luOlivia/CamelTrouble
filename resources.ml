@@ -113,5 +113,6 @@ let get_input_name (player: Camel.player_num) =
     match player with
     | One -> "p1name"
     | Two -> "p2name" in 
-  let input_elt = get_element_by_id Js_of_ocaml.Dom_html.CoerceTo.textarea elt_name 
+  let input_elt = get_element_by_id 
+      Js_of_ocaml.Dom_html.CoerceTo.textarea elt_name 
   in Js_of_ocaml.Js.to_string input_elt##.value

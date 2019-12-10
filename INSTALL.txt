@@ -6,8 +6,9 @@ opam install js_of_ocaml-lwt
 
 Then run: 
 
-1. make build (to recompile main.js)
-2. run index.html for the game (we ran on VSCode Live Server)
+1. make play (to obtain main.byte file)
+2. make build (to recompile main.js)
+3. run index.html for the game (we ran on VSCode Live Server)
 
 Instructions for gameplay: 
 1. Input names of player 1 and player 2 (then deselect text area)

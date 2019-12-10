@@ -1,6 +1,6 @@
 (** Resources such as colors, images, and audio *)
 
-(* [size] is standard text size *)
+(** [size] is standard text size *)
 val size : int
 
 (** [sand] is maze background color *)
@@ -47,7 +47,8 @@ val player2 : string list
 (** [draw word x y] draws [word] at pos [x][y] *)
 val draw : string -> int -> int -> unit
 
-(** [audio name] plays audio from file of [name].wav*)
+(** [audio name] plays audio from file of [name].wav *)
 val audio : string -> unit -> unit
 
+(** [get_input_name player] is the user-inputted player name *)
 val get_input_name : Camel.player_num -> string

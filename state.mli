@@ -53,11 +53,12 @@ val shoot : Camel.t -> t -> t
 (** [move direction st camel] is the new [st] with [camel] position moved*)
 val move : movement -> t -> Camel.t -> t
 
-(** [rotate d st camel] is the new [st] after rotating [camel] in direction [d]*)
+(** [rotate d st camel] is the new [st] after rotating 
+    [camel] in direction [d] *)
 val rotate : rotation -> t -> Camel.t -> t
 
 (** [rot_point x y center_x center_y angle] is the point [x] and [y] rotated 
-    around center [center_x] [center_y]pt by [angle] *)
+    around center [center_x] [center_y] pt by [angle] *)
 val rot_point : float -> float -> float -> float -> float -> int * int
 
 (** [update_state state] is the new [state] after moving all balls*)

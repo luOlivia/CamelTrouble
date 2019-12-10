@@ -98,7 +98,7 @@ let audio name () =
   elt##.src := (Js_of_ocaml.Js.string ("sounds/" ^ name ^ ".wav"));
   elt##play
 
-(** [getElementById coerce id] is the type of html [id] element *)
+(** [get_element_by_id coerce id] is the type of html [id] element *)
 let get_element_by_id coerce id =
   match Js_of_ocaml.Js.Opt.to_option @@ 
     Js_of_ocaml.Dom_html.document##getElementById (Js_of_ocaml.Js.string id) 

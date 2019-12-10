@@ -117,11 +117,7 @@ let second_square_loop out found coord =
     end
   done 
 
-            <<<<<<< HEAD
-            (** [current_square axis pos] is the current maze square that the [pos] inhabits*)
-            =======
-            (**[current_square axis pos] is the current maze square that [pos] inhabits*)
-            >>>>>>> 5e488b073c1e692c918dc096a8d22e210ca0b021
+(** [current_square axis pos] is the current maze square that the [pos] inhabits*)
 let current_square axis pos =
   let coord = match axis with
     | X -> pos.x

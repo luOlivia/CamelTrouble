@@ -3,16 +3,23 @@ type player_num = One | Two
 
 (** The type [Camel.t] represents a camel *)
 type t = {
+  (** [player_num] is the player controlling [Camel.t] *)
   player_num: player_num;
+  (** [player_name] is the player name of [Camel.t] *)
   player_name: string;
+  (** [score] is the points of [Camel.t] *)
   score : int; 
+  (** [num_balls] is the number of balls currently out of [Camel.t] *)
   num_balls: int;
-  dir: float; (* degrees 0 - 360 *)
+  (** [dir] is the angle pointed by [Camel.t], and is in [[0.0, 360.0)] *)
+  dir: float; 
+  (** [pos] is the position of [Camel.t] *)
   pos: Position.t;
+  (** [shot_time] is the last time [Camel.t] shot a ball *)
   shot_time: float; 
 }
 
-(** [init num x y score name] is initialized camel before gameplay *)
+(** [init num x y score name] is initialized Camel before gameplay *)
 val init : player_num -> float -> float -> int -> string -> t
 
 (** [fwd_speed] is speed the tank moves forward *)

@@ -47,7 +47,7 @@ val player2 : string list
 (** [draw word x y] draws [word] at pos [x][y] *)
 val draw : string -> int -> int -> unit
 
-(**[audio name] plays audio from file of [name].wav*)
+(** [audio name] plays audio from file of [name].wav*)
 val audio : string -> unit -> unit
 
 val get_input_name : player_num -> string

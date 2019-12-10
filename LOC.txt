@@ -1,0 +1,17 @@
+We believe we have sufficient lines of code in our program with the following results:
+
+-------------------------------------------------------------------------------
+Language                     files          blank        comment           code
+-------------------------------------------------------------------------------
+JavaScript                       1              0              1           2640
+OCaml                           20            276            336           1435
+HTML                             1              8              0             40
+make                             1             10              2             29
+Markdown                         1              0              0              2
+-------------------------------------------------------------------------------
+SUM:                            24            294            339           4146
+-------------------------------------------------------------------------------
+
+In fact, before refactoring for code quality and maintability purposes, we had 1800 lines of code. 
+With our best efforts, we made the code elegant and concise as possible.
+

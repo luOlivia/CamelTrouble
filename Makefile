@@ -1,18 +1,18 @@
-MODULES=authors ball camel cell main maze position state resources
+MODULES=authors ball resources camel cell main maze position state
 OBJECTS=$(MODULES:=.cmo)
 MLS=$(MODULES:=.ml)
 MLIS=$(MODULES:=.mli)
 TEST=test.byte
 MAIN=main.byte
 OCAMLBUILD=ocamlbuild -use-ocamlfind
-PKGS=unix,oUnit,str
+PKGS=unix,oUnit,str,js_of_ocaml-lwt,js_of_ocaml-lwt.graphics,js_of_ocaml-ppx
 
 
 default: build
 	utop
 
 build:
-	$(OCAMLBUILD) $(MAIN) && js_of_ocaml +graphics.js $(MAIN) 
+	$(OCAMLBUILD) $(OBJECTS) && js_of_ocaml +graphics.js $(MAIN) 
 	
 test:
 	$(OCAMLBUILD) $(TEST) && ./$(TEST)

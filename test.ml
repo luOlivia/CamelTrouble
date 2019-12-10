@@ -202,7 +202,7 @@ let test_pos_dist
     (pos2 : Position.t)
     (expected_output : float) : test = 
   name >:: (fun _ -> 
-      assert_equal expected_output (Position.distance pos1 pos2) )
+      assert_equal expected_output (Position.distance pos1 pos2))
 
 (** [position_tests] is test cases for position module *)
 let position_tests = [

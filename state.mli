@@ -32,7 +32,8 @@ val wall_height : float
 (** [square_width] is width of the grid squares. *)
 val square_width : float 
 
-(** [x_dimension] and [y_dimension] make up the dimensions of the play screen in pixels *)
+(** [x_dimension] and [y_dimension] make up the 
+    dimensions of the play screen in pixels *)
 val x_dimension : int 
 val y_dimension : int
 

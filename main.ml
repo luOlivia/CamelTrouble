@@ -224,8 +224,8 @@ let draw_state state =
   draw_balls state;
   draw_fps ()
 
-(** [keypressed evt] is an eventlistener that updates the state of the [input_keys]
-   in the [evt] that any key is pressed. *)
+(** [keypressed evt] is an eventlistener that updates the state of the 
+    [input_keys] in the [evt] that any key is pressed. *)
 let keypressed evt =
   let () = match evt##.keyCode with
     | 38  -> input_keys.p2_up <- true
@@ -241,8 +241,8 @@ let keypressed evt =
     | _ -> ()
   in Js_of_ocaml.Js._true
 
-(** [keyup evt] is an eventlistener that updates the state of the [input_keys] in
-   the [evt] that any key is unpressed.*)
+(** [keyup evt] is an eventlistener that updates the state of the [input_keys] 
+    in the [evt] that any key is unpressed.*)
 let keyup evt =
   let () = match evt##.keyCode with
     | 38  -> input_keys.p2_up <- false
@@ -258,8 +258,8 @@ let keyup evt =
     | _ -> ()
   in Js_of_ocaml.Js._true
 
-(** [handle_ctrls player ctrls st] is the updated state for [player] who inputted 
-    controls [ctrls] in a given [st] *)
+(** [handle_ctrls player ctrls st] is the updated state for [player] 
+    who inputted controls [ctrls] in a given [st] *)
 let handle_ctrls player ctrls st = 
   let camel = match player with
     | One -> st.camel1

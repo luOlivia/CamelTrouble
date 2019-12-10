@@ -1,3 +1,15 @@
+TO SIMPLY PLAY:
+
+* Open index.html
+
+Instructions for gameplay: 
+1. Input names of player 1 and player 2 (then deselect text area)
+2. Press ENTER 
+3.  player 1: WASD and E for shooting 
+    player 2: arrow keys and period for shooting
+
+OTHERWISE, TO RECOMPILE OCAML TO JAVASCRIPT:
+
 In order to install:
 
 opam install Graphics
@@ -9,12 +21,6 @@ Then run:
 1. make play (to obtain main.byte file)
 2. make build (to recompile main.js)
 3. run index.html for the game (we ran on VSCode Live Server)
-
-Instructions for gameplay: 
-1. Input names of player 1 and player 2 (then deselect text area)
-2. Press ENTER 
-3.  player 1: WASD and E for shooting 
-    player 2: arrow keys and period for shooting
 
 NOTE:
 We encountered difficulty installing Graphics on different devices. Some advice from our

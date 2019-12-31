@@ -34,7 +34,7 @@ make build
 ```
 3. Open `index.html` to play!
 
-##Authors
+## Authors
 
 CamelTrouble was made as the final project for Fall 2019 CS 3110 at Cornell University.
 

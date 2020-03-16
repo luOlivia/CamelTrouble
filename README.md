@@ -3,7 +3,7 @@ CamelTrouble is a multiplayer game based on TankTrouble, written in OCaml.
 
 ![Image of CamelTrouble](https://github.com/luOlivia/CamelTrouble/blob/js/resources/gameplay.gif)
 
-[Give it try!](https://as2626.github.io/cameltrouble/)
+[Give it a try!](https://as2626.github.io/cameltrouble/)
 
 ## How to play
 Player 1 controls their camel via controls WASD and shoot with E. Player 2 uses arrow keys to move and "." to shoot. The objective of the game is to shoot and kill the other player while navigating around the maze.
@@ -38,4 +38,4 @@ make build
 
 CamelTrouble was made as the final project for Fall 2019 CS 3110 at Cornell University.
 
-Made with ❤️ by Olivia Lu (luolivia), Abhay Singh (as2626), & Lillian Hong (clillianhong)
+Made with 🐫 by Abhay Singh (as2626), Lillian Hong (clillianhong), & Olivia Lu (luolivia)
